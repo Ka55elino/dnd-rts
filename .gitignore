@@ -1,0 +1,33 @@
+# Wails v3 build output
+bin/
+build/bin/
+frontend/dist/
+.task/
+
+# Node
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Go
+*.exe
+*.test
+*.out
+vendor/
+
+# Env / secrets
+.env
+.env.*
+!.env.example
+
+# IDE
+.idea/
+.vscode/*
+!.vscode/extensions.json
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
