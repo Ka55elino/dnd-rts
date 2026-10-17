@@ -1,4 +1,4 @@
-module changeme
+module dnd-rts
 
 go 1.25.0
 

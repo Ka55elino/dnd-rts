@@ -31,3 +31,6 @@ vendor/
 # OS
 .DS_Store
 Thumbs.db
+
+# Unused mobile build caches
+.gradle/
