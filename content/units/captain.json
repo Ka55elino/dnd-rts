@@ -1,0 +1,42 @@
+{
+  "id": "captain",
+  "name": "Captain",
+  "model": "",
+  "health": 900,
+  "armor": 4,
+  "speed": 4.2,
+  "radius": 0.5,
+  "mass": 3,
+  "melee": {
+    "damage": 40,
+    "range": 1.4,
+    "cooldown": 1.0
+  },
+  "tags": [
+    "hero",
+    "infantry"
+  ],
+  "armorClass": "heavy",
+  "magicDefense": 3,
+  "abilities": [
+    "shockwave",
+    "battle_cry",
+    "fire_pillar",
+    "storm",
+    "heal"
+  ],
+  "hero": {
+    "xp": [
+      0,
+      150,
+      400,
+      800,
+      1400
+    ],
+    "perLevel": {
+      "damage": 0.1,
+      "armor": 1
+    },
+    "healthPerLevel": 0.1
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "id": "fire_arrows",
+  "name": "Fire Arrows",
+  "cost": { "gold": 250, "wood": 100 },
+  "researchTime": 35
+}

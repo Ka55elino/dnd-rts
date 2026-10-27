@@ -1,0 +1,10 @@
+{
+  "id": "spear_wall",
+  "name": "Spear Wall",
+  "kind": "toggle",
+  "modifiers": {
+    "rooted": true,
+    "speedDamage": 5,
+    "armor": 1
+  }
+}

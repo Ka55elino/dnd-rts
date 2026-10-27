@@ -1,0 +1,17 @@
+{
+  "id": "healers",
+  "name": "Healers",
+  "unit": "healer",
+  "size": 4,
+  "formation": {
+    "columns": 2,
+    "spacing": 1.4
+  },
+  "cost": {
+    "gold": 250
+  },
+  "buildTime": 30,
+  "uses": {
+    "food": 6
+  }
+}

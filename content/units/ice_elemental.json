@@ -1,0 +1,28 @@
+{
+  "id": "ice_elemental",
+  "name": "Ice Elemental",
+  "model": "",
+  "health": 450,
+  "armor": 0,
+  "speed": 4.5,
+  "radius": 0.8,
+  "mass": 4,
+  "tags": [
+    "elemental",
+    "monster"
+  ],
+  "armorClass": "medium",
+  "magicDefense": 4,
+  "resist": {
+    "ice": 0.5
+  },
+  "immune": [
+    "slow"
+  ],
+  "melee": {
+    "damage": 28,
+    "range": 1.8,
+    "cooldown": 1.2,
+    "damageType": "ice"
+  }
+}

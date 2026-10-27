@@ -1,0 +1,8 @@
+{
+  "id": "purity",
+  "name": "Purity",
+  "kind": "passive",
+  "modifiers": {
+    "immune": "poison"
+  }
+}

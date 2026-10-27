@@ -1,0 +1,17 @@
+{
+  "id": "swordsmen",
+  "name": "Swordsmen",
+  "unit": "swordsman",
+  "size": 20,
+  "formation": {
+    "columns": 5,
+    "spacing": 1.2
+  },
+  "cost": {
+    "gold": 150
+  },
+  "buildTime": 20,
+  "uses": {
+    "food": 10
+  }
+}

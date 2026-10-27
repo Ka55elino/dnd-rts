@@ -1,0 +1,18 @@
+{
+  "id": "spearmen",
+  "name": "Spearmen",
+  "unit": "spearman",
+  "size": 20,
+  "formation": {
+    "columns": 5,
+    "spacing": 1.2
+  },
+  "cost": {
+    "gold": 170,
+    "metal": 20
+  },
+  "buildTime": 22,
+  "uses": {
+    "food": 10
+  }
+}

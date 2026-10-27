@@ -1,0 +1,12 @@
+{
+  "id": "fire_pillar",
+  "name": "Pillar of Fire",
+  "kind": "active",
+  "target": "point",
+  "range": 30,
+  "cooldown": 25,
+  "autocast": true,
+  "effects": [
+    { "type": "damage", "damageType": "fire", "amount": 40, "radius": 3 }
+  ]
+}

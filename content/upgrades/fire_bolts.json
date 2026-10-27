@@ -1,0 +1,9 @@
+{
+  "id": "fire_bolts",
+  "name": "Fire Bolts",
+  "cost": {
+    "gold": 250,
+    "wood": 100
+  },
+  "researchTime": 35
+}

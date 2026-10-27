@@ -1,0 +1,14 @@
+{
+  "id": "pack_call",
+  "name": "Call of the Pack",
+  "kind": "active",
+  "target": "self",
+  "cooldown": 60,
+  "effects": [
+    {
+      "type": "summon",
+      "horde": "wolf_riders",
+      "limit": true
+    }
+  ]
+}

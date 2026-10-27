@@ -1,0 +1,36 @@
+{
+  "id": "storm_elemental",
+  "name": "Storm Elemental",
+  "model": "",
+  "health": 450,
+  "armor": 0,
+  "speed": 4.5,
+  "radius": 0.8,
+  "mass": 4,
+  "tags": [
+    "elemental",
+    "monster"
+  ],
+  "armorClass": "medium",
+  "magicDefense": 4,
+  "resist": {
+    "lightning": 0.5
+  },
+  "immune": [
+    "stun"
+  ],
+  "ranged": {
+    "damage": 22,
+    "range": 18,
+    "cooldown": 1.8,
+    "damageType": "lightning",
+    "projectile": {
+      "speed": 40,
+      "spread": 1
+    },
+    "targets": [
+      "ground",
+      "air"
+    ]
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "name": "vatbake",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Bakes skinned glTF characters into Vertex Animation Textures for instanced rendering.",
+  "type": "module",
+  "scripts": {
+    "bake": "node bake.mjs"
+  },
+  "dependencies": {
+    "meshoptimizer": "0.22.0",
+    "three": "^0.186.1"
+  }
+}

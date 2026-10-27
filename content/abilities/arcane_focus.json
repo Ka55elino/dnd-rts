@@ -1,0 +1,12 @@
+{
+  "id": "arcane_focus",
+  "name": "Arcane Focus",
+  "kind": "aura",
+  "radius": 15,
+  "tags": [
+    "mage"
+  ],
+  "modifiers": {
+    "abilityHaste": 0.33
+  }
+}

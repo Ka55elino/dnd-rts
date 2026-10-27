@@ -1,0 +1,6 @@
+{
+  "id": "shield_wall",
+  "name": "Shield Wall",
+  "kind": "toggle",
+  "modifiers": { "moveSpeed": -0.4, "armor": 3, "rangedTaken": -0.6 }
+}

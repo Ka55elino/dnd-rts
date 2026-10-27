@@ -1,0 +1,31 @@
+{
+  "id": "stables",
+  "name": "Stables",
+  "kind": "building",
+  "model": "witch_cottage",
+  "modelScale": 2.0,
+  "footprint": {
+    "x": 11,
+    "y": 10
+  },
+  "health": 1400,
+  "armor": 3,
+  "placement": [
+    "plot"
+  ],
+  "buildTime": 25,
+  "cost": {
+    "gold": 200,
+    "wood": 150
+  },
+  "trains": [
+    "knights"
+  ],
+  "material": "wood",
+  "requires": {
+    "buildings": [
+      "barracks"
+    ]
+  },
+  "noBuildRadius": 8
+}

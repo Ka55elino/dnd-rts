@@ -1,0 +1,18 @@
+{
+  "id": "lightning_mages",
+  "name": "Lightning Mages",
+  "unit": "battlemage",
+  "size": 6,
+  "formation": {
+    "columns": 3,
+    "spacing": 1.4
+  },
+  "cost": {
+    "gold": 300,
+    "metal": 50
+  },
+  "buildTime": 35,
+  "uses": {
+    "food": 8
+  }
+}

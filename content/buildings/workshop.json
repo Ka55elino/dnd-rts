@@ -1,0 +1,27 @@
+{
+  "id": "workshop",
+  "name": "Workshop",
+  "kind": "building",
+  "model": "tea_house",
+  "modelScale": 1.25,
+  "footprint": {
+    "x": 13,
+    "y": 15
+  },
+  "health": 1600,
+  "armor": 3,
+  "material": "wood",
+  "placement": [
+    "plot"
+  ],
+  "buildTime": 30,
+  "cost": {
+    "gold": 250,
+    "wood": 200
+  },
+  "trains": [
+    "ballistas",
+    "trebuchets"
+  ],
+  "noBuildRadius": 8
+}

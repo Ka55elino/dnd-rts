@@ -1,0 +1,12 @@
+{
+  "id": "storm_elementals",
+  "name": "Storm Elemental",
+  "unit": "storm_elemental",
+  "size": 1,
+  "formation": {
+    "columns": 1,
+    "spacing": 1
+  },
+  "cost": {},
+  "buildTime": 1
+}

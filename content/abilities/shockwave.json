@@ -1,0 +1,11 @@
+{
+  "id": "shockwave",
+  "name": "Shockwave",
+  "kind": "active",
+  "target": "self",
+  "cooldown": 20,
+  "effects": [
+    { "type": "damage", "damageType": "crush", "amount": 45, "radius": 9 },
+    { "type": "knockback", "force": 10, "radius": 9 }
+  ]
+}

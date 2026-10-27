@@ -1,0 +1,43 @@
+{
+  "id": "warlord",
+  "name": "Warlord",
+  "model": "",
+  "health": 1000,
+  "armor": 3,
+  "speed": 4.2,
+  "radius": 0.55,
+  "mass": 3.5,
+  "melee": {
+    "damage": 45,
+    "range": 1.4,
+    "cooldown": 1.1,
+    "damageType": "crush"
+  },
+  "tags": [
+    "hero",
+    "infantry"
+  ],
+  "armorClass": "heavy",
+  "magicDefense": 3,
+  "abilities": [
+    "shockwave",
+    "battle_cry",
+    "frost_fan",
+    "pack_call",
+    "beast_form"
+  ],
+  "hero": {
+    "xp": [
+      0,
+      150,
+      400,
+      800,
+      1400
+    ],
+    "perLevel": {
+      "damage": 0.1,
+      "armor": 1
+    },
+    "healthPerLevel": 0.1
+  }
+}

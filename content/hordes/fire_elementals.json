@@ -1,0 +1,12 @@
+{
+  "id": "fire_elementals",
+  "name": "Fire Elemental",
+  "unit": "fire_elemental",
+  "size": 1,
+  "formation": {
+    "columns": 1,
+    "spacing": 1
+  },
+  "cost": {},
+  "buildTime": 1
+}

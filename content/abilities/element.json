@@ -1,0 +1,29 @@
+{
+  "id": "element",
+  "name": "Element",
+  "kind": "mode",
+  "cooldown": 5,
+  "modes": [
+    {
+      "id": "fire",
+      "name": "Fire",
+      "modifiers": {
+        "attackType": "fire"
+      }
+    },
+    {
+      "id": "ice",
+      "name": "Ice",
+      "modifiers": {
+        "attackType": "ice"
+      }
+    },
+    {
+      "id": "lightning",
+      "name": "Lightning",
+      "modifiers": {
+        "attackType": "lightning"
+      }
+    }
+  ]
+}

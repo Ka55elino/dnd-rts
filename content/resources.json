@@ -1,0 +1,8 @@
+{
+  "resources": [
+    { "id": "gold", "name": "Gold", "icon": "gold", "kind": "stock", "start": 500, "order": 1 },
+    { "id": "wood", "name": "Wood", "icon": "wood", "kind": "stock", "start": 300, "order": 2 },
+    { "id": "metal", "name": "Metal", "icon": "metal", "kind": "stock", "start": 100, "order": 3 },
+    { "id": "food", "name": "Food", "icon": "food", "kind": "cap", "start": 0, "max": 300, "order": 4 }
+  ]
+}

@@ -1,0 +1,31 @@
+{
+  "id": "farm",
+  "name": "Farm",
+  "kind": "building",
+  "model": "witch_cottage",
+  "modelScale": 1.3,
+  "footprint": {
+    "x": 8,
+    "y": 7
+  },
+  "health": 800,
+  "armor": 2,
+  "placement": [
+    "plot",
+    "free"
+  ],
+  "buildTime": 15,
+  "noBuildRadius": 12,
+  "cost": {
+    "gold": 80,
+    "wood": 40
+  },
+  "economy": [
+    {
+      "type": "provide",
+      "resource": "food",
+      "amount": 10
+    }
+  ],
+  "material": "wood"
+}

@@ -1,0 +1,42 @@
+{
+  "id": "empire",
+  "name": "Empire",
+  "color": "#3a6ea5",
+  "hordes": [
+    "builders",
+    "swordsmen",
+    "spearmen",
+    "archers",
+    "knights",
+    "fire_mages",
+    "water_mages",
+    "lightning_mages",
+    "healers",
+    "ballistas",
+    "trebuchets",
+    "paladin",
+    "archmage",
+    "king"
+  ],
+  "start": [
+    "swordsmen",
+    "archers",
+    "knights",
+    "paladin",
+    "builders"
+  ],
+  "fortress": "keep",
+  "buildings": [
+    "barracks",
+    "archery_range",
+    "stables",
+    "mage_guild",
+    "forge",
+    "farm",
+    "archer_tower",
+    "workshop",
+    "ballista_tower",
+    "trebuchet_tower",
+    "watchtower"
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "id": "raiders",
+  "name": "Raiders",
+  "unit": "raider",
+  "size": 20,
+  "formation": {
+    "columns": 5,
+    "spacing": 1.2
+  },
+  "cost": {
+    "gold": 120
+  },
+  "buildTime": 18,
+  "uses": {
+    "food": 10
+  }
+}

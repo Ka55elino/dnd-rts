@@ -1,0 +1,27 @@
+{
+  "id": "spearman",
+  "name": "Spearman",
+  "model": "",
+  "health": 100,
+  "armor": 2,
+  "speed": 3.4,
+  "radius": 0.4,
+  "mass": 1.2,
+  "melee": {
+    "damage": 11,
+    "range": 1.8,
+    "cooldown": 1.0,
+    "damageType": "pierce",
+    "bonus": {
+      "cavalry": 1.6
+    }
+  },
+  "tags": [
+    "infantry",
+    "living"
+  ],
+  "armorClass": "heavy",
+  "abilities": [
+    "spear_wall"
+  ]
+}

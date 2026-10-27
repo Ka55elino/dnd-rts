@@ -1,0 +1,35 @@
+{
+  "id": "battlemage",
+  "name": "Lightning Mage",
+  "model": "",
+  "health": 80,
+  "armor": 0,
+  "speed": 3.4,
+  "radius": 0.4,
+  "mass": 1,
+  "ranged": {
+    "damage": 14,
+    "range": 22,
+    "cooldown": 2.0,
+    "damageType": "lightning",
+    "projectile": {
+      "speed": 40,
+      "spread": 1.5
+    },
+    "targets": [
+      "ground",
+      "air"
+    ]
+  },
+  "tags": [
+    "infantry",
+    "ranged",
+    "mage",
+    "living"
+  ],
+  "armorClass": "light",
+  "magicDefense": 5,
+  "abilities": [
+    "chain_lightning"
+  ]
+}

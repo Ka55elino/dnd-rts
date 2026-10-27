@@ -1,0 +1,48 @@
+{
+  "id": "king",
+  "name": "King",
+  "model": "",
+  "health": 1100,
+  "armor": 4,
+  "speed": 7,
+  "radius": 0.8,
+  "mass": 4.5,
+  "melee": {
+    "damage": 45,
+    "range": 1.7,
+    "cooldown": 1.1,
+    "damageType": "slash"
+  },
+  "charge": {
+    "trampleDamage": 40,
+    "knockback": 8
+  },
+  "tags": [
+    "hero",
+    "cavalry",
+    "living"
+  ],
+  "armorClass": "heavy",
+  "magicDefense": 2,
+  "abilities": [
+    "royal_guard",
+    "royal_march",
+    "inspire",
+    "royal_oversight",
+    "mass_recall"
+  ],
+  "hero": {
+    "xp": [
+      0,
+      150,
+      400,
+      800,
+      1400
+    ],
+    "perLevel": {
+      "damage": 0.1,
+      "armor": 1
+    },
+    "healthPerLevel": 0.1
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "id": "ballistas",
+  "name": "Ballistas",
+  "unit": "ballista",
+  "size": 2,
+  "formation": {
+    "columns": 2,
+    "spacing": 4
+  },
+  "cost": {
+    "gold": 350,
+    "wood": 200
+  },
+  "buildTime": 40,
+  "uses": {
+    "food": 10
+  }
+}

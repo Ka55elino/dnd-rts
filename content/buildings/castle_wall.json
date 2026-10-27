@@ -1,0 +1,14 @@
+{
+  "id": "castle_wall",
+  "name": "Wall",
+  "kind": "wall",
+  "model": "castle_wall",
+  "footprint": {
+    "x": 6.2,
+    "y": 7
+  },
+  "health": 3000,
+  "armor": 6,
+  "material": "stone",
+  "walkHeight": 5.6
+}

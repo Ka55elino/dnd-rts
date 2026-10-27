@@ -1,0 +1,22 @@
+{
+  "id": "forged_weapons_2",
+  "name": "Forged Weapons II",
+  "cost": {
+    "gold": 400,
+    "metal": 100
+  },
+  "researchTime": 45,
+  "requires": {
+    "upgrades": [
+      "forged_weapons_1"
+    ]
+  },
+  "units": [
+    "swordsman",
+    "spearman",
+    "knight"
+  ],
+  "modifiers": {
+    "damage": 0.15
+  }
+}

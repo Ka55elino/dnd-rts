@@ -1,0 +1,43 @@
+{
+  "id": "ore_mine",
+  "name": "Ore Mine",
+  "kind": "outpost",
+  "model": "keep",
+  "modelScale": 0.9,
+  "footprint": {
+    "x": 8,
+    "y": 8
+  },
+  "health": 2000,
+  "armor": 3,
+  "plots": [
+    {
+      "offset": {
+        "x": -14,
+        "y": 0
+      },
+      "class": "m"
+    },
+    {
+      "offset": {
+        "x": 14,
+        "y": 0
+      },
+      "class": "m"
+    }
+  ],
+  "noBuildRadius": 20,
+  "capture": {
+    "time": 10,
+    "radius": 12
+  },
+  "economy": [
+    {
+      "type": "income",
+      "resource": "metal",
+      "amount": 5,
+      "every": 5
+    }
+  ],
+  "material": "stone"
+}

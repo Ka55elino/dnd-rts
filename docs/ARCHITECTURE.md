@@ -1,25 +1,28 @@
-# Архитектура
+# Architecture
 
-RTS в духе *Battle for Middle-earth 2*: отряды по 15–30 бойцов, тысячи солдат в бою, герои, осады.
-Десктоп-приложение на **Wails v3**: Go-бэкенд + веб-фронтенд с **three.js**.
-Целевые платформы: **Windows, macOS, Linux**.
+An RTS in the spirit of *Battle for Middle-earth 2*: squads of 15–30 soldiers, thousands of soldiers in battle, heroes, sieges.
+A desktop application on **Wails v3**: Go backend + web frontend with **three.js**.
+Target platforms: **Windows, macOS, Linux**.
 
-## Ключевые принципы
+## Key principles
 
-1. **Go — авторитетная симуляция, JS — только рендер и ввод.**
-   Всё состояние игры живёт в Go. Фронтенд получает снапшоты, интерполирует и рисует, а в Go отправляет только команды.
-2. **Игра и редактор — два режима одного приложения** на общем ядре (данные, рендер, симуляция).
-3. **Data-driven.** Юниты, отряды, герои, фракции и карты описываются в файлах `content/`, а не в коде. Редактор правит эти файлы.
-4. **Детерминизм с первого дня** (готовность к lockstep-мультиплееру):
-   - математика симуляции на fixed-point (`internal/fixed`), **никаких float в `sim`**;
-   - время — только номер тика, без `time.Now()` в логике;
-   - случайность только из сидированного RNG симуляции;
-   - стабильный порядок обхода (без `range` по `map`);
-   - состояние меняется только через команды (`playerId`, `tick`).
-5. **`sim` ничего не знает про Wails, сеть и рендер.** Чистый Go-пакет, покрытый тестами.
-6. **Транспорт спрятан за интерфейсом.** Сейчас это локальный бинарный WebSocket, потом сеть. Игра разницы не видит.
+1. **Go is the authoritative simulation; JS is only rendering and input.**
+   All game state lives in Go. The frontend receives snapshots, interpolates and draws them, and sends only commands to Go.
+   - **Go:** movement, combat, damage, effects, abilities, economy, recruitment, construction, capture, visibility, victory — any game numbers.
+   - **JS:** interpolation between snapshots, animations and effects, LOD selection, culling, HUD, input.
+   - **UI hints** (can you build here, are there enough resources) JS may compute on its own to highlight red / green immediately. This is display only: Go re-checks every command and rejects invalid ones. JS never changes game state.
+2. **The game and the editor are two modes of one application** on a shared core (data, rendering, simulation).
+3. **Data-driven.** Units, squads, heroes, factions and maps are described in `content/` files, not in code. The editor edits these files.
+4. **Determinism from day one** (readiness for lockstep multiplayer):
+   - simulation math in fixed-point (`internal/fixed`), **no floats in `sim`**;
+   - time is only the tick number, no `time.Now()` in logic;
+   - randomness only from the simulation's seeded RNG;
+   - stable iteration order (no `range` over a `map`);
+   - state changes only through commands (`playerId`, `tick`).
+5. **`sim` knows nothing about Wails, networking or rendering.** A pure Go package covered by tests.
+6. **Transport is hidden behind an interface.** Right now it is a local binary WebSocket, later the network. The game doesn't see the difference.
 
-## Потоки данных
+## Data flows
 
 ```
 Frontend (TS)                                   Backend (Go)
@@ -30,82 +33,83 @@ Input ──► Command ───────── WS (binary) ─────�
                                                      │
 Render ◄── Interpolation ◄── WS (binary) ◄──── Snapshot / Delta
 
-UI (меню, настройки, редактор) ◄── Wails bindings (JSON) ──► services
+UI (menu, settings, editor) ◄── Wails bindings (JSON) ──► services
 ```
 
-- **Горячий путь** (снапшоты, команды): бинарный WebSocket на `127.0.0.1`.
-- **Холодный путь** (меню, сохранения, список карт, файлы редактора): Wails-биндинги.
+- **Hot path** (snapshots, commands): binary WebSocket on `127.0.0.1`.
+- **Cold path** (menus, saves, map list, editor files): Wails bindings.
 
-## Структура репозитория
+## Repository structure
 
 ```
 dnd-rts/
-├── main.go                 # точка входа Wails: окно, сервисы, запуск WS
+├── main.go                 # Wails entry point: window, services, WS startup
 ├── go.mod
-├── Taskfile.yml            # задачи Wails (dev, build, package)
+├── Taskfile.yml            # Wails tasks (dev, build, package)
 │
-├── internal/               # весь Go-код приложения
-│   ├── fixed/              # fixed-point: Fixed, Vec2, sqrt, sin/cos (таблицы)
-│   ├── data/               # схемы контента + загрузка/валидация
+├── internal/               # all Go application code
+│   ├── fixed/              # fixed-point: Fixed, Vec2, sqrt, sin/cos (tables)
+│   ├── data/               # content schemas + loading/validation
 │   │   ├── unit.go
 │   │   ├── horde.go
 │   │   ├── hero.go
 │   │   ├── faction.go
 │   │   └── mapdata.go
-│   ├── sim/                # детерминированная симуляция
-│   │   ├── world.go        # World, Tick(), порядок систем
-│   │   ├── command.go      # типы команд
-│   │   ├── horde.go        # отряды, формации, приказы
-│   │   ├── soldier.go      # бойцы, бой, отбрасывание/затаптывание
-│   │   ├── hero.go         # герои, способности, уровни
-│   │   ├── rng.go          # сидированный RNG
-│   │   └── nav/            # сетка проходимости, flow fields
-│   ├── game/               # игровой цикл: таймер тиков, очередь команд, сессия
-│   ├── protocol/           # бинарный формат снапшотов и команд (encode/decode)
-│   ├── transport/          # Transport-интерфейс; ws.go (локальный/сетевой)
-│   ├── editor/             # бэкенд редактора: сохранение, валидация, файлы
-│   └── services/           # Wails-сервисы (биндинги для фронтенда)
+│   ├── terrain/            # heightfield: generation (fixed-point), .r16 loading, HeightAt
+│   ├── sim/                # deterministic simulation
+│   │   ├── world.go        # World, Tick(), system order
+│   │   ├── command.go      # command types
+│   │   ├── horde.go        # squads, formations, orders
+│   │   ├── soldier.go      # soldiers, combat, knockback/trampling
+│   │   ├── hero.go         # heroes, abilities, levels
+│   │   ├── rng.go          # seeded RNG
+│   │   └── nav/            # passability grid, flow fields
+│   ├── game/               # game loop: tick timer, command queue, session
+│   ├── protocol/           # binary snapshot and command format (encode/decode)
+│   ├── transport/          # Transport interface; ws.go (local/network)
+│   ├── editor/             # editor backend: saving, validation, files
+│   └── services/           # Wails services (bindings for the frontend)
 │
 ├── frontend/
 │   ├── index.html
 │   ├── package.json
-│   ├── bindings/           # генерируется Wails (коммитится)
+│   ├── bindings/           # generated by Wails (committed)
 │   └── src/
 │       ├── main.ts         # bootstrap
-│       ├── app/            # экраны и переключение режимов: menu, game, editor
-│       ├── engine/         # общий рендер для игры и редактора
+│       ├── app/            # screens and mode switching: menu, game, editor
+│       ├── engine/         # shared rendering for the game and the editor
 │       │   ├── renderer.ts
-│       │   ├── camera/     # RTS-камера
-│       │   ├── terrain/    # heightmap-меш, splat-текстуры
-│       │   ├── models/     # загрузка glTF, кэш ассетов
-│       │   └── vat/        # инстансинг + vertex animation textures
-│       ├── net/            # GameConnection, декодер протокола (зеркало internal/protocol)
-│       ├── game/           # игровой клиент
-│       │   ├── Game.ts     # start()/stop() — жизненный цикл карты
-│       │   ├── input/      # выделение, приказы, хоткеи
-│       │   ├── view/       # синхронизация снапшотов → инстансы, интерполяция
-│       │   └── hud/        # HTML-HUD поверх canvas
-│       ├── editor/         # клиент редактора
-│       │   ├── map/        # кисти рельефа, раскраска, расстановка объектов
-│       │   └── content/    # формы юнитов/отрядов/героев/фракций, 3D-превью
-│       ├── ui/             # общие HTML-компоненты и стили
-│       └── shared/         # события, утилиты, общие типы
+│       │   ├── camera/     # RTS camera
+│       │   ├── terrain/    # heightmap mesh, splat textures
+│       │   ├── models/     # glTF loading, asset cache
+│       │   └── vat/        # instancing + vertex animation textures
+│       ├── net/            # GameConnection, protocol decoder (mirror of internal/protocol)
+│       ├── game/           # game client
+│       │   ├── Game.ts     # start()/stop() — map lifecycle
+│       │   ├── input/      # selection, orders, hotkeys
+│       │   ├── view/       # snapshot → instance sync, interpolation
+│       │   └── hud/        # HTML HUD over the canvas
+│       ├── editor/         # editor client
+│       │   ├── map/        # terrain brushes, painting, object placement
+│       │   └── content/    # unit/squad/hero/faction forms, 3D preview
+│       ├── ui/             # shared HTML components and styles
+│       └── shared/         # events, utilities, shared types
 │
-├── content/                # игровые данные (то, что правит редактор)
+├── content/                # game data (what the editor edits); content.go embeds it into the binary
 │   ├── factions/           # *.json
 │   ├── units/
 │   ├── hordes/
 │   ├── heroes/
 │   ├── abilities/
 │   ├── maps/               # <map>/map.json, heightmap, splat
-│   └── models/             # glTF + запечённые VAT
+│   └── models/             # glTF + baked VAT
 │
-├── tools/                  # CLI-утилиты (Go): запекание VAT, конвертация, валидация контента
-├── docs/                   # документация (этот файл, ROADMAP.md)
-└── build/                  # платформенные конфиги Wails (иконки, nfpm, NSIS, plist)
+├── tools/                  # CLI utilities (Go): VAT baking, conversion, content validation
+├── docs/                   # documentation (this file, ROADMAP.md)
+└── build/                  # Wails platform configs (icons, nfpm, NSIS, plist)
 ```
 
-### Правила зависимостей
+### Dependency rules
 
 ```
 fixed  ◄── data ◄── sim ◄── game ◄── services / main
@@ -114,25 +118,40 @@ fixed  ◄── data ◄── sim ◄── game ◄── services / main
 editor ──► data
 ```
 
-- `sim` импортирует только `fixed`, `data` и стандартную библиотеку.
-- `frontend/src/engine` не знает про `game` и `editor`: оба используют его.
-- `frontend/src/game` и `frontend/src/editor` не импортируют друг друга.
-- Формат `internal/protocol` и `frontend/src/net` меняется синхронно: одна версия протокола.
+- `sim` imports only `fixed`, `data`, `terrain` and the standard library.
+- `frontend/src/engine` knows nothing about `game` and `editor`: both use it.
+- `frontend/src/game` and `frontend/src/editor` don't import each other.
+- The `internal/protocol` and `frontend/src/net` formats change in sync. Until release 0.0.1 the protocol version is fixed at 1 (both parts are always built together); after 0.0.1 it is bumped on every format change.
 
-## Рендер массовых сражений
+## Rendering mass battles
 
-- Рядовые бойцы рисуются через `InstancedMesh` + **VAT**: один draw call на тип юнита.
-- `SkinnedMesh` только для героев и крупных существ.
-- LOD: полная модель, затем упрощённая, затем импостор.
-- Ориентир — WebGL2 (`WebGLRenderer`). WebGPU не используем: нет стабильной поддержки во всех webview.
-- Самая слабая платформа — Linux (WebKitGTK): проверять производительность там в первую очередь.
+- Rank-and-file soldiers are drawn via `InstancedMesh` + **VAT**: one draw call per unit type and LOD level.
+- `SkinnedMesh` only for heroes and large creatures.
+- The target is WebGL2 (`WebGLRenderer`). We don't use WebGPU: there is no stable support in all webviews.
+- The weakest platform is Linux (WebKitGTK): check performance there first.
 
-## Платформы и пакеты
+### Render optimizations: what we have and what we don't
 
-| ОС | Webview | Пакеты |
+| Technique | Status | Where |
 |---|---|---|
-| Windows | WebView2 (Chromium) | NSIS-установщик |
-| macOS | WKWebView | `.app` / `.dmg`, universal (arm64 + amd64) |
-| Linux | WebKitGTK 4.1 | `.deb`, `.rpm` (зависимости через nfpm), AppImage |
+| **Frustum culling** | ✅ soldiers — our own per-soldier sphere culling (`engine/vat/VatLodSet`); buildings and other meshes — built into three.js | `VatLodSet`, `BuildingsView` |
+| **Occlusion culling** | ❌ not doing it: the RTS camera looks from above, there is little occlusion; later if needed | — |
+| **LOD** | ✅ soldiers — 3 levels (45 / 110 m); buildings — 3 levels (`tools/meshbake`); ❌ terrain — a single mesh (large maps need chunks with LOD) | `VatLodSet`, `StaticModel` |
+| **Instancing** | ✅ soldiers, selection rings, corpses; ❌ buildings — separate clones (there are dozens of them, that's fine); trees and decor — **instancing is mandatory** once they appear | `SoldiersView` |
+| **Object pools** | ✅ ability waves, corpses (ring buffer), projectile and instance buffers, status particles (one buffer for 12,000 particles, one draw call); ❌ HTML labels above squads are created / removed; explosions and ability projectiles — with abilities | `Effects`, `SoldiersView`, `ProjectilesView`, `StatusEffectsView` |
+| **Simplified physics** | ✅ no physics in rendering: knockback and collisions are computed by Go; JS has only visual trajectories (arrow arcs, falling corpses, building collapse) | — |
+| **Quality control** | ⚠️ only a pixel ratio cap (1.5) and antialiasing; ❌ no menu settings: render scale, shadows, particles, LOD distance, labels | `engine/renderer.ts` |
 
-Сборка — GitHub Actions, каждая ОС собирается на своём раннере.
+What is not done yet is in `ROADMAP.md`, section "Render performance".
+
+## Platforms and packages
+
+| OS | Webview | Packages |
+|---|---|---|
+| Windows | WebView2 (Chromium) | NSIS installer |
+| macOS | WKWebView | `.app` / `.dmg`, universal (arm64 + amd64) |
+| Linux | WebKitGTK 6.0 + GTK4 (default in Wails v3) | `.deb`, `.rpm` (dependencies are already listed in `build/linux/nfpm/nfpm.yaml`), AppImage |
+
+Builds run on GitHub Actions; each OS is built on its own runner.
+
+Default Linux dependencies: `libgtk-4-1`, `libwebkitgtk-6.0-4` (Ubuntu 24.04+ / Debian 13+). For older distributions there is the `-tags gtk3` build tag (WebKit2GTK 4.1), but it will be removed in Wails v3.1.

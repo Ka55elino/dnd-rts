@@ -1,0 +1,23 @@
+{
+  "id": "wolf_rider",
+  "name": "Wolf Rider",
+  "model": "",
+  "health": 180,
+  "armor": 1.5,
+  "speed": 7.5,
+  "radius": 0.8,
+  "mass": 3,
+  "melee": {
+    "damage": 16,
+    "range": 1.5,
+    "cooldown": 1.0
+  },
+  "charge": {
+    "trampleDamage": 22,
+    "knockback": 6
+  },
+  "tags": [
+    "cavalry"
+  ],
+  "armorClass": "medium"
+}

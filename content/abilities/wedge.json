@@ -1,0 +1,11 @@
+{
+  "id": "wedge",
+  "name": "Wedge Formation",
+  "kind": "toggle",
+  "modifiers": {
+    "formation": "wedge",
+    "moveSpeed": 0.15,
+    "charge": 0.3,
+    "damageTaken": 0.15
+  }
+}

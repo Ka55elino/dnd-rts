@@ -1,0 +1,53 @@
+{
+  "id": "archmage",
+  "name": "Archmage",
+  "model": "",
+  "health": 650,
+  "armor": 1,
+  "speed": 4,
+  "radius": 0.5,
+  "mass": 2.5,
+  "ranged": {
+    "damage": 30,
+    "range": 24,
+    "cooldown": 1.6,
+    "damageType": "fire",
+    "projectile": {
+      "speed": 36,
+      "spread": 1
+    },
+    "targets": [
+      "ground",
+      "air"
+    ]
+  },
+  "tags": [
+    "hero",
+    "infantry",
+    "mage",
+    "ranged"
+  ],
+  "armorClass": "light",
+  "magicDefense": 6,
+  "abilities": [
+    "element",
+    "elemental_ward",
+    "summon_elemental",
+    "arcane_focus",
+    "meteor_shower"
+  ],
+  "hero": {
+    "xp": [
+      0,
+      150,
+      400,
+      800,
+      1400
+    ],
+    "perLevel": {
+      "damage": 0.1,
+      "armor": 0.5
+    },
+    "healthPerLevel": 0.1
+  }
+}

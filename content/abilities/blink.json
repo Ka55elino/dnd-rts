@@ -1,0 +1,13 @@
+{
+  "id": "blink",
+  "name": "Blink",
+  "kind": "active",
+  "target": "point",
+  "range": 25,
+  "cooldown": 30,
+  "effects": [
+    {
+      "type": "teleport"
+    }
+  ]
+}

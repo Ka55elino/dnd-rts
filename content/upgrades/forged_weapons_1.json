@@ -1,0 +1,17 @@
+{
+  "id": "forged_weapons_1",
+  "name": "Forged Weapons I",
+  "cost": {
+    "gold": 200,
+    "metal": 50
+  },
+  "researchTime": 30,
+  "units": [
+    "swordsman",
+    "spearman",
+    "knight"
+  ],
+  "modifiers": {
+    "damage": 0.15
+  }
+}

@@ -1,0 +1,18 @@
+{
+  "id": "wolf_riders",
+  "name": "Wolf Riders",
+  "unit": "wolf_rider",
+  "size": 10,
+  "formation": {
+    "columns": 5,
+    "spacing": 2.2
+  },
+  "cost": {
+    "gold": 250,
+    "metal": 30
+  },
+  "buildTime": 38,
+  "uses": {
+    "food": 15
+  }
+}

@@ -1,0 +1,15 @@
+{
+  "id": "archmage",
+  "name": "Archmage",
+  "unit": "archmage",
+  "size": 1,
+  "formation": {
+    "columns": 1,
+    "spacing": 1
+  },
+  "cost": {
+    "gold": 1200
+  },
+  "buildTime": 60,
+  "unique": true
+}

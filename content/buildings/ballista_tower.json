@@ -1,0 +1,45 @@
+{
+  "id": "ballista_tower",
+  "name": "Ballista Tower",
+  "kind": "building",
+  "model": "castle_tower",
+  "modelScale": 0.95,
+  "footprint": {
+    "x": 6.5,
+    "y": 6.5
+  },
+  "health": 2600,
+  "armor": 5,
+  "material": "stone",
+  "placement": [
+    "tower"
+  ],
+  "buildTime": 40,
+  "cost": {
+    "gold": 350,
+    "wood": 150,
+    "metal": 50
+  },
+  "attack": {
+    "damage": 50,
+    "range": 38,
+    "cooldown": 3,
+    "damageType": "pierce",
+    "projectile": {
+      "speed": 42,
+      "spread": 0.6
+    },
+    "targets": [
+      "ground",
+      "air"
+    ],
+    "bonus": {
+      "monster": 1.5,
+      "cavalry": 1.3
+    }
+  },
+  "volley": 1,
+  "toggles": [
+    "fire_bolts_mode"
+  ]
+}

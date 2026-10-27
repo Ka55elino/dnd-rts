@@ -1,0 +1,23 @@
+{
+  "id": "swordsman",
+  "name": "Swordsman",
+  "model": "swordsman",
+  "health": 100,
+  "armor": 2,
+  "speed": 3.5,
+  "radius": 0.4,
+  "mass": 1,
+  "melee": {
+    "damage": 12,
+    "range": 1.2,
+    "cooldown": 1.0
+  },
+  "tags": [
+    "infantry",
+    "living"
+  ],
+  "armorClass": "heavy",
+  "abilities": [
+    "shield_wall"
+  ]
+}

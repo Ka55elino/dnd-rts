@@ -1,0 +1,31 @@
+{
+  "id": "harpy",
+  "name": "Harpy",
+  "model": "",
+  "health": 90,
+  "armor": 0,
+  "speed": 6.5,
+  "radius": 0.6,
+  "mass": 1.5,
+  "flying": true,
+  "melee": {
+    "damage": 11,
+    "range": 1.5,
+    "cooldown": 1.0,
+    "damageType": "slash",
+    "targets": ["ground", "air"]
+  },
+  "ranged": {
+    "damage": 7,
+    "range": 16,
+    "cooldown": 1.6,
+    "damageType": "pierce",
+    "projectile": {
+      "speed": 26,
+      "spread": 2
+    },
+    "targets": ["ground", "air"]
+  },
+  "tags": ["monster", "flying"],
+  "armorClass": "light"
+}

@@ -1,0 +1,20 @@
+{
+  "id": "elemental_ward",
+  "name": "Elemental Ward",
+  "kind": "aura",
+  "radius": 15,
+  "byMode": {
+    "fire": {
+      "resistType": "fire",
+      "resist": 0.3
+    },
+    "ice": {
+      "resistType": "ice",
+      "resist": 0.3
+    },
+    "lightning": {
+      "resistType": "lightning",
+      "resist": 0.3
+    }
+  }
+}

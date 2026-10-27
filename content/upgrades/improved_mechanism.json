@@ -1,0 +1,19 @@
+{
+  "id": "improved_mechanism",
+  "name": "Improved Mechanism",
+  "cost": {
+    "gold": 300,
+    "wood": 150,
+    "metal": 50
+  },
+  "researchTime": 40,
+  "units": [
+    "trebuchet"
+  ],
+  "buildings": [
+    "trebuchet_tower"
+  ],
+  "modifiers": {
+    "attackSpeed": 0.33
+  }
+}

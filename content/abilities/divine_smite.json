@@ -1,0 +1,15 @@
+{
+  "id": "divine_smite",
+  "name": "Divine Smite",
+  "kind": "active",
+  "target": "unit",
+  "range": 12,
+  "cooldown": 45,
+  "effects": [
+    {
+      "type": "damage",
+      "damageType": "radiant",
+      "amount": 250
+    }
+  ]
+}

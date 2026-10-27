@@ -1,0 +1,20 @@
+{
+  "id": "worker",
+  "name": "Worker",
+  "model": "swordsman",
+  "health": 60,
+  "armor": 0,
+  "speed": 4,
+  "radius": 0.4,
+  "mass": 1,
+  "melee": {
+    "damage": 4,
+    "range": 1.2,
+    "cooldown": 1.0
+  },
+  "tags": [
+    "infantry",
+    "worker"
+  ],
+  "armorClass": "light"
+}

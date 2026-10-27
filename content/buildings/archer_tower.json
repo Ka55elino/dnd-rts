@@ -1,0 +1,40 @@
+{
+  "id": "archer_tower",
+  "name": "Archer Tower",
+  "kind": "building",
+  "model": "castle_tower",
+  "modelScale": 0.85,
+  "footprint": {
+    "x": 6,
+    "y": 6
+  },
+  "health": 1800,
+  "armor": 4,
+  "material": "stone",
+  "placement": [
+    "tower"
+  ],
+  "buildTime": 30,
+  "cost": {
+    "gold": 250,
+    "wood": 100
+  },
+  "attack": {
+    "damage": 10,
+    "range": 32,
+    "cooldown": 1.5,
+    "damageType": "pierce",
+    "projectile": {
+      "speed": 34,
+      "spread": 2
+    },
+    "targets": [
+      "ground",
+      "air"
+    ]
+  },
+  "volley": 5,
+  "toggles": [
+    "fire_mode"
+  ]
+}

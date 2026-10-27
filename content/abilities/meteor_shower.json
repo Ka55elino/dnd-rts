@@ -1,0 +1,55 @@
+{
+  "id": "meteor_shower",
+  "name": "Meteor Shower",
+  "kind": "active",
+  "target": "point",
+  "range": 30,
+  "cooldown": 150,
+  "ultimate": true,
+  "effects": [
+    {
+      "type": "zone",
+      "radius": 12,
+      "duration": 6,
+      "interval": 1,
+      "effects": [
+        {
+          "type": "damage",
+          "damageType": "fire",
+          "amount": 30,
+          "mode": "fire"
+        },
+        {
+          "type": "status",
+          "status": "burn",
+          "duration": 3,
+          "mode": "fire"
+        },
+        {
+          "type": "damage",
+          "damageType": "ice",
+          "amount": 30,
+          "mode": "ice"
+        },
+        {
+          "type": "status",
+          "status": "slow",
+          "duration": 2,
+          "mode": "ice"
+        },
+        {
+          "type": "damage",
+          "damageType": "lightning",
+          "amount": 30,
+          "mode": "lightning"
+        },
+        {
+          "type": "status",
+          "status": "stun",
+          "duration": 1,
+          "mode": "lightning"
+        }
+      ]
+    }
+  ]
+}

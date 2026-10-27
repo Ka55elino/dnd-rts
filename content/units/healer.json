@@ -1,0 +1,20 @@
+{
+  "id": "healer",
+  "name": "Healer",
+  "model": "",
+  "health": 70,
+  "armor": 0,
+  "speed": 3.4,
+  "radius": 0.4,
+  "mass": 1,
+  "tags": [
+    "infantry",
+    "mage",
+    "living"
+  ],
+  "armorClass": "light",
+  "magicDefense": 5,
+  "abilities": [
+    "heal"
+  ]
+}

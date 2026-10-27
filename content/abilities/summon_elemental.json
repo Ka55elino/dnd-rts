@@ -1,0 +1,27 @@
+{
+  "id": "summon_elemental",
+  "name": "Summon Elemental",
+  "kind": "active",
+  "target": "self",
+  "cooldown": 60,
+  "effects": [
+    {
+      "type": "summon",
+      "horde": "fire_elementals",
+      "duration": 45,
+      "mode": "fire"
+    },
+    {
+      "type": "summon",
+      "horde": "ice_elementals",
+      "duration": 45,
+      "mode": "ice"
+    },
+    {
+      "type": "summon",
+      "horde": "storm_elementals",
+      "duration": 45,
+      "mode": "lightning"
+    }
+  ]
+}

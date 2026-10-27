@@ -1,0 +1,15 @@
+{
+  "id": "beast_form",
+  "name": "Beast Form",
+  "kind": "active",
+  "target": "self",
+  "cooldown": 180,
+  "effects": [
+    {
+      "type": "transform",
+      "unit": "warbeast",
+      "duration": 30
+    }
+  ],
+  "ultimate": true
+}

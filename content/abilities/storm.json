@@ -1,0 +1,17 @@
+{
+  "id": "storm",
+  "name": "Storm",
+  "kind": "active",
+  "target": "point",
+  "range": 30,
+  "cooldown": 35,
+  "effects": [
+    {
+      "type": "zone", "radius": 8, "duration": 6, "interval": 1,
+      "effects": [
+        { "type": "damage", "damageType": "ice", "amount": 6 },
+        { "type": "status", "status": "slow", "duration": 1.2 }
+      ]
+    }
+  ]
+}

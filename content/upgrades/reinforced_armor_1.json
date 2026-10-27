@@ -1,0 +1,18 @@
+{
+  "id": "reinforced_armor_1",
+  "name": "Reinforced Armor I",
+  "cost": {
+    "gold": 200,
+    "metal": 50
+  },
+  "researchTime": 30,
+  "units": [
+    "swordsman",
+    "spearman",
+    "knight",
+    "archer"
+  ],
+  "modifiers": {
+    "armor": 2
+  }
+}

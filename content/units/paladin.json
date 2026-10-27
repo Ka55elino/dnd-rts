@@ -1,0 +1,44 @@
+{
+  "id": "paladin",
+  "name": "Paladin",
+  "model": "",
+  "health": 950,
+  "armor": 4,
+  "speed": 4.2,
+  "radius": 0.55,
+  "mass": 3.5,
+  "melee": {
+    "damage": 42,
+    "range": 1.5,
+    "cooldown": 1.1,
+    "damageType": "slash"
+  },
+  "tags": [
+    "hero",
+    "infantry",
+    "living"
+  ],
+  "armorClass": "heavy",
+  "magicDefense": 2,
+  "abilities": [
+    "holy_radiance",
+    "purity",
+    "divine_smite",
+    "warding_aura",
+    "divine_shield"
+  ],
+  "hero": {
+    "xp": [
+      0,
+      150,
+      400,
+      800,
+      1400
+    ],
+    "perLevel": {
+      "damage": 0.1,
+      "armor": 1
+    },
+    "healthPerLevel": 0.1
+  }
+}

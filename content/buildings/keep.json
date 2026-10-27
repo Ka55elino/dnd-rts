@@ -1,0 +1,69 @@
+{
+  "id": "keep",
+  "name": "Keep",
+  "kind": "fortress",
+  "model": "keep",
+  "modelScale": 1.6,
+  "footprint": {
+    "x": 14,
+    "y": 14
+  },
+  "health": 5000,
+  "armor": 4,
+  "economy": [
+    {
+      "type": "provide",
+      "resource": "food",
+      "amount": 20
+    }
+  ],
+  "trains": [
+    "builders",
+    "paladin",
+    "archmage",
+    "king",
+    "captain",
+    "warlord"
+  ],
+  "material": "stone",
+  "base": {
+    "shape": "circle",
+    "radius": 70,
+    "rings": [
+      {
+        "radius": 26,
+        "count": 4,
+        "offset": 45,
+        "sizes": [
+          "m"
+        ]
+      },
+      {
+        "radius": 39,
+        "count": 6,
+        "offset": 30,
+        "sizes": [
+          "s",
+          "l",
+          "s"
+        ]
+      },
+      {
+        "radius": 53,
+        "count": 6,
+        "offset": 30,
+        "sizes": [
+          "m"
+        ]
+      }
+    ],
+    "gates": [
+      0,
+      180
+    ],
+    "towers": 8,
+    "wall": "castle_wall",
+    "gate": "castle_gate",
+    "stairs": 4
+  }
+}

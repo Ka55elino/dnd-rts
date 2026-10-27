@@ -1,0 +1,14 @@
+{
+  "id": "royal_guard",
+  "name": "Royal Guard",
+  "kind": "active",
+  "target": "self",
+  "cooldown": 90,
+  "effects": [
+    {
+      "type": "summon",
+      "horde": "royal_guards",
+      "limit": true
+    }
+  ]
+}

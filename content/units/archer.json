@@ -1,0 +1,32 @@
+{
+  "id": "archer",
+  "name": "Archer",
+  "model": "ranger",
+  "health": 70,
+  "armor": 0.5,
+  "speed": 3.5,
+  "radius": 0.4,
+  "mass": 1,
+  "ranged": {
+    "damage": 9,
+    "range": 30,
+    "cooldown": 1.5,
+    "projectile": {
+      "speed": 30,
+      "spread": 3
+    },
+    "targets": [
+      "ground",
+      "air"
+    ]
+  },
+  "tags": [
+    "infantry",
+    "ranged",
+    "living"
+  ],
+  "armorClass": "medium",
+  "abilities": [
+    "fire_mode"
+  ]
+}

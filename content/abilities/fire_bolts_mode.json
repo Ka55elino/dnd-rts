@@ -1,0 +1,15 @@
+{
+  "id": "fire_bolts_mode",
+  "name": "Fire Bolts",
+  "kind": "toggle",
+  "requires": {
+    "upgrades": [
+      "fire_bolts"
+    ]
+  },
+  "modifiers": {
+    "extraType": "fire",
+    "extraDamage": 0.3,
+    "noPierce": true
+  }
+}

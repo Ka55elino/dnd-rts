@@ -1,0 +1,18 @@
+{
+  "id": "griffon_riders",
+  "name": "Griffon Riders",
+  "unit": "griffon_rider",
+  "size": 5,
+  "formation": {
+    "columns": 5,
+    "spacing": 3
+  },
+  "cost": {
+    "gold": 400,
+    "wood": 80
+  },
+  "buildTime": 45,
+  "uses": {
+    "food": 15
+  }
+}

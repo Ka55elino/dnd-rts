@@ -1,0 +1,19 @@
+{
+  "id": "raider",
+  "name": "Raider",
+  "model": "",
+  "health": 90,
+  "armor": 1,
+  "speed": 3.8,
+  "radius": 0.4,
+  "mass": 1,
+  "melee": {
+    "damage": 13,
+    "range": 1.2,
+    "cooldown": 0.9
+  },
+  "tags": [
+    "infantry"
+  ],
+  "armorClass": "light"
+}

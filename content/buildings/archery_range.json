@@ -1,0 +1,25 @@
+{
+  "id": "archery_range",
+  "name": "Archery Range",
+  "kind": "building",
+  "model": "mausoleum",
+  "modelScale": 2.2,
+  "footprint": {
+    "x": 10,
+    "y": 10
+  },
+  "health": 1300,
+  "armor": 3,
+  "placement": [
+    "plot"
+  ],
+  "buildTime": 20,
+  "cost": {
+    "gold": 150,
+    "wood": 120
+  },
+  "trains": [
+    "archers"
+  ],
+  "material": "wood"
+}

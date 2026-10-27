@@ -1,0 +1,9 @@
+{
+  "id": "royal_oversight",
+  "name": "Royal Oversight",
+  "kind": "aura",
+  "radius": 20,
+  "modifiers": {
+    "workSpeed": 0.3
+  }
+}

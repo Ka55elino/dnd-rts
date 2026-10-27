@@ -1,0 +1,15 @@
+{
+  "id": "holy_radiance",
+  "name": "Holy Radiance",
+  "kind": "active",
+  "target": "self",
+  "cooldown": 40,
+  "effects": [
+    {
+      "type": "status",
+      "status": "blind",
+      "duration": 4,
+      "radius": 8
+    }
+  ]
+}

@@ -1,0 +1,7 @@
+{
+  "id": "fire_mode",
+  "name": "Fire Arrows",
+  "kind": "toggle",
+  "requires": { "upgrades": ["fire_arrows"] },
+  "modifiers": { "extraType": "fire", "extraDamage": 0.3, "noPierce": true }
+}

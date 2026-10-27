@@ -1,0 +1,60 @@
+{
+  "id": "plains",
+  "name": "Plains",
+  "width": 512,
+  "height": 512,
+  "terrain": {
+    "cellSize": 2,
+    "maxHeight": 40,
+    "seed": 1337
+  },
+  "players": [
+    {
+      "start": {
+        "x": -130,
+        "y": 0
+      },
+      "fortress": {
+        "pos": {
+          "x": -170,
+          "y": 0
+        }
+      }
+    },
+    {
+      "start": {
+        "x": 130,
+        "y": 0
+      },
+      "fortress": {
+        "pos": {
+          "x": 170,
+          "y": 0
+        }
+      }
+    }
+  ],
+  "outposts": [
+    {
+      "building": "gold_mine",
+      "pos": {
+        "x": 0,
+        "y": 160
+      }
+    },
+    {
+      "building": "sawmill",
+      "pos": {
+        "x": 0,
+        "y": -155
+      }
+    },
+    {
+      "building": "ore_mine",
+      "pos": {
+        "x": -80,
+        "y": -100
+      }
+    }
+  ]
+}

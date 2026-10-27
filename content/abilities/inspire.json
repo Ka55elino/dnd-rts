@@ -1,0 +1,17 @@
+{
+  "id": "inspire",
+  "name": "Inspire",
+  "kind": "active",
+  "target": "self",
+  "cooldown": 50,
+  "effects": [
+    {
+      "type": "buff",
+      "duration": 12,
+      "radius": 15,
+      "modifiers": {
+        "attackSpeed": 0.3
+      }
+    }
+  ]
+}

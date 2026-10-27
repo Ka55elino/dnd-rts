@@ -1,0 +1,29 @@
+{
+  "id": "barracks",
+  "name": "Barracks",
+  "kind": "building",
+  "model": "mausoleum",
+  "modelScale": 2.5,
+  "footprint": {
+    "x": 10,
+    "y": 10
+  },
+  "health": 1500,
+  "armor": 3,
+  "placement": [
+    "plot"
+  ],
+  "buildTime": 20,
+  "cost": {
+    "gold": 200,
+    "wood": 100
+  },
+  "trains": [
+    "swordsmen",
+    "spearmen",
+    "raiders",
+    "wolf_riders",
+    "harpies"
+  ],
+  "material": "stone"
+}

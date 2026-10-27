@@ -1,0 +1,30 @@
+{
+  "id": "mage_guild",
+  "name": "Mage Guild",
+  "kind": "building",
+  "model": "mausoleum",
+  "modelScale": 2.4,
+  "footprint": {
+    "x": 13,
+    "y": 13
+  },
+  "health": 1200,
+  "armor": 3,
+  "placement": [
+    "plot"
+  ],
+  "buildTime": 30,
+  "cost": {
+    "gold": 300,
+    "wood": 80,
+    "metal": 40
+  },
+  "trains": [
+    "fire_mages",
+    "water_mages",
+    "lightning_mages",
+    "healers"
+  ],
+  "material": "stone",
+  "noBuildRadius": 8
+}

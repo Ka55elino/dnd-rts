@@ -1,0 +1,16 @@
+{
+  "id": "mass_recall",
+  "name": "Mass Recall",
+  "kind": "active",
+  "target": "point",
+  "range": 1000,
+  "cooldown": 180,
+  "effects": [
+    {
+      "type": "teleport",
+      "radius": 15,
+      "toBuilding": true
+    }
+  ],
+  "ultimate": true
+}

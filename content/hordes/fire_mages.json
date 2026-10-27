@@ -1,0 +1,18 @@
+{
+  "id": "fire_mages",
+  "name": "Fire Mages",
+  "unit": "fire_mage",
+  "size": 6,
+  "formation": {
+    "columns": 3,
+    "spacing": 1.4
+  },
+  "cost": {
+    "gold": 300,
+    "metal": 50
+  },
+  "buildTime": 35,
+  "uses": {
+    "food": 8
+  }
+}

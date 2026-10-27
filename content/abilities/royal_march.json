@@ -1,0 +1,9 @@
+{
+  "id": "royal_march",
+  "name": "Royal March",
+  "kind": "aura",
+  "radius": 15,
+  "modifiers": {
+    "moveSpeed": 0.15
+  }
+}

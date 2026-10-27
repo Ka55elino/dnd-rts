@@ -1,0 +1,47 @@
+{
+  "minDamage": 0.25,
+  "effectInterval": 0.5,
+  "armor": {
+    "lightDodge": 0.15,
+    "heavyResist": 0.35
+  },
+  "pierce": {
+    "ignoreArmorChance": 0.25
+  },
+  "crush": {
+    "buildingMultiplier": 2.5
+  },
+  "fire": {
+    "dotPerSecond": 0.2,
+    "duration": 3,
+    "wood": 1.5,
+    "stone": 0.5
+  },
+  "lightning": {
+    "stunChance": 0.15,
+    "stunDuration": 1
+  },
+  "ice": {
+    "slow": 0.3,
+    "duration": 2
+  },
+  "acid": {
+    "armorPerStack": 2,
+    "maxStacks": 3,
+    "duration": 6
+  },
+  "poison": {
+    "dotPerSecond": 0.15,
+    "duration": 5,
+    "spreadChance": 0.15,
+    "spreadRadius": 3,
+    "maxSpread": 2
+  },
+  "necrotic": {
+    "lifeSteal": 0.3
+  },
+  "xp": {
+    "radius": 25,
+    "capture": 100
+  }
+}

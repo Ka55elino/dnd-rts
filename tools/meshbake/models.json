@@ -1,0 +1,87 @@
+{
+  "$comment": "Static models to bake. source is relative to the repo root; output goes to frontend/public/models/<id>/lod{0,1,2}.glb. lods: fraction of triangles kept per level (LOD0 = 1, cleaned only).",
+  "lods": [
+    1,
+    0.3,
+    0.08
+  ],
+  "models": [
+    {
+      "id": "keep",
+      "source": "art/source/buildings/keep.glb"
+    },
+    {
+      "id": "mausoleum",
+      "source": "art/source/buildings/mausoleum.glb"
+    },
+    {
+      "id": "witch_cottage",
+      "source": "art/source/buildings/witch-cottage.glb"
+    },
+    {
+      "id": "castle_wall",
+      "source": "art/source/buildings/castle-wall.glb",
+      "lods": [
+        1,
+        0.12,
+        0.03
+      ],
+      "error": 0.05,
+      "sloppy": true
+    },
+    {
+      "id": "gatehouse",
+      "source": "art/source/buildings/gatehouse-light.glb",
+      "keepNamed": true,
+      "sloppy": true,
+      "error": 0.05
+    },
+    {
+      "id": "ballista",
+      "source": "art/source/grab3d/ballista.glb",
+      "keepNamed": true,
+      "sloppy": true,
+      "error": 0.05
+    },
+    {
+      "id": "trebuchet",
+      "source": "art/source/grab3d/trebuchet.glb",
+      "keepNamed": true,
+      "sloppy": true,
+      "error": 0.05
+    },
+    {
+      "id": "catapult",
+      "source": "art/source/grab3d/catapult.glb",
+      "keepNamed": true,
+      "sloppy": true,
+      "error": 0.05
+    },
+    {
+      "id": "battering_ram",
+      "source": "art/source/grab3d/battering-ram.glb",
+      "keepNamed": true,
+      "sloppy": true,
+      "error": 0.05
+    },
+    {
+      "id": "castle_tower",
+      "source": "art/source/buildings/castle-tower.glb",
+      "sloppy": true,
+      "error": 0.05
+    },
+    {
+      "id": "wooden_watchtower",
+      "source": "art/source/buildings/wooden-watchtower.glb",
+      "sloppy": true,
+      "error": 0.05
+    },
+    {
+      "id": "tea_house",
+      "source": "art/source/buildings/tea-house-light.glb",
+      "keepNamed": true,
+      "sloppy": true,
+      "error": 0.05
+    }
+  ]
+}

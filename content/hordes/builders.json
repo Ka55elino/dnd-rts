@@ -1,0 +1,17 @@
+{
+  "id": "builders",
+  "name": "Builder",
+  "unit": "worker",
+  "size": 1,
+  "formation": {
+    "columns": 1,
+    "spacing": 1
+  },
+  "cost": {
+    "gold": 50
+  },
+  "buildTime": 10,
+  "uses": {
+    "food": 2
+  }
+}

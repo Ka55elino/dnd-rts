@@ -1,0 +1,77 @@
+{
+  "version": 1,
+  "fps": 15,
+  "vertexCount": 3233,
+  "frames": 84,
+  "texture": {
+    "width": 2048,
+    "height": 133,
+    "format": "rgba16f"
+  },
+  "clips": {
+    "idle": {
+      "start": 0,
+      "frames": 30,
+      "loop": true,
+      "duration": 2
+    },
+    "walk": {
+      "start": 30,
+      "frames": 15,
+      "loop": true,
+      "duration": 1,
+      "groundSpeed": 0.912
+    },
+    "run": {
+      "start": 45,
+      "frames": 10,
+      "loop": true,
+      "duration": 0.667,
+      "groundSpeed": 1.97
+    },
+    "attack": {
+      "start": 55,
+      "frames": 13,
+      "loop": false,
+      "duration": 0.8
+    },
+    "die": {
+      "start": 68,
+      "frames": 16,
+      "loop": false,
+      "duration": 1
+    }
+  },
+  "bounds": {
+    "min": [
+      -0.683,
+      -0.177,
+      -0.926
+    ],
+    "max": [
+      0.777,
+      1.805,
+      1.256
+    ]
+  },
+  "geometry": {
+    "lod0": {
+      "offset": 0,
+      "count": 17208
+    },
+    "lod1": {
+      "offset": 68832,
+      "count": 6852
+    },
+    "lod2": {
+      "offset": 96240,
+      "count": 1713
+    },
+    "colors": {
+      "offset": 103092
+    },
+    "positions": {
+      "offset": 116024
+    }
+  }
+}

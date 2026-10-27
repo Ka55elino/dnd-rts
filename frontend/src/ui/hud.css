@@ -1,0 +1,727 @@
+/* In-game HUD: carved dark stone with bronze trim (original placeholder art,
+   built from CSS only until painted frames exist). */
+
+@font-face {
+    font-family: "Cinzel";
+    src: url("./fonts/cinzel-latin-600-normal.woff2") format("woff2");
+    font-weight: 600;
+    font-display: swap;
+}
+@font-face {
+    font-family: "Cinzel";
+    src: url("./fonts/cinzel-latin-700-normal.woff2") format("woff2");
+    font-weight: 700;
+    font-display: swap;
+}
+@font-face {
+    font-family: "Alegreya Sans";
+    src: url("./fonts/alegreya-sans-latin-400-normal.woff2") format("woff2");
+    font-weight: 400;
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+    font-family: "Alegreya Sans";
+    src: url("./fonts/alegreya-sans-latin-700-normal.woff2") format("woff2");
+    font-weight: 700;
+    unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+    font-family: "Alegreya Sans";
+    src: url("./fonts/alegreya-sans-cyrillic-400-normal.woff2") format("woff2");
+    font-weight: 400;
+    unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+@font-face {
+    font-family: "Alegreya Sans";
+    src: url("./fonts/alegreya-sans-cyrillic-700-normal.woff2") format("woff2");
+    font-weight: 700;
+    unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+
+.game-hud {
+    --stone-0: #12100d;
+    --stone-1: #1d1914;
+    --stone-2: #2b251d;
+    --stone-3: #3b3227;
+    --bronze-d: #4f3a1e;
+    --bronze: #9a7742;
+    --gold: #d6b26a;
+    --gold-hi: #f2dc9e;
+    --ink: #eadfc6;
+    --ink-dim: #b9ab8c;
+    --bad: #e2674f;
+    --good: #9fdc72;
+    --display: "Cinzel", Georgia, serif;
+    --text: "Alegreya Sans", "Segoe UI", system-ui, sans-serif;
+    font-family: var(--text);
+    color: var(--ink);
+}
+
+/* Reusable bronze ring: inner dark gap, gold rim, dark outer edge. */
+.game-hud .hud-ring {
+    box-shadow:
+        inset 0 2px 6px rgba(0, 0, 0, 0.8),
+        0 0 0 2px var(--bronze-d),
+        0 0 0 3px var(--gold),
+        0 0 0 5px var(--bronze-d),
+        0 4px 10px rgba(0, 0, 0, 0.6);
+}
+
+.hud-icon {
+    width: 60%;
+    height: 60%;
+    color: var(--gold-hi);
+    filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.9));
+}
+
+.hud-icon--letter {
+    display: grid;
+    place-items: center;
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: 20px;
+}
+
+/* ---------- Players (top left) ---------- */
+
+.hud-players {
+    position: absolute;
+    left: 14px;
+    top: 10px;
+    display: flex;
+    gap: 10px;
+}
+
+.hud-player {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    padding: 4px 12px 4px 8px;
+    font-family: var(--display);
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.04em;
+    background: linear-gradient(var(--stone-2), var(--stone-1));
+    border: 1px solid var(--bronze);
+    box-shadow: inset 0 1px 0 rgba(255, 230, 170, 0.12), 0 2px 6px rgba(0, 0, 0, 0.5);
+    opacity: 0.85;
+}
+
+.hud-player__banner {
+    width: 10px;
+    height: 16px;
+    background: var(--team);
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 50% 75%, 0 100%);
+    box-shadow: inset 0 0 0 1px rgba(0, 0, 0, 0.4);
+}
+
+.hud-player__tag {
+    padding: 1px 6px;
+    font-family: var(--text);
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-dim);
+    border: 1px solid rgba(214, 178, 106, 0.35);
+    border-radius: 2px;
+}
+
+.hud-player.is-local { opacity: 1; border-color: var(--gold); }
+.hud-player.is-local .hud-player__tag { color: var(--stone-0); background: var(--gold); border-color: var(--gold); }
+.hud-player.is-defeated { opacity: 0.4; }
+.hud-player.is-defeated .hud-player__name { text-decoration: line-through; }
+
+/* ---------- Bottom-left console: minimap, abilities, resources ---------- */
+
+.hud-console {
+    position: absolute;
+    left: 16px;
+    bottom: 14px;
+    width: 236px;
+    height: 284px;
+    pointer-events: none;
+}
+
+.hud-minimap {
+    position: absolute;
+    left: 14px;
+    top: 0;
+    width: 208px;
+    height: 208px;
+    border-radius: 50%;
+    padding: 9px;
+    box-sizing: border-box;
+    background:
+        radial-gradient(circle at 50% 35%, var(--stone-3), var(--stone-0) 75%);
+    box-shadow:
+        0 0 0 2px var(--bronze-d),
+        0 0 0 4px var(--gold),
+        0 0 0 7px var(--bronze-d),
+        0 0 0 8px rgba(242, 220, 158, 0.25),
+        0 8px 18px rgba(0, 0, 0, 0.7);
+    pointer-events: auto;
+}
+
+/* Rivets at the four compass points. */
+.hud-minimap::before,
+.hud-minimap::after {
+    content: "";
+    position: absolute;
+    inset: -11px;
+    border-radius: 50%;
+    background:
+        radial-gradient(circle at 50% 0, var(--gold-hi) 0 3px, var(--bronze-d) 3.5px 5px, transparent 5.5px),
+        radial-gradient(circle at 50% 100%, var(--gold-hi) 0 3px, var(--bronze-d) 3.5px 5px, transparent 5.5px),
+        radial-gradient(circle at 0 50%, var(--gold-hi) 0 3px, var(--bronze-d) 3.5px 5px, transparent 5.5px),
+        radial-gradient(circle at 100% 50%, var(--gold-hi) 0 3px, var(--bronze-d) 3.5px 5px, transparent 5.5px);
+    pointer-events: none;
+}
+.hud-minimap::after { display: none; }
+
+.hud-minimap__frame {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    overflow: hidden;
+    box-shadow: inset 0 0 0 2px rgba(0, 0, 0, 0.7), inset 0 0 18px rgba(0, 0, 0, 0.7);
+}
+
+.hud-minimap__canvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+    cursor: crosshair;
+    image-rendering: auto;
+}
+
+/* Resource plate under the minimap. */
+.hud-resources {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 2px 14px;
+    width: 236px;
+    box-sizing: border-box;
+    padding: 18px 16px 8px;
+    background: linear-gradient(var(--stone-2), var(--stone-1));
+    border: 1px solid var(--bronze);
+    border-radius: 0 0 14px 14px;
+    clip-path: polygon(0 18px, 30% 0, 70% 0, 100% 18px, 100% 100%, 0 100%);
+    box-shadow: inset 0 -1px 0 rgba(255, 230, 170, 0.08);
+    pointer-events: auto;
+}
+
+.hud-res {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--display);
+    font-size: 14px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+    text-shadow: 0 1px 2px #000;
+}
+
+.hud-res__gem {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    box-shadow: inset 0 -2px 2px rgba(0, 0, 0, 0.45), inset 0 2px 2px rgba(255, 255, 255, 0.35), 0 0 0 1px rgba(0, 0, 0, 0.6);
+}
+
+.hud-res__gem--gold { background: #e2b94a; }
+.hud-res__gem--wood { background: #9a6a3a; }
+.hud-res__gem--metal { background: #a8b2bb; }
+.hud-res__gem--food { background: #86bb52; }
+
+.hud-res.is-full .hud-res__value { color: var(--bad); }
+
+.hud-res__delta {
+    position: absolute;
+    left: 18px;
+    bottom: 100%;
+    font-size: 12px;
+    color: var(--good);
+    opacity: 0;
+    pointer-events: none;
+}
+
+.hud-res__delta.is-on { animation: hud-delta 1.4s ease-out; }
+
+@keyframes hud-delta {
+    0% { opacity: 1; transform: translateY(4px); }
+    100% { opacity: 0; transform: translateY(-10px); }
+}
+
+/* ---------- Portraits: selection bar and hero column ---------- */
+
+.hud-selection {
+    position: absolute;
+    left: 272px;
+    bottom: 16px;
+    right: 310px; /* command card */
+    display: flex;
+    flex-wrap: wrap-reverse;
+    gap: 10px;
+    pointer-events: none;
+}
+
+.hud-heroes {
+    position: absolute;
+    left: 16px;
+    top: 60px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.hud-portrait,
+.hud-hero {
+    position: relative;
+    width: 54px;
+    height: 54px;
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    pointer-events: auto;
+    /* Health ring: team-colored arc outside a dark gap. */
+    background:
+        radial-gradient(circle, transparent 23px, var(--stone-0) 23.5px 24.5px, transparent 25px),
+        conic-gradient(var(--good) calc(var(--hp) * 360deg), rgba(0, 0, 0, 0.6) 0);
+    box-shadow: 0 0 0 2px var(--bronze-d), 0 0 0 3px var(--bronze), 0 3px 8px rgba(0, 0, 0, 0.6);
+}
+
+.hud-hero { width: 60px; height: 60px; }
+.hud-hero.is-selected { box-shadow: 0 0 0 2px var(--bronze-d), 0 0 0 3px var(--gold-hi), 0 0 14px rgba(242, 220, 158, 0.55); }
+
+.hud-portrait__face {
+    position: absolute;
+    inset: 5px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: radial-gradient(circle at 50% 30%, color-mix(in srgb, var(--team) 45%, var(--stone-3)), var(--stone-0) 85%);
+    box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.8);
+}
+
+.hud-portrait:hover .hud-portrait__face,
+.hud-hero:hover .hud-portrait__face { filter: brightness(1.25); }
+
+/* Hero level badge (top left) and XP arc along the bottom. */
+.hud-portrait__level {
+    position: absolute;
+    left: -5px;
+    top: -5px;
+    width: 20px;
+    height: 20px;
+    font-family: var(--display);
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 18px;
+    text-align: center;
+    color: var(--gold-hi);
+    background: radial-gradient(circle at 50% 35%, var(--stone-3), var(--stone-0));
+    border: 1px solid var(--bronze);
+    border-radius: 50%;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.7);
+}
+
+.hud-portrait__xp {
+    position: absolute;
+    left: 8px;
+    right: 8px;
+    bottom: -7px;
+    height: 4px;
+    border-radius: 2px;
+    background: linear-gradient(90deg, #8fb7ff calc(var(--xp) * 100%), rgba(0, 0, 0, 0.7) 0);
+    box-shadow: 0 0 0 1px var(--bronze-d);
+}
+
+.hud-hero.is-fallen {
+    --hp: 0;
+    --team: #555;
+    cursor: default;
+    filter: grayscale(1) brightness(0.55);
+}
+
+.hud-portrait__count {
+    position: absolute;
+    right: -4px;
+    bottom: -4px;
+    min-width: 20px;
+    padding: 1px 4px;
+    font-family: var(--display);
+    font-size: 11px;
+    font-weight: 700;
+    line-height: 16px;
+    text-align: center;
+    color: var(--stone-0);
+    background: linear-gradient(var(--gold-hi), var(--gold));
+    border: 1px solid var(--bronze-d);
+    border-radius: 9px;
+}
+
+/* ---------- Radial command ring ---------- */
+
+.radial {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 0;
+    height: 0;
+    pointer-events: none;
+    z-index: 5;
+    will-change: transform;
+}
+
+.radial.is-offscreen,
+.radial.is-suppressed { visibility: hidden; }
+
+.radial__hub {
+    position: absolute;
+    left: -38px;
+    top: -38px;
+    width: 76px;
+    height: 76px;
+    display: grid;
+    place-items: center;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(18, 16, 13, 0.25) 55%, rgba(214, 178, 106, 0.35) 56% 58%, transparent 59%);
+    pointer-events: none;
+}
+
+.radial__hub span {
+    max-width: 120px;
+    padding: 2px 8px;
+    font-family: var(--display);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    white-space: nowrap;
+    color: var(--gold-hi);
+    background: rgba(18, 16, 13, 0.82);
+    border: 1px solid var(--bronze);
+    text-shadow: 0 1px 2px #000;
+}
+
+.radial__item {
+    position: absolute;
+    left: -24px;
+    top: -24px;
+    width: 48px;
+    height: 48px;
+    padding: 0;
+    display: grid;
+    place-items: center;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    pointer-events: auto;
+    background: radial-gradient(circle at 50% 30%, var(--stone-3), var(--stone-0) 80%);
+    box-shadow:
+        inset 0 2px 6px rgba(0, 0, 0, 0.8),
+        0 0 0 2px var(--bronze-d),
+        0 0 0 3px var(--gold),
+        0 0 0 5px rgba(79, 58, 30, 0.9),
+        0 4px 10px rgba(0, 0, 0, 0.6);
+    animation: radial-in 0.16s ease-out both;
+}
+
+.radial__item:hover:not(.is-disabled) {
+    background: radial-gradient(circle at 50% 30%, #5b4a33, var(--stone-0) 85%);
+    box-shadow:
+        inset 0 2px 6px rgba(0, 0, 0, 0.6),
+        0 0 0 2px var(--bronze-d),
+        0 0 0 3px var(--gold-hi),
+        0 0 0 5px rgba(79, 58, 30, 0.9),
+        0 0 16px rgba(242, 220, 158, 0.6);
+}
+
+.radial__item.is-disabled { cursor: default; filter: grayscale(0.85) brightness(0.6); }
+
+@keyframes radial-in {
+    from { opacity: 0; scale: 0.6; }
+}
+
+.radial__below {
+    position: absolute;
+    left: -110px;
+    top: 118px;
+    width: 220px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+}
+
+.radial__status {
+    width: 100%;
+    padding: 5px 10px;
+    font-size: 13px;
+    text-align: center;
+    background: rgba(18, 16, 13, 0.85);
+    border: 1px solid var(--bronze);
+}
+
+.radial__bar {
+    height: 5px;
+    margin-top: 4px;
+    background: rgba(0, 0, 0, 0.6);
+}
+
+.radial__bar > span {
+    display: block;
+    height: 100%;
+    background: linear-gradient(90deg, var(--bronze), var(--gold-hi));
+}
+
+.radial__queue {
+    display: flex;
+    gap: 6px;
+    pointer-events: auto;
+}
+
+.radial__queued {
+    position: relative;
+    width: 34px;
+    height: 34px;
+    padding: 0;
+    display: grid;
+    place-items: center;
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    background:
+        radial-gradient(circle, var(--stone-1) 14px, transparent 14.5px),
+        conic-gradient(var(--gold) calc(var(--p) * 360deg), rgba(0, 0, 0, 0.7) 0);
+    box-shadow: 0 0 0 1px var(--bronze-d), 0 2px 6px rgba(0, 0, 0, 0.6);
+}
+
+.radial__queued:hover { box-shadow: 0 0 0 1px var(--bad), 0 0 8px rgba(226, 103, 79, 0.6); }
+
+/* Parchment tooltip. */
+.radial__tip {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 8px 12px 9px;
+    color: #2b2116;
+    background:
+        radial-gradient(ellipse at 30% 20%, rgba(255, 255, 255, 0.35), transparent 60%),
+        linear-gradient(#efe0bb, #dcc79a);
+    border: 1px solid #7a5a2c;
+    box-shadow: inset 0 0 12px rgba(122, 90, 44, 0.35), 0 4px 12px rgba(0, 0, 0, 0.6);
+}
+
+.radial__tip-title {
+    font-family: var(--display);
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.radial__tip-cost { margin-top: 3px; font-size: 13px; font-weight: 700; }
+.radial__tip-cost .res-cost.is-short { color: #a3291a; }
+.radial__tip-meta { margin-top: 2px; font-size: 12px; color: #5b4630; }
+
+/* ---------- Plates over hordes and buildings ---------- */
+
+.game-hud .horde-label {
+    gap: 3px;
+    font-family: var(--display);
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--ink);
+    text-shadow: 0 1px 2px #000, 0 0 4px #000;
+}
+
+.game-hud .horde-label__bar {
+    width: 46px;
+    height: 5px;
+    background: rgba(10, 8, 6, 0.85);
+    border: 1px solid rgba(214, 178, 106, 0.55);
+    border-radius: 1px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.6);
+}
+
+.game-hud .building-label { font-size: 12px; letter-spacing: 0.04em; }
+.game-hud .building-label__bar { width: 76px; height: 6px; }
+.game-hud .building-label.is-selected .horde-label__text { color: var(--gold-hi); }
+
+/* ---------- Result banner and hint ---------- */
+
+.game-hud .game-hud__result {
+    padding: 22px 64px 18px;
+    background: linear-gradient(var(--stone-2), var(--stone-0));
+    border: 1px solid var(--gold);
+    box-shadow: 0 0 0 4px var(--bronze-d), 0 0 0 5px var(--bronze), 0 12px 40px rgba(0, 0, 0, 0.8);
+}
+
+.game-hud .game-hud__result-title { font-family: var(--display); letter-spacing: 0.14em; }
+
+.game-hud .game-hud__hint {
+    left: auto;
+    right: 14px;
+    top: 10px;
+    bottom: auto;
+    transform: none;
+    max-width: 420px;
+    white-space: normal;
+    font-size: 11px;
+    line-height: 1.4;
+    color: var(--ink-dim);
+    background: rgba(18, 16, 13, 0.7);
+    border: 1px solid rgba(154, 119, 66, 0.5);
+    transition: opacity 1s;
+}
+
+.game-hud .game-hud__hint.is-faded { opacity: 0; }
+
+.radial__tip-cost .res-cost { font-size: 13px; }
+
+/* ---------- Command card (bottom right) ---------- */
+
+.hud-card {
+    position: absolute;
+    right: 14px;
+    bottom: 14px;
+    padding: 12px;
+    background:
+        linear-gradient(rgba(255, 230, 170, 0.05), transparent 30%),
+        linear-gradient(var(--stone-2), var(--stone-1));
+    border: 1px solid var(--bronze);
+    border-radius: 6px;
+    box-shadow:
+        inset 0 0 0 1px rgba(0, 0, 0, 0.6),
+        inset 0 1px 0 rgba(255, 230, 170, 0.12),
+        0 0 0 3px var(--bronze-d),
+        0 8px 20px rgba(0, 0, 0, 0.65);
+    pointer-events: auto;
+}
+
+/* Corner studs. */
+.hud-card::before {
+    content: "";
+    position: absolute;
+    inset: 4px;
+    pointer-events: none;
+    background:
+        radial-gradient(circle at 0 0, var(--gold) 0 2.5px, transparent 3px),
+        radial-gradient(circle at 100% 0, var(--gold) 0 2.5px, transparent 3px),
+        radial-gradient(circle at 0 100%, var(--gold) 0 2.5px, transparent 3px),
+        radial-gradient(circle at 100% 100%, var(--gold) 0 2.5px, transparent 3px);
+}
+
+.hud-card__grid {
+    display: grid;
+    grid-template-columns: repeat(4, 58px);
+    grid-template-rows: repeat(3, 58px);
+    gap: 7px;
+}
+
+.hud-card__cell {
+    position: relative;
+    display: grid;
+    place-items: center;
+    padding: 0;
+    border: none;
+    border-radius: 3px;
+    overflow: hidden;
+    background: radial-gradient(circle at 50% 30%, var(--stone-3), var(--stone-0) 90%);
+    box-shadow:
+        inset 0 2px 5px rgba(0, 0, 0, 0.8),
+        0 0 0 1px var(--bronze-d),
+        0 0 0 2px var(--bronze);
+    cursor: pointer;
+}
+
+.hud-card__cell.is-empty {
+    cursor: default;
+    background: rgba(0, 0, 0, 0.35);
+    box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.8), 0 0 0 1px rgba(79, 58, 30, 0.7);
+}
+
+.hud-card__cell:not(.is-empty):not(.is-disabled):hover {
+    background: radial-gradient(circle at 50% 30%, #5b4a33, var(--stone-0) 90%);
+    box-shadow: inset 0 2px 5px rgba(0, 0, 0, 0.6), 0 0 0 1px var(--bronze-d), 0 0 0 2px var(--gold-hi), 0 0 12px rgba(242, 220, 158, 0.45);
+}
+
+.hud-card__cell.is-active {
+    box-shadow: inset 0 0 12px rgba(242, 220, 158, 0.45), 0 0 0 1px var(--bronze-d), 0 0 0 2px var(--gold-hi);
+}
+
+.hud-card__cell.is-disabled { cursor: default; filter: grayscale(0.85) brightness(0.6); }
+
+.hud-card__cell .hud-icon { width: 62%; height: 62%; }
+
+.hud-card__cell::after {
+    /* Cooldown sweep. */
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: conic-gradient(rgba(0, 0, 0, 0.72) calc(var(--cd, 0) * 360deg), transparent 0);
+    pointer-events: none;
+}
+
+.hud-card__key {
+    position: absolute;
+    right: 4px;
+    top: 2px;
+    z-index: 1;
+    font-family: var(--display);
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--gold-hi);
+    text-shadow: 0 1px 2px #000;
+}
+
+.hud-card__tip {
+    position: absolute;
+    right: 0;
+    bottom: calc(100% + 10px);
+    width: 260px;
+    box-sizing: border-box;
+    padding: 8px 12px 9px;
+    color: #2b2116;
+    background:
+        radial-gradient(ellipse at 30% 20%, rgba(255, 255, 255, 0.35), transparent 60%),
+        linear-gradient(#efe0bb, #dcc79a);
+    border: 1px solid #7a5a2c;
+    box-shadow: inset 0 0 12px rgba(122, 90, 44, 0.35), 0 4px 12px rgba(0, 0, 0, 0.6);
+    pointer-events: none;
+}
+
+.hud-card__tip-title { font-family: var(--display); font-size: 14px; font-weight: 700; }
+.hud-card__tip-key { float: right; font-size: 12px; color: #7a5a2c; }
+.hud-card__tip-detail { margin-top: 3px; font-size: 13px; line-height: 1.35; color: #4a3826; }
+.hud-card__tip-detail .res-cost { font-size: 13px; font-weight: 700; }
+.hud-card__tip-detail .res-cost.is-short { color: #a3291a; }
+
+/* Waiting for the target of a command card order. */
+/* Canvas cursors are set per hover (game/hud/cursors.ts). */
+
+.hud-card__cell.is-autocast {
+    box-shadow:
+        inset 0 2px 5px rgba(0, 0, 0, 0.8),
+        0 0 0 1px var(--bronze-d),
+        0 0 0 2px #7dff7a,
+        0 0 10px rgba(125, 255, 122, 0.45);
+}
+
+.hud-card__cell.is-passive { opacity: 0.85; }
+
+/* Hero ultimates: a gold rim. */
+.hud-card__cell.is-ultimate {
+    box-shadow:
+        inset 0 2px 5px rgba(0, 0, 0, 0.8),
+        0 0 0 1px var(--bronze-d),
+        0 0 0 2px var(--gold-hi),
+        0 0 12px rgba(242, 220, 158, 0.5);
+}
+
+.radial__tip-req,
+.hud-card__tip-req { color: #a3291a; font-weight: 700; }

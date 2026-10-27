@@ -1,0 +1,17 @@
+{
+  "id": "harpies",
+  "name": "Harpies",
+  "unit": "harpy",
+  "size": 8,
+  "formation": {
+    "columns": 4,
+    "spacing": 2.4
+  },
+  "cost": {
+    "gold": 220
+  },
+  "buildTime": 30,
+  "uses": {
+    "food": 12
+  }
+}

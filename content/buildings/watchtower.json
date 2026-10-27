@@ -1,0 +1,25 @@
+{
+  "id": "watchtower",
+  "name": "Watchtower",
+  "kind": "building",
+  "model": "wooden_watchtower",
+  "modelScale": 1.2,
+  "footprint": {
+    "x": 4.5,
+    "y": 5
+  },
+  "health": 900,
+  "armor": 2,
+  "material": "wood",
+  "placement": [
+    "free"
+  ],
+  "buildTime": 25,
+  "cost": {
+    "gold": 120,
+    "wood": 120
+  },
+  "noBuildRadius": 6,
+  "garrison": true,
+  "walkHeight": 7.6
+}

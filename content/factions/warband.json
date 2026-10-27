@@ -1,0 +1,26 @@
+{
+  "id": "warband",
+  "name": "Warband",
+  "color": "#a53a3a",
+  "hordes": [
+    "raiders",
+    "wolf_riders",
+    "harpies",
+    "warlord",
+    "builders"
+  ],
+  "fortress": "keep",
+  "buildings": [
+    "barracks",
+    "farm",
+    "forge",
+    "archer_tower"
+  ],
+  "start": [
+    "raiders",
+    "wolf_riders",
+    "harpies",
+    "warlord",
+    "builders"
+  ]
+}

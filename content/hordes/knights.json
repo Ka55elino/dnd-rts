@@ -1,0 +1,23 @@
+{
+  "id": "knights",
+  "name": "Knights",
+  "unit": "knight",
+  "size": 10,
+  "formation": {
+    "columns": 5,
+    "spacing": 2.2
+  },
+  "cost": {
+    "gold": 300,
+    "metal": 50
+  },
+  "buildTime": 40,
+  "uses": {
+    "food": 15
+  },
+  "requires": {
+    "upgrades": [
+      "forged_weapons_1"
+    ]
+  }
+}

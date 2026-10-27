@@ -1,0 +1,17 @@
+{
+  "id": "divine_shield",
+  "name": "Divine Shield",
+  "kind": "active",
+  "target": "self",
+  "cooldown": 120,
+  "ultimate": true,
+  "effects": [
+    {
+      "type": "buff",
+      "duration": 6,
+      "modifiers": {
+        "invulnerable": true
+      }
+    }
+  ]
+}

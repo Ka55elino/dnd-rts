@@ -1,0 +1,36 @@
+{
+  "id": "forge",
+  "name": "Forge",
+  "kind": "building",
+  "model": "mausoleum",
+  "modelScale": 2.2,
+  "footprint": {
+    "x": 10,
+    "y": 10
+  },
+  "health": 1200,
+  "armor": 3,
+  "material": "stone",
+  "placement": [
+    "plot"
+  ],
+  "buildTime": 25,
+  "cost": {
+    "gold": 150,
+    "wood": 100
+  },
+  "requires": {
+    "buildings": [
+      "barracks"
+    ]
+  },
+  "research": [
+    "forged_weapons_1",
+    "forged_weapons_2",
+    "reinforced_armor_1",
+    "reinforced_armor_2",
+    "fire_arrows",
+    "fire_bolts",
+    "improved_mechanism"
+  ]
+}

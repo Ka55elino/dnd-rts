@@ -1,0 +1,44 @@
+{
+  "id": "trebuchet_tower",
+  "name": "Trebuchet Tower",
+  "kind": "building",
+  "model": "castle_tower",
+  "modelScale": 1.05,
+  "footprint": {
+    "x": 6.8,
+    "y": 6.8
+  },
+  "health": 3000,
+  "armor": 5,
+  "material": "stone",
+  "placement": [
+    "tower"
+  ],
+  "buildTime": 50,
+  "cost": {
+    "gold": 450,
+    "wood": 250,
+    "metal": 80
+  },
+  "requires": {
+    "buildings": [
+      "forge"
+    ]
+  },
+  "attack": {
+    "damage": 80,
+    "range": 65,
+    "minRange": 18,
+    "cooldown": 7,
+    "damageType": "crush",
+    "projectile": {
+      "speed": 22,
+      "spread": 3
+    },
+    "splash": 4,
+    "targets": [
+      "ground"
+    ]
+  },
+  "volley": 1
+}

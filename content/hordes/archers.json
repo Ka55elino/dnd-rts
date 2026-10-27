@@ -1,0 +1,18 @@
+{
+  "id": "archers",
+  "name": "Archers",
+  "unit": "archer",
+  "size": 20,
+  "formation": {
+    "columns": 5,
+    "spacing": 1.2
+  },
+  "cost": {
+    "gold": 150,
+    "wood": 50
+  },
+  "buildTime": 25,
+  "uses": {
+    "food": 10
+  }
+}

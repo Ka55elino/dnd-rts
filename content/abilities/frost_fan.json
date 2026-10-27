@@ -1,0 +1,26 @@
+{
+  "id": "frost_fan",
+  "name": "Frost Fan",
+  "kind": "active",
+  "target": "point",
+  "range": 12,
+  "cooldown": 30,
+  "effects": [
+    {
+      "type": "damage",
+      "damageType": "ice",
+      "amount": 35,
+      "shape": "cone",
+      "radius": 12,
+      "angle": 60
+    },
+    {
+      "type": "status",
+      "status": "slow",
+      "duration": 3,
+      "shape": "cone",
+      "radius": 12,
+      "angle": 60
+    }
+  ]
+}

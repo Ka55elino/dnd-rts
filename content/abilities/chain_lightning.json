@@ -1,0 +1,29 @@
+{
+  "id": "chain_lightning",
+  "name": "Chain Lightning",
+  "kind": "active",
+  "target": "unit",
+  "range": 22,
+  "cooldown": 20,
+  "autocast": true,
+  "effects": [
+    {
+      "type": "chain",
+      "jumps": 4,
+      "jumpRange": 6,
+      "falloff": 0.2,
+      "effects": [
+        {
+          "type": "damage",
+          "damageType": "lightning",
+          "amount": 40
+        },
+        {
+          "type": "status",
+          "status": "stun",
+          "duration": 1
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "id": "heal",
+  "name": "Heal",
+  "kind": "active",
+  "target": "unit",
+  "range": 20,
+  "cooldown": 8,
+  "autocast": true,
+  "affects": "allies",
+  "effects": [ { "type": "heal", "amount": 60, "radius": 4 } ]
+}

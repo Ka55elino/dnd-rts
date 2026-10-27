@@ -1,0 +1,22 @@
+{
+  "id": "warbeast",
+  "name": "Warbeast",
+  "model": "",
+  "health": 1600,
+  "armor": 5,
+  "speed": 4.6,
+  "radius": 0.95,
+  "mass": 6,
+  "melee": {
+    "damage": 70,
+    "range": 2.0,
+    "cooldown": 1.0,
+    "damageType": "slash"
+  },
+  "tags": [
+    "hero",
+    "monster"
+  ],
+  "armorClass": "heavy",
+  "magicDefense": 3
+}

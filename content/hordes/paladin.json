@@ -1,0 +1,15 @@
+{
+  "id": "paladin",
+  "name": "Paladin",
+  "unit": "paladin",
+  "size": 1,
+  "formation": {
+    "columns": 1,
+    "spacing": 1
+  },
+  "cost": {
+    "gold": 1000
+  },
+  "buildTime": 60,
+  "unique": true
+}

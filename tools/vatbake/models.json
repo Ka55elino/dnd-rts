@@ -1,0 +1,70 @@
+{
+  "$comment": "What to bake. source is relative to the repo root; output goes to frontend/public/models/<id>/. clips: name -> source clip in the glb, or a procedural generator from clips.mjs (\"@swing\", \"@bow\", \"@die\").",
+  "fps": 15,
+  "models": [
+    {
+      "id": "swordsman",
+      "source": "art/source/grab3d/swordsman.glb",
+      "teamMaterials": [
+        "hat_primary",
+        "top_primary",
+        "back_primary",
+        "handL_primary",
+        "back_accent"
+      ],
+      "clips": {
+        "idle": {
+          "from": "idle",
+          "loop": true
+        },
+        "walk": {
+          "from": "walk",
+          "loop": true
+        },
+        "run": {
+          "from": "run",
+          "loop": true
+        },
+        "attack": {
+          "from": "@swing",
+          "loop": false
+        },
+        "die": {
+          "from": "@die",
+          "loop": false
+        }
+      }
+    },
+    {
+      "id": "ranger",
+      "source": "art/source/grab3d/ranger.glb",
+      "teamMaterials": [
+        "hat_primary",
+        "top_primary",
+        "bottom_accent"
+      ],
+      "clips": {
+        "idle": {
+          "from": "idle",
+          "loop": true
+        },
+        "walk": {
+          "from": "walk",
+          "loop": true
+        },
+        "run": {
+          "from": "run",
+          "loop": true
+        },
+        "attack": {
+          "from": "@bow",
+          "loop": false
+        },
+        "die": {
+          "from": "@die",
+          "loop": false
+        }
+      }
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "id": "reinforced_armor_2",
+  "name": "Reinforced Armor II",
+  "cost": {
+    "gold": 400,
+    "metal": 100
+  },
+  "researchTime": 45,
+  "requires": {
+    "upgrades": [
+      "reinforced_armor_1"
+    ]
+  },
+  "units": [
+    "swordsman",
+    "spearman",
+    "knight",
+    "archer"
+  ],
+  "modifiers": {
+    "armor": 2
+  }
+}

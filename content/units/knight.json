@@ -1,0 +1,28 @@
+{
+  "id": "knight",
+  "name": "Knight",
+  "model": "",
+  "health": 220,
+  "armor": 3,
+  "speed": 7,
+  "radius": 0.8,
+  "mass": 4,
+  "melee": {
+    "damage": 18,
+    "range": 1.6,
+    "cooldown": 1.2
+  },
+  "charge": {
+    "trampleDamage": 30,
+    "knockback": 7
+  },
+  "tags": [
+    "cavalry",
+    "living"
+  ],
+  "armorClass": "heavy",
+  "magicDefense": 1,
+  "abilities": [
+    "wedge"
+  ]
+}

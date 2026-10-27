@@ -1,0 +1,31 @@
+{
+  "id": "griffon_rider",
+  "name": "Griffon Rider",
+  "model": "",
+  "health": 220,
+  "armor": 2,
+  "speed": 8,
+  "radius": 0.9,
+  "mass": 3,
+  "flying": true,
+  "melee": {
+    "damage": 20,
+    "range": 1.8,
+    "cooldown": 1.1,
+    "damageType": "slash",
+    "targets": ["air"]
+  },
+  "ranged": {
+    "damage": 10,
+    "range": 24,
+    "cooldown": 1.5,
+    "damageType": "pierce",
+    "projectile": {
+      "speed": 32,
+      "spread": 2
+    },
+    "targets": ["ground", "air"]
+  },
+  "tags": ["cavalry", "flying"],
+  "armorClass": "medium"
+}
