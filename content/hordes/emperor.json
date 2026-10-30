@@ -1,0 +1,15 @@
+{
+  "id": "emperor",
+  "name": "Emperor",
+  "unit": "emperor",
+  "size": 1,
+  "formation": {
+    "columns": 1,
+    "spacing": 1
+  },
+  "cost": {
+    "gold": 1400
+  },
+  "buildTime": 60,
+  "unique": true
+}

@@ -1,0 +1,12 @@
+{
+  "id": "imperial_guards",
+  "name": "Imperial Guard",
+  "unit": "knight",
+  "size": 6,
+  "formation": {
+    "columns": 3,
+    "spacing": 2.2
+  },
+  "cost": {},
+  "buildTime": 1
+}

@@ -6,45 +6,81 @@ The lore explains what already exists in the mechanics (see [`../FACTIONS.md`](.
 
 ## Nature of magic
 
-Magic comes from the concentrations of primal energy that underlie the structure of the world. How exactly they produce magical power, who is able to use it and what they pay for it has not been determined yet.
+Magic comes from primordial energy — the primordial elements from which everything in the world originated.
 
-Religions, myths and legends are not an established objective source of magic, but human explanations of the world that grew out of folklore and an incomplete understanding of the nature of primal energy.
+The elements take different forms. Their visible manifestation is clots of energy, but invisible threads of them permeate the whole world.
 
-Priests are mages who specialize in light magic. Light magic, including the kind used by paladins, has no separate divine source and comes from the same primal energy.
+Mages do not receive power from anyone: they study the elements and learn to work with them.
+
+### Who can use magic
+
+In fact, anyone can. Some are simply born with a stronger connection to the energy.
+
+### What it costs
+
+Using magic causes physical exhaustion, like physical exercise. In the game this is simply the ability's cooldown.
+
+Religions, myths and legends are not an objective source of magic, but explanations of the world that grew out of folklore and an incomplete understanding of the nature of primordial energy.
+
+Priests are mages who specialize in light magic. Light magic, including the kind used by paladins, has no separate divine source and comes from the same primordial energy. Healing is a separate school of magic, not part of the priests' light magic.
 
 ## Elements
 
-In the game, magic is divided into elements, which are damage types:
+In the game, the primordial elements are damage types. All of them have the same nature described above; they differ only in how they manifest:
 
-| Element | Damage type | In-game effect | Who wields it | Lore |
-|---|---|---|---|---|
-| Fire | `fire` | burning | fire mages, Archmage, Dark Mage | > ❓ |
-| Ice / water | `ice` | slow | water mages, Archmage | > ❓ |
-| Lightning | `lightning` | chance to stun | lightning mages, Archmage | > ❓ |
-| Acid | `acid` | reduces armor | Dark Mage | > ❓ |
-| Poison | `poison` | damage over time, spreads | Dark Elves | > ❓ |
-| Necrotic | `necrotic` | life steal | Dark Paladin, undead | > ❓ where the power of death comes from |
-| Light | `radiant` | pure damage, ignores defense | Paladin, priests | magic of primal energy; its religious explanation may differ from its actual nature |
+| Element | Damage type | In-game effect | Who wields it |
+|---|---|---|---|
+| Fire | `fire` | burning | fire mages, Archmage, Dark Mage |
+| Ice / water | `ice` | slow | water mages, Archmage |
+| Lightning | `lightning` | chance to stun | lightning mages, Archmage |
+| Acid | `acid` | reduces armor | Dark Mage |
+| Poison | `poison` | damage over time, spreads | Dark Elves |
+| Necrotic | `necrotic` | life steal | Dark Paladin, Alkars, undead |
+| Light | `radiant` | pure damage, ignores defense | Paladin, priests |
+
+The necrotic power of the Alkars is also one of the primordial elements: the Alkars simply were more strongly under its influence than other peoples; the Faith of the Eternal Cycle explains it in its own way (see [`religions.md`](religions.md)).
 
 ## Gods and higher powers
 
-> ❓ Are there gods? Which peoples pray to whom? Are the Celestials connected to the gods?
+### No gods
 
-A principle of the world: what the peoples revere as divine is not necessarily a god. The Spider Queen is a living being of enormous power whom the drow consider a goddess; the religious explanation of light may also differ from its actual nature.
+There are no gods in the traditional fantasy sense — no divine beings who created the world by will, rule over it from the heavens, or directly govern the fate of mortals.
 
-| Power | Who reveres it | What it grants (in game) |
+### Origin of the world
+
+The world was formed through the influence of primordial energy particles, the same fundamental forces from which magic originates. All living beings and the world itself emerged under their influence.
+
+### Beliefs of the peoples
+
+Every faction has its own beliefs, myths, folklore, and interpretation of the world's origins. These traditions shape their religions, rituals, sacred places, and understanding of magic.
+
+Some peoples may worship legendary ancestors, personified natural forces, mythical beings, or figures from their own history. Others may revere the primordial forces themselves. However, these beliefs do not necessarily imply the existence of actual gods.
+
+### Religion as culture
+
+Religion is therefore a reflection of each people's culture, history, and understanding of the world rather than proof of a universal divine order.
+
+The true nature of the world's origins remains uncertain, and no single religious tradition is established as the absolute truth.
+
+The faiths of the peoples are described in [`religions.md`](religions.md).
+
+### Revered powers
+
+What the peoples revere as divine is not a god. Whatever power their priests and heroes wield, it is the same primordial energy.
+
+| Power | Who reveres it | What actually stands behind it (in game) |
 |---|---|---|
-| > ❓ | Empire (paladins) | light — `radiant` |
-| > ❓ | High Elves (Priestess) | light, healing |
-| > ❓ | Alkars | necrotic (greenish necrotic lines under the skin) |
-| Spider Queen | Dark Elves (Melasarach is the main temple) | to her followers, a goddess; in truth, a living being of enormous power who takes the battlefield herself (Dark Elf hero) |
+| the One Light | Empire (paladins) | light magic — `radiant` |
+| the Living World (natural forces) | High Elves (Priestess) | light and healing magic |
+| the Eternal Cycle | Alkars | necrotic magic |
+| the Great Spider | Dark Elves (Melasarach is the main temple) | a mythological creation. The Spider Queen's transformation into a giant spider is a spell based on primordial energy, not a gift of the Great Spider |
 
 ## Runes
 
-> ❓ Dwarven runes (Runemaster, golems): how do runes differ from elemental magic?
+Dwarven runes (Runemaster, golems) do not differ from elemental magic: they are simply one of the ways of interacting with magic.
 
 ## Faction powers (spell book)
 
-The mechanic is not built yet: points for kills and for holding outposts, a power tree. The lore needs to explain where the commander gets these powers.
+The mechanic is not built yet: points for kills and for holding outposts, a power tree.
 
-> ❓ Is it a blessing of the gods, an order from the court, ancient pacts?
+In the lore, faction powers are the result of research and work with energy: each people has learned to use primordial energy in its own way.

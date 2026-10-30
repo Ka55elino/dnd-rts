@@ -88,7 +88,7 @@ All "chances" are deterministic (a hash of the tick, attacker id and target id),
 |---|---|---|
 | **Piercing** (spears, arrows, crossbows) | chance to **ignore armor**: the armor value and heavy-armor resistance are not applied | 25% chance |
 | **Slashing** (swords, axes) | standard damage, no special | — |
-| **Crushing** (hammers, ogres, siege) | **bonus damage vs structures** | ×2.5 vs buildings |
+| **Crushing** (hammers, trolls, siege) | **bonus damage vs structures** | ×2.5 vs buildings |
 
 ### Magical Damage
 
@@ -176,7 +176,7 @@ Settlements can be walled in **[mechanic: walls — done for the base]**:
 | **Workshop** | free | ballistae, trebuchets | — |
 | **Mage Guild** | free | mages, healers | — |
 | **Forge** | plot | weapon, armor and engine upgrades (see below) **[mechanic: upgrades]** | — |
-| **Farm** | free | food | — (was not in the list — needed for the army cap) |
+| **Farm** | free | food | — (needed for the army cap) |
 | **Walls and gates** | free, by dragging | see above | — |
 
 Placement (plot or free) is a proposal, to be adjusted.
@@ -264,23 +264,23 @@ Light armor, high magic defense, magical damage of the chosen element, ranged, *
 | 4 | **Arcane Focus** | aura | **all mages** in the radius (guild mages, healers, mage heroes) recover abilities faster | 15 m radius, −25% cooldown |
 | 5 | **Meteor Shower** | ultimate, area | a rain of meteors; damage type and effect follow the **chosen element**: fire — burning, ice — strong slow, lightning — stun | 12 m radius, 6 s, 150 s cooldown |
 
-#### King — Cavalry Commander
+#### Emperor — Cavalry Commander
 
 Mounted. Heavy armor, slashing damage, charge (like the knights).
 
 | Lvl | Ability | Type | Description | Starting |
 |---|---|---|---|---|
-| 1 | **Royal Guard** | ability | a squad of cavalrymen appears around the King; the squad stays **as long as it lives**; **cannot be summoned again** while the squad is alive or the ability is on cooldown | 1 squad (like knights, 6 riders), 90 s cooldown after the squad dies **[mechanic: limited summoning — done]** |
-| 2 | **Royal March** | aura | +movement speed to own units in the radius | 15 m radius, +15% |
+| 1 | **Imperial Guard** | ability | a squad of cavalrymen appears around the Emperor; the squad stays **as long as it lives**; **cannot be summoned again** while the squad is alive or the ability is on cooldown | 1 squad (like knights, 6 riders), 90 s cooldown after the squad dies **[mechanic: limited summoning — done]** |
+| 2 | **Imperial March** | aura | +movement speed to own units in the radius | 15 m radius, +15% |
 | 3 | **Inspire** | ability, area around self | for a time, +attack speed to units that were in the radius at the moment of casting | 15 m radius, +30% for 12 s, 50 s cooldown |
-| 4 | **Royal Oversight** | aura | +**construction and production** speed (recruitment in buildings) in the radius | 20 m radius, +30% **[mechanic: auras on structures — done]** |
-| 5 | **Mass Recall** | ultimate | transports own units from the radius around the King (together with him) **to a chosen own building** | 15 m radius, 180 s cooldown **[mechanic: teleport — done]** |
+| 4 | **Imperial Oversight** | aura | +**construction and production** speed (recruitment in buildings) in the radius | 20 m radius, +30% **[mechanic: auras on structures — done]** |
+| 5 | **Mass Recall** | ultimate | transports own units from the radius around the Emperor (together with him) **to a chosen own building** | 15 m radius, 180 s cooldown **[mechanic: teleport — done]** |
 
 ### Decisions
 
 No open questions for the Empire.
 
-**Decided (heroes):** experience for kills and capturing outposts; respawn in the keep for gold and a long time; mass teleport — only to own buildings; the King's retinue lives until it dies; the focus aura affects all mages; the elemental protection aura changes immediately with the element.
+**Decided (heroes):** experience for kills and capturing outposts; respawn in the keep for gold and a long time; mass teleport — only to own buildings; the Emperor's retinue lives until it dies; the focus aura affects all mages; the elemental protection aura changes immediately with the element.
 
 **Decided:** fire arrows for ballistae are toggled, like the archers'; both fire arrow upgrades also apply to the corresponding towers, and fire mode on towers is toggleable too; in fire mode piercing damage does not ignore armor; forge upgrades — weapons ×2, armor ×2, fire arrows, fire arrows for ballistae, improved mechanism; the storm deals damage; mages hit air (anti-air); three kinds of mages — fire (Pillar of Fire), water (Storm), lightning (Chain Lightning); heal is an ability with autocast; fire arrows are bought at the forge; healers heal only the living; builders repair structures, ballistae and trebuchets; fire arrows — a purchasable upgrade + a toggleable ability; towers are built on separate plots on walls; the forge is needed; the trebuchet existing as both a unit and a tower is fine.
 
@@ -290,7 +290,7 @@ No open questions for the Empire.
 
 - **Play style:** keep distance, shoot the enemy down on approach, retreat to own land, heal and come back
 - **Racial features:**
-  - **Heal on own land** — gradual health regeneration near own buildings and **sacred trees** (created by the Elven King); radii in JSON **[mechanic: territory, regeneration]**
+  - **Heal on own land** — gradual health regeneration near own buildings and **sacred trees** (created by the Elf King); radii in JSON **[mechanic: territory, regeneration]**
   - **See at night as well as by day** — vision is not reduced at night **[mechanic: day / night]**
   - **Walls** around settlements (like all factions)
 - **Strengths:** ranged damage, air (griffons), mobility, healing, night
@@ -303,7 +303,7 @@ No open questions for the Empire.
 | Building | Placement | What it does |
 |---|---|---|
 | **Keep** | map (player slot) | main building; **spirits** (builders), heroes |
-| **Order of the Sword** | plot | swordsmen with two blades and a shield |
+| **Order of the Sword** | plot | swordsmen with a double-bladed sword and a shield |
 | **Order of Archers** | plot | archers |
 | **Griffon tower** | free | griffon riders (air) |
 | **Tiger pen** | free | tiger riders (cavalry) |
@@ -326,7 +326,7 @@ Placement is a proposal, to be adjusted.
 | Unit | Where | Armor | Melee attack | Ranged attack | Special |
 |---|---|---|---|---|---|
 | **Spirit** | keep | **none** (no armor) | — | — | **no attack**; **the elves' builder**: constructs buildings, **grows trees**, **removes negative effects** from allies (dispel) |
-| **Swordsman with two blades and a shield** | Order of the Sword | medium | slashing | — | — |
+| **Swordsman with a double-bladed sword and a shield** | Order of the Sword | medium | slashing | — | — |
 | **Archer** | Order of Archers | light | slashing | piercing | anti-air (with the ranged attack) |
 | **Griffon rider** | griffon tower | medium | slashing — **air targets only** | piercing | **flying** **[mechanic: flying units, attacks with restricted targets]** |
 | **Tiger rider** | tiger pen | medium | slashing | piercing | cavalry; shoots and slashes |
@@ -363,9 +363,9 @@ Light armor. **Two attacks**, damage depends on the **stance**: melee — slashi
 | 4 | **Eagle Eye** | aura | +range for own ranged units in the radius | 15 m radius, +20% range |
 | 5 | **Sniper Shot** | ultimate, point-targeted | heavy damage to **any visible point on the map** | 150 s cooldown **[mechanic: "whole map" range within vision]** |
 
-#### Elven King — Stag Rider
+#### Elf King — Stag Rider
 
-Mounted on a stag. Medium armor, slashing damage, melee.
+Head of the council of elders and keepers (lore: [`lore/factions/high-elves.md`](lore/factions/high-elves.md)). Mounted on a stag. Medium armor, slashing damage, melee.
 
 | Lvl | Ability | Type | Description | Starting |
 |---|---|---|---|---|
@@ -411,7 +411,7 @@ No open questions for the High Elves.
 
 | Building | Placement | What it does |
 |---|---|---|
-| **Keep** | map (player slot) | main building; slaves, heroes |
+| **Keep** | map (player slot) | main building; webweavers, heroes |
 | **Fighting Pits** | plot | blade dancers |
 | **Shooting Range** | plot | crossbowmen |
 | **Scout Post** | free | scouts |
@@ -429,7 +429,7 @@ Placement is a proposal, to be adjusted.
 | Structure | What it does |
 |---|---|
 | **Crossbow Tower** | piercing, ranged; **anti-air** |
-| **Traps and Mines** | hidden ground structures, **placed by slaves**; trigger when an enemy steps on them; **the enemy cannot see them** unless it has **invisibility detection** **[mechanic: traps, invisible structures]** |
+| **Traps and Mines** | hidden ground structures, **placed by webweavers**; trigger when an enemy steps on them; **the enemy cannot see them** unless it has **invisibility detection** **[mechanic: traps, invisible structures]** |
 
 **Trap types:**
 
@@ -443,7 +443,7 @@ Placement is a proposal, to be adjusted.
 
 | Unit | Where | Armor | Melee attack | Ranged attack | Special |
 |---|---|---|---|---|---|
-| **Slave** | keep | light | — | — | no attack; **builds, repairs, captures** outposts |
+| **Webweaver** | keep | light | — | — | no attack; **builds, repairs, captures** outposts |
 | **Blade Dancer** | fighting pits | light | slashing | — | — |
 | **Crossbowman** | shooting range | light | slashing | piercing | **anti-air** (with ranged attack) |
 | **Scout** | scout post | light | slashing | — | with upgrade — **building sabotage** |
@@ -490,7 +490,7 @@ Heavy armor, slashing damage, melee.
 
 #### Spider Queen — mistress of the web
 
-In the lore she is the very being the drow worship as a goddess: not a god, but a living creature of immense power (see [`lore/factions/dark-elves.md`](lore/factions/dark-elves.md)).
+In the lore she is the high priestess of the Great Spider, the deity of the drow cult: not a goddess, but a living being of great power (see [`lore/factions/dark-elves.md`](lore/factions/dark-elves.md)).
 
 - **Normal form:** no armor, **ranged attack only** — necrotic damage.
 - **Spider form** (ultimate): **heavy** armor, **melee attack only** — slashing + **poison** + **acid**.
@@ -507,13 +507,11 @@ In the lore she is the very being the drow worship as a goddess: not a god, but 
 
 No open questions on the Dark Elves.
 
-**Decided:** traps are placed by slaves — mines (bludgeoning), poison and paralysis traps; sabotage is channeled, does not break invisibility, interrupted only by the scout's death; the archer's melee is slashing; the queen — ranged necrotic, in spider form melee slashing + poison + acid; food — spider farm; traps and mines are invisible without invisibility detection; sabotage — the building slowly burns and crumbles; Poisoned Weapons — all weapon attacks (swords, arrows); the dark dragon flies, ranged combat; crossbowmen and their tower hit air; slaves build, repair and capture; the paladin also takes damage while Dark Shield is up; the archer has light armor, the queen has no armor, heavy in spider form; the queen's web is a toggleable aura.
+**Decided:** traps are placed by webweavers — mines (bludgeoning), poison and paralysis traps; sabotage is channeled, does not break invisibility, interrupted only by the scout's death; the archer's melee is slashing; the queen — ranged necrotic, in spider form melee slashing + poison + acid; food — spider farm; traps and mines are invisible without invisibility detection; sabotage — the building slowly burns and crumbles; Poisoned Weapons — all weapon attacks (swords, arrows); the dark dragon flies, ranged combat; crossbowmen and their tower hit air; slaves build, repair and capture; the paladin also takes damage while Dark Shield is up; the archer has light armor, the queen has no armor, heavy in spider form; the queen's web is a toggleable aura.
 
-## 5. Alkars and Their Orcs (formerly “Orcs — the Dark Lord's Army”)
+## 5. Alkars
 
-> **Lore changed:** these are the Alkars — a pale aristocratic civilization ruled by the strongest; orcs are their artificially created servants and labor force, with a vast necropolis nearby ([`lore/factions/alkars.md`](lore/factions/alkars.md)). The mechanics below are unchanged. Heroes: the Dark Lord — ruler of the Alkars, the strongest of them; the Dark Mage — head of the order of mages in the center of Alkaris; the Wraith King — overseer of the necropolis. Units still need to be matched to the lore.
-
-**Concept.** Not tribal orcs, but **the army of a dark lord**: an endless stream of cheap troops, trolls, harpies, cultists and undead. Plays like a swarm (in the spirit of the Zerg): overwhelm with numbers, sacrifice squads and immediately recruit new ones.
+**Concept.** A pale aristocratic civilization ruled by the strongest; next to their city lies a vast necropolis (lore: [`lore/factions/alkars.md`](lore/factions/alkars.md)). The core of the army is **created creatures** — orcs, goblins and trolls, made by the Alkars from stone and wood with dark energy — and wild **harpies** the Alkars have attracted or subjugated: an endless stream of cheap troops. On top of them stand the **elite — the Alkars themselves**, aristocrats serving as expensive units: Alkar swordsmen, Alkar archers and dark acolytes. Undead rise from fallen enemies. Plays like a swarm (in the spirit of the Zerg): overwhelm with numbers, sacrifice squads and immediately recruit new ones, with a small elite core.
 
 - **Playstyle:** constant pressure with mass, trading cheap squads for expensive ones, curses and dead that rise from fallen enemies
 - **Racial traits:**
@@ -523,15 +521,15 @@ No open questions on the Dark Elves.
 - **Strengths:** mass, necrotic damage and curses (poison, acid, anti-heal), siege trolls, harpies in the air
 - **Weaknesses:** almost no armor — vulnerable to area damage and magic; strong only in numbers
 - **Resources:** gold + wood
-- **Visuals:** black iron, red lights, bones, spikes, gloom
+- **Visuals:** dark volcanic stone, black metal, porcelain-white Alkar aristocrats, greenish necrotic light; crude created creatures
 
 ### Buildings
 
 | Building | Placement | What it does |
 |---|---|---|
 | **Keep** | map (player slot) | main building; goblins, heroes |
-| **Orc Pits** | plot | orcs, berserkers |
-| **Dark Order** | plot | shield spearmen, crossbowmen |
+| **Orc Pits** | plot | orcs, berserkers, orc hunters, orc spearmen |
+| **Dark Order** | plot | Alkar swordsmen, Alkar archers (Alkar elite) |
 | **Harpy Nest** | free | harpies (air) |
 | **Wolf Den** | free | goblin wolf riders |
 | **Dark Cult** | free | dark acolytes |
@@ -552,11 +550,13 @@ Placement is a proposal, to be adjusted.
 | **Goblin** | keep | **none** | — | — | builds, repairs, **captures** outposts |
 | **Orc** | orc pits | **none** | slashing | — | cheap, large squad |
 | **Berserker** | orc pits | **none** | slashing | — | **rage**: the lower the HP, the higher the damage **[mechanic: damage from missing health]** |
-| **Shield Spearman** | dark order | **heavy** | piercing | — | **bonus vs cavalry**; toggleable **"Shields"** mode: resistance to ranged attacks **[mechanic: toggleable modes]** |
-| **Crossbowman** | dark order | **heavy** | — | piercing | **anti-air** |
+| **Orc Hunter** | orc pits | **none** | slashing | piercing (thrown spears) | cheap ranged infantry: throws spears at a short range; hits **ground and air** targets |
+| **Orc Spearman** | orc pits | **heavy** | piercing | — | **bonus vs cavalry**; toggleable **"Shields"** mode: resistance to ranged attacks **[mechanic: toggleable modes]** |
 | **Harpy** | harpy nest | **none** | slashing | piercing | **flying**; with upgrade — **acid bombs** (a separate attack against ground targets) |
 | **Goblin Wolf Rider** | wolf den | **none** | slashing | — | fast cavalry |
-| **Dark Acolyte** | dark cult | **none** | — | necrotic | **Curse the Ground** (channeled): curses an area; an enemy who dies in it rises as a **skeleton or wraith** under the player's control **[mechanic: channeled abilities]** |
+| **Alkar Swordsman** | dark order | **heavy** | slashing | — | **Alkar elite**, very expensive |
+| **Alkar Archer** | dark order | **heavy** | — | piercing | **Alkar elite**, very expensive; **anti-air** |
+| **Dark Acolyte** | dark cult | **none** | — | necrotic | **Curse the Ground** (channeled): curses an area; an enemy who dies in it rises as a **skeleton (swordsman or archer) or wraith** under the player's control **[mechanic: channeled abilities]** |
 | **Siege Troll** | troll arena | **none** | bludgeoning | (with upgrade) bludgeoning, **ground targets only** | siege |
 
 **Workshop upgrades:**
@@ -567,7 +567,7 @@ Placement is a proposal, to be adjusted.
 | **Sack of Rocks** | siege trolls | unlocks a **ranged attack**: bludgeoning damage, ground targets only |
 | **Acid Bombs** | harpies | **new attack**: bombs against **ground** targets — acid (damage and −armor) |
 
-**Dark Order Enchantments upgrades** (spearmen and crossbowmen):
+**Dark Order Enchantments upgrades** (Alkar swordsmen and archers):
 
 | Upgrade | Effect |
 |---|---|
@@ -582,7 +582,8 @@ All summoned and risen units are **temporary** (disappear after a time) and **ta
 | Unit | Source | Description |
 |---|---|---|
 | **Wraith** | Wraith Retinue, those killed by the Wraith King's abilities, the acolytes' curse | **ground** (does not fly), necrotic damage |
-| **Skeleton** | the acolytes' curse | cheap infantry |
+| **Skeleton Swordsman** | the acolytes' curse | cheap melee infantry |
+| **Skeleton Archer** | the acolytes' curse | cheap ranged infantry, **anti-air** |
 
 Stats (armor, damage, HP, lifetime) live in JSON and are tuned during balancing.
 | **Demon** | Dark Mage's ultimate | melee: slashing + fire; heavy armor |
@@ -633,9 +634,9 @@ Heavy armor, damage: necrotic + slashing.
 
 ### Decisions
 
-No open questions on the orcs (summon numbers — during balancing, in JSON).
+No open questions on the Alkars (summon numbers — during balancing, in JSON).
 
-**Decided:** the order's crossbowmen and their tower hit air; invisibility detection for the wraith tower is in the order enchantments; wraiths do not fly; the Dark Lord's ultimate is an empowered Cursed Presence that drains enemy health; towers — crossbow and wraith (necrotic, invisibility detection with upgrade); food — goblin farm; goblins have no armor and capture; spearmen — bonus vs cavalry and toggleable ranged resistance; acid bombs are a separate ground attack; wraiths, skeletons and the demon are temporary and take no food; horde = cheap units + wraiths and skeletons, with no separate swarm mechanic.
+**Decided:** the crossbow tower hits air; invisibility detection for the wraith tower is in the order enchantments; wraiths do not fly; the Dark Lord's ultimate is an empowered Cursed Presence that drains enemy health; towers — crossbow and wraith (necrotic, invisibility detection with upgrade); food — goblin farm; goblins have no armor and capture; spearmen — bonus vs cavalry and toggleable ranged resistance; acid bombs are a separate ground attack; wraiths, skeletons and the demon are temporary and take no food; horde = cheap units + wraiths and skeletons, with no separate swarm mechanic.
 
 ## 6. Dwarves
 
@@ -679,7 +680,7 @@ Placement is a proposal, to be adjusted.
 
 | Unit | Where | Armor | Melee attack | Ranged attack | Special |
 |---|---|---|---|---|---|
-| **Worker** | keep | **heavy** | — | — | builds, repairs, **captures** outposts |
+| **Worker** | keep | **none** | — | — | builds, repairs, **captures** outposts |
 | **Axe Dwarf** | barracks | heavy | slashing | — | — |
 | **Gunner** | barracks | medium | slashing | piercing | firearms; **anti-air** |
 | **Airship** | workshop | **heavy** | — | piercing — **against ground and air** | **flying**, machine (`mechanical`) |
@@ -709,7 +710,7 @@ Placement is a proposal, to be adjusted.
 
 #### Dwarf King — unbreakable chieftain
 
-Heavy armor, bludgeoning damage, melee.
+The King under the Mountain, supreme ruler of the dwarves (lore: [`lore/factions/dwarves.md`](lore/factions/dwarves.md)). Heavy armor, bludgeoning damage, melee.
 
 | Lvl | Ability | Type | Description | Starting values |
 |---|---|---|---|---|
@@ -747,7 +748,7 @@ Medium armor. Melee and ranged attacks use the element of the **selected rune**:
 
 No open questions on the Dwarves.
 
-**Decided:** food — farm; tunnel — a building type on a dedicated plot at outposts, built into the keep, one squad at a time, destructible, the enemy cannot pass; workers have heavy armor and capture outposts; gunners and the gunner tower hit air; airships and mortars have heavy armor; a golem without a rune deals bludgeoning damage, the element is chosen in the golem workshop and applies immediately; rune tower — damage by selected rune, hits air, invisibility detection is a Rune Hall upgrade; the enemy cannot see rune traps; Undermine — one squad at a time, can be destroyed.
+**Decided:** food — farm; tunnel — a building type on a dedicated plot at outposts, built into the keep, one squad at a time, destructible, the enemy cannot pass; workers have no armor and capture outposts; gunners and the gunner tower hit air; airships and mortars have heavy armor; a golem without a rune deals bludgeoning damage, the element is chosen in the golem workshop and applies immediately; rune tower — damage by selected rune, hits air, invisibility detection is a Rune Hall upgrade; the enemy cannot see rune traps; Undermine — one squad at a time, can be destroyed.
 
 ## 7. Celestials
 
@@ -761,13 +762,13 @@ Draft idea (from the first sketch): a heavenly host — few squads, strong magic
 
 Who has the edge over whom, by feel. To be refined during balancing.
 
-| | Empire | High Elves | Dark Elves | Orcs | Dwarves | Celestials |
+| | Empire | High Elves | Dark Elves | Alkars | Dwarves | Celestials |
 |---|---|---|---|---|---|---|
 | **Empire** | = | siege and cavalry vs fragile elves | formation vs raids | upgrades vs mass | parity | crossbows vs air |
 | **High Elves** | range | = | light magic vs shadows | kiting the slow horde | hard to pierce armor | parity |
 | **Dark Elves** | economy raids | ambushes | = | poison vs mass | weak vs armor | debuffs vs elites |
-| **Orcs** | mass before upgrades | charge into archers | brute force | = | ogres vs infantry | mass vs the few |
-| **Dwarves** | armor | armor vs arrows | armor vs poison | cannons vs ogres | = | weak vs air |
+| **Alkars** | mass before upgrades | charge into archers | brute force | = | trolls vs infantry | mass vs the few |
+| **Dwarves** | armor | armor vs arrows | armor vs poison | cannons vs trolls | = | weak vs air |
 | **Celestials** | air | parity | light vs darkness | too few | air over walls | = |
 
 ---
@@ -787,20 +788,20 @@ Collected from the tags above. This feeds the "Common mechanics" block in `ROADM
 | Experience and levels for squads and heroes (5 levels, ability / aura / ability / aura / ultimate pattern), hero recruitment and revival | everyone | high |
 | Blindness (misses), true damage (bypasses all defenses), invulnerability, immunities | Empire (Paladin), everyone | high |
 | Toggleable damage type and abilities that depend on the selected mode | Empire (Archmage) | medium |
-| Auras on buildings (construction and recruitment speed), group teleport | Empire (King) | medium |
+| Auras on buildings (construction and recruitment speed), group teleport | Empire (Emperor) | medium |
 | Attacking buildings (towers), incl. anti-air and minimum range | Empire, Dwarves, everyone | high |
 | Drag-placed walls, gates (passable only for the owner), tower slots on walls | Empire, Dwarves | medium |
-| Siege engines (range, buildings only, crew) | Empire, Orcs, Dwarves | medium |
+| Siege engines (range, buildings only, crew) | Empire, Alkars, Dwarves | medium |
 | Toggleable modes and stances (shield wall, spear wall, fire arrows) | Empire, Dwarves | high |
 | Damage that depends on the target's speed (spear wall vs charge) | Empire | medium |
 | Squad formations (wedge) | Empire, all cavalry | medium |
 | Flying units and anti-air defense | Elves, Dwarves, Celestials | done (flight without navigation, targeting, grounding) |
 | Invisibility and fog of war | Dark Elves, High Elves | medium |
 | Faction powers (points, power tree) | everyone | medium |
-| Damage from missing health (berserkers) | Orcs | medium |
-| Turning the fallen into units (skeletons, wraiths), temporary summoned units without food | Orcs, all summons | high |
-| Heal prevention (anti-heal), unit size (who gets knocked back) | Orcs | medium |
-| Rectangular and moving areas (wraith horde) | Orcs | medium |
+| Damage from missing health (berserkers) | Alkars | medium |
+| Turning the fallen into units (skeletons, wraiths), temporary summoned units without food | Alkars, all summons | high |
+| Heal prevention (anti-heal), unit size (who gets knocked back) | Alkars | medium |
+| Rectangular and moving areas (wraith horde) | Alkars | medium |
 | Summoning units and buildings | Dwarves, Celestials, powers | low |
 | Tunnels: transfer between friendly outposts; undermining into someone else's building | Dwarves | medium |
 | Vision-blocking zones (smoke), temporary vision (recon shell) | Dwarves | medium |
@@ -825,7 +826,7 @@ Collected from the tags above. This feeds the "Common mechanics" block in `ROADM
 
 ## 10. Open Questions
 
-- How many factions do we bring to a playable state first? Proposal: **the Human Empire** (the baseline, tests all common mechanics) and **Orcs / ogres** (contrast: mass vs quality).
+- How many factions do we bring to a playable state first? Proposal: **the Human Empire** (the baseline, tests all common mechanics) and the **Alkars** (contrast: mass vs quality).
 - ~~A unique resource for some factions~~ — no, everyone shares the same set.
 - ~~Mana for heroes~~ — no, cooldowns only.
 - ~~Flying units later~~ — no, right away.

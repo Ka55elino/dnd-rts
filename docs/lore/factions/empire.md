@@ -12,26 +12,68 @@ A disciplined army and stone fortresses: heavy infantry, knights, archers and si
 
 ## Who they are
 
-- **What they call themselves and what others call them:** > Concordia
-- **Where they came from, how old they are as a people:** the unified Empire formed several centuries ago from the union of previously scattered tribes. Their differences have long since blurred; the tribal past is remembered mostly through stories and monuments to the generals who united them. > ❓ Under what circumstances did the unification happen?
-- **Where they live** (see [`../geography.md`](../geography.md)): > ❓
-- **How society works** (power, estates, faith): a monarchy headed by a king. Each city is led by its own ruling dynasty and is represented at court. Each of the five regional knightly orders has its own representative on the council; the Paladin Order, the mages and the Order of Builders are also represented on it. Healers are one of the branches of the priests, the light mages, and do not have a separate seat on the council. The council is an advisory body: the final word always rests with the king. The powers of the representatives and how they are appointed — > ❓
-- **What they want in this war:** > ❓
-- **Their "gray" side** (mixed tone): > ❓
+- **What they call themselves and what others call them:** Concordia
+- **Where they came from, how old they are as a people:** one of the first civilizations of Oikouménē. The Empire formed several centuries ago from the gradual union of human tribes (see [Unification of the tribes](#unification-of-the-tribes)); the tribal past is remembered mostly through stories and monuments to the generals who united them.
+- **Where they live** (see [`../geography.md`](../geography.md)): the capital Kordkayer in the Central Region; Morkayer, the port at the Nimrath Sea; Nixborg in the north; Rahupaxstad in the west; Helmishahir in the south; Azatsich in the east.
+- **How society works** (power, estates, faith): a monarchy headed by an emperor, resting on the consent of the nobility; see [Society and power](#society-and-power).
+- **What they want at first contact:** > ❓
+- **Their "gray" side** (mixed tone): see [Gray side](#gray-side) below.
 
 The cultural reference is a medieval European country; it is not tied to any one specific historical culture.
 
 The architecture of the Empire varies by region. Its central image is set by the capital, [Kordkayer](../geography.md), a city of two rings at the foot of a mountain.
 
-Internal relations between the city dynasties are largely peaceful; whatever rivalry there may be between them does not define the life of the Empire.
+## Unification of the tribes
 
-For most inhabitants, the rule of their city's dynasty is a familiar and generally accepted order.
+Before the Empire was formed, the central lands were inhabited by numerous human tribes. They had their own chiefs, customs, beliefs and military traditions. Some farmed the land; others controlled trade routes, forests or river crossings.
 
-The Empire has no separate hereditary nobility: knights, paladins and mages count as nobles. The Order of Builders unites architects and builders and has its own representative on the royal council.
+The unification happened gradually, not as the result of a single conquest:
 
-The paladins are united in an independent righteous religious order: it answers to the king, keeps its own structure and has a voice on the council at court. The order preaches kindness and justice, but also serves as the local inquisition. The specific religion, teaching and powers of the order have not been determined yet.
+- **Central tribes** created the original core of the future Empire, uniting around the strongest military ruler.
+- **The Western Lands** joined through trade agreements and alliances with the local nobility.
+- **The Eastern territories** became part of the state after a series of military campaigns and treaties with local rulers.
+- **The Southern Lands** kept considerable autonomy, receiving guarantees of their local laws and privileges.
+- **The northern tribes** resisted centralization the longest, but in the end entered the Empire as allies of the crown.
 
-The mages of the Empire are scholars who study the concentrations of primal energy and try to control them. They have partly mastered fire, ice, lightning and light. Priests are mages who specialize in light magic; its nature is no different from that of the other schools of magic. The mages are led by the Archmage, who represents them on the royal council.
+After the unification, the former chiefs became the first members of the imperial nobility. The crown recognized their lands and privileges; in return they pledged to provide troops, collect taxes and obey imperial law. To the people, this order is explained and justified by religion.
+
+This gave rise to a contradiction that persists to this day: by law the Empire belongs to the crown, but in many ways it rests on the consent of those who own its lands.
+
+## Society and power
+
+### The crown and the nobility
+
+The emperor rules the Empire. The nobility descends from the tribal chiefs: each city is led by its own ruling dynasty, which holds its lands and privileges from the crown and is represented at court. Relations between the city dynasties are largely peaceful; whatever rivalry there may be between them does not define the life of the Empire. For most inhabitants, the rule of their city's dynasty is a familiar and generally accepted order.
+
+### The imperial council
+
+Each of the five regional knightly orders has its own representative on the council; the Holy Order (the paladins), the Mages' Guild and the Order of Builders are also represented on it. The Order of Builders unites architects and builders. The council is an advisory body: the final word always rests with the emperor.
+
+### The Mages' Guild
+
+The mages of the Empire belong to the imperial Mages' Guild, which is under the patronage of the crown but has limited internal independence. This matches the guild building in Kordkayer: a large dome with four towers dedicated to fire, lightning, water and light.
+
+- The magical gift does not depend on origin or belonging to the nobility.
+- People capable of magic are found and trained. Wealthy families can pay for training, but formally they have no monopoly on magic.
+- The guild sets training standards, awards degrees and makes sure the rules for using dangerous forces are followed.
+- The crown funds research, provides premises and calls mages into military service.
+- Mages must obey imperial law, but decide internal scholarly matters on their own.
+
+The mages are scholars who study primordial energy and try to control it. They have partly mastered fire, ice, lightning and light. Priests are mages who specialize in light magic; its nature is no different from that of the other schools of magic. The guild is led by the Archmage, who represents it on the imperial council.
+
+Healing is a separate school of magic. Healers are the link between the Holy Order and the mages.
+
+### The knightly orders — military and regional power
+
+The orders protect the borders, important roads, holy sites and strategic fortresses. Each has its own history, traditions and specialization tied to its region of the Empire (see [Regional knightly orders](#regional-knightly-orders)).
+
+They swear allegiance to the crown but keep their own internal hierarchy. Some orders are closely tied to the church; others answer directly to the emperor.
+
+### Spiritual power — the Holy Order
+
+The Holy Order (the paladins) is the church of the Faith of the One Light. It unites the population through a common faith, runs temples and monasteries, trains the clergy and is engaged in charity. The order preaches kindness and justice, but also serves as the local inquisition.
+
+It gives the emperor the religious right to be the lawful ruler, but holds that the crown must obey the moral laws of the faith. On particular questions the church may oppose the emperor, especially if it considers his actions unjust.
 
 ## Regional knightly orders
 
@@ -39,7 +81,7 @@ The knightly orders preserve echoes of the times when the lands of the future Em
 
 ### Central Order
 
-The main image of imperial knighthood and the king's personal mainstay: many of its knights serve at court as the monarch's bodyguards. They wear heavy armor, undergo drill training and keep strict discipline. In battle the order relies on heavy cavalry, the frontal charge and holding position. Its culture rests on hierarchy, ancient titles and solemn ceremonies of knighting.
+The main image of imperial knighthood and the emperor's personal mainstay: many of its knights serve at court as the monarch's bodyguards. They wear heavy armor, undergo drill training and keep strict discipline. In battle the order relies on heavy cavalry, the frontal charge and holding position. Its culture rests on hierarchy, ancient titles and solemn ceremonies of knighting.
 
 **Appearance:** full heavy plate with even, severe lines; closed helmets, long cloaks and ceremonial surcoats over the armor. Their equipment looks uniform and ceremonial, and their weapons and shields emphasize formation and allegiance to the crown.
 
@@ -77,52 +119,161 @@ The order of the harsh lands, where survival depends on mutual help and readines
 
 **Reference image:** `docs/lore/images/empire/orders/northern-order.*`
 
+## Gray side
+
+The Empire promises peace, protection, and unity, but its stability depends on constant military readiness, heavy taxation, and the expansion of imperial authority. Its rulers justify conquest as a necessary price for preserving civilization. The Empire also suppresses local traditions and religious beliefs when they threaten imperial unity, even when those traditions are harmless.
+
+## Faith
+
+**The Faith of the One Light**: the world arose from the primordial Light; a centralized church hierarchy, monastic communities and knightly orders that protect holy sites. Full description: [`../religions.md`](../religions.md#human-empire--the-faith-of-the-one-light).
+
 ## Relations
 
-| With whom | Attitude | Why |
-|---|---|---|
-| > ❓ | | |
-
-## Questions
-
-> ❓ What are the Empire and its capital called? How old is it?
-> ❓ Who rules — the king (hero) with a court around him? Are there nobles, orders, a church?
-> ❓ Where do the Empire's mages come from: a guild under the crown's supervision, free mages?
-> ❓ What makes the Empire "gray": taxes, wars for land, pressure on its neighbors?
+At the start of the game the peoples meet for the first time (first contact, see [`../history.md`](../history.md)): there are no established relations yet. Attitudes toward other peoples follow from the faith (see "Faith" above) and arise during the game.
 
 ## Heroes
 
+Heroes are titles, not specific characters. In the campaign each title will belong to different characters; in PvP heroes are simply units. Names, backgrounds and personal stories are not written in the lore.
+
 ### Paladin
 
-- **In game:** support warrior, light
-- **Who he / she is:** > ❓
-- **Background:** > ❓
-- **Goal and weakness:** > ❓
-- **Select / order line** (for voice-over): > ❓
+Support warrior, light.
 
 ### Archmage
 
-- **In game:** elemental mage
-- **Who he / she is:** > ❓
-- **Background:** > ❓
-- **Goal and weakness:** > ❓
-- **Select / order line** (for voice-over): > ❓
+Elemental mage.
 
-### King
+### Emperor
 
-- **In game:** cavalry commander
-- **Who he / she is:** > ❓
-- **Background:** > ❓
-- **Goal and weakness:** > ❓
-- **Select / order line** (for voice-over): > ❓
+Cavalry commander. The ruler of the Empire.
 
-## Units (lore for descriptions)
+## Units
 
-Roster: builders, swordsmen with shields, spearmen, archers, knights, ballistas, trebuchets, fire / water mages, lightning mages, healers.
+Each unit has five regional skins: `central`, `western`, `northern`, `southern`, `eastern` (see [`../../ASSETS.md`](../../ASSETS.md), Regional skins). Concept art: [`../images/empire/units/`](../images/empire/units/).
 
-| Unit | Who they are in the world (1–2 sentences for the in-game description) |
-|---|---|
-| > ❓ | |
+### Builder
+
+A military engineer who accompanies the army. Builds structures, fortifications and siege works, and repairs damaged buildings. Armed with tools.
+
+**Appearance:** work clothes, a leather apron, a tool belt, light protection and a small imperial badge.
+
+<!-- References for the artist (Pinterest):
+https://it.pinterest.com/pin/754564112617363209/
+https://it.pinterest.com/pin/857513585344237137/
+-->
+
+### Swordsman
+
+A versatile foot soldier with sword and shield. Holds positions, protects archers and mages, and deals well with ordinary infantry.
+
+**Appearance:** mail or lamellar armor, a helmet, a sword and a shield with imperial symbols.
+
+<!-- References for the artist (Pinterest):
+https://it.pinterest.com/pin/664703226287990825/ — central
+https://it.pinterest.com/pin/751538256562797775/ — central
+https://it.pinterest.com/pin/521150988155337828/ — western
+https://it.pinterest.com/pin/528117493828811689/ — western
+https://it.pinterest.com/pin/924786104742789891/ — northern
+https://it.pinterest.com/pin/1044764813576311545/ — northern
+https://it.pinterest.com/pin/1091841503445873375/ — southern
+https://it.pinterest.com/pin/733031276859009309/ — southern
+https://it.pinterest.com/pin/850054498462268466/ — eastern
+https://it.pinterest.com/pin/558657528799658531/ — eastern
+https://it.pinterest.com/pin/770256342538916835/ — eastern
+-->
+
+### Spearman
+
+A specialized fighter who protects the formation from cavalry charges and large enemies. Effective at holding a position, but less comfortable in close combat against mobile enemies.
+
+**Appearance:** a long spear, medium armor, a protective plate on the forearm.
+
+<!-- References for the artist (Pinterest):
+https://it.pinterest.com/pin/293859944452619272/
+https://it.pinterest.com/pin/953215077403714447/
+-->
+
+### Archer
+
+Deals steady ranged damage, covers the army's advance and weakens the enemy before the main forces clash. Vulnerable in close combat.
+
+**Appearance:** a bow, a quiver, a padded jacket or leather armor, a minimum of metal details.
+
+<!-- References for the artist (Pinterest):
+https://it.pinterest.com/pin/738308932706566719/
+https://it.pinterest.com/pin/569846159124286603/
+-->
+
+### Knight
+
+An expensive elite warrior meant for swift attacks on vulnerable targets, pursuing the enemy and breaking enemy formations. Needs space to maneuver effectively.
+
+**Appearance:** heavy armor, a warhorse, a lance or sword, a cloth surcoat with a coat of arms.
+
+<!-- References for the artist (Pinterest):
+https://it.pinterest.com/pin/948218896569371199/
+https://it.pinterest.com/pin/724375921290968287/
+-->
+
+### Ballista
+
+A mechanical weapon that launches heavy bolts. Pierces dense formations and deals heavy damage to large targets. Needs a crew and is vulnerable to attacks by mobile squads.
+
+**Appearance:** a wooden frame, a tensioning mechanism, metal fittings and wheels for transport.
+
+<!-- References for the artist (Pinterest):
+https://it.pinterest.com/pin/548524429626876672/
+-->
+
+### Trebuchet
+
+Hurls heavy stone projectiles over long distances. Especially effective against walls, towers and buildings, but slow to turn and poorly protected against attacks.
+
+**Appearance:** a massive wooden structure with a counterweight, ropes, a wheeled platform and stone projectiles.
+
+<!-- References for the artist (Pinterest):
+https://it.pinterest.com/pin/46865652360692110/
+-->
+
+### Fire Mage
+
+A mage of the battle wing of the imperial Mages' Guild. Specializes in destructive spells, fireballs and setting groups of enemies on fire. Dangerous against clusters of infantry and buildings, but vulnerable without cover.
+
+**Appearance:** a dark red robe, protective bracers, a staff or wand, glowing orange energy effects.
+
+<!-- References for the artist (Pinterest):
+https://it.pinterest.com/pin/646196246568536789/
+-->
+
+### Water Mage
+
+Controls streams of water, slows enemies, breaks up their formations and supports allies. Their main value is controlling the pace of battle, not maximum direct damage.
+
+**Appearance:** blue-turquoise clothing, silver details, a staff with a water focus, effects of streams and water spheres.
+
+<!-- References for the artist (Pinterest):
+https://it.pinterest.com/pin/384143043233963347/
+-->
+
+### Lightning Mage
+
+Uses electrical discharges to strike priority targets and disrupt the enemy's actions. Can stun enemies, creating openings for cavalry and infantry to attack.
+
+**Appearance:** dark blue or purple fabrics, metal conductors, a staff and sharp blue electrical effects.
+
+<!-- References for the artist (Pinterest):
+https://it.pinterest.com/pin/810718370464541716/
+-->
+
+### Healer
+
+Restores allies' health and helps squads stay in battle longer. Not meant for direct confrontation with the enemy. Especially valuable in drawn-out battles.
+
+**Appearance:** light clothing, cream and golden details, a bag of supplies, a staff or the symbol of a healers' order. Not a priest: healing is a separate school of magic.
+
+<!-- References for the artist (Pinterest):
+https://it.pinterest.com/pin/917327017863341517/
+-->
 
 ## Buildings and architecture
 

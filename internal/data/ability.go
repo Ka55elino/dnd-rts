@@ -150,7 +150,7 @@ type AbilityEffect struct {
 	Horde string `json:"horde,omitempty"` // horde type
 	Count int    `json:"count,omitempty"` // hordes (default 1)
 	// Limit: one summon of this ability at a time; its cooldown only runs
-	// while nothing it summoned is alive (the king's guard).
+	// while nothing it summoned is alive (the emperor's guard).
 	Limit bool `json:"limit,omitempty"`
 
 	// EffTeleport: only next to an own finished building (the centre must be
@@ -188,7 +188,7 @@ type Modifiers struct {
 	// Immune: a status effect that doesn't apply (burn, slow, stun, acid, poison).
 	Immune string `json:"immune,omitempty"`
 	// WorkSpeed: auras only — + fraction of construction and training speed
-	// of own buildings in the radius (the king's oversight).
+	// of own buildings in the radius (the emperor's oversight).
 	WorkSpeed fixed.Fixed `json:"workSpeed,omitempty"`
 
 	// Rooted: the horde stands its ground (doesn't move or chase) and can't be

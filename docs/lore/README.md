@@ -12,7 +12,7 @@ This is where the game world lives: history, geography, magic, peoples, heroes, 
   - `accepted` — agreed on; other texts already rely on it;
   - `canon` — in the game (descriptions, campaign); changed only deliberately.
 - **Link to mechanics.** If lore explains a mechanic (why elves heal on their own land, why dwarves travel by tunnels), add a link to the relevant section of FACTIONS.md.
-- **Images** for the lore (map, coats of arms, reference images) live only in `docs/lore/images/`: `world/` for world maps, `<people>/` for one folder per people (`empire/`, `high-elves/`, …), which may contain `orders/`, `cities/` and so on. Links from `.md` files are relative (`images/...` from `docs/lore/`, `../images/...` from `factions/`). Sources for game models are kept separately, in `art/source/`.
+- **Images** for the lore (map, coats of arms, reference images) live only in `docs/lore/images/`: `world/` for world maps, `<people>/` for one folder per people (`empire/`, `high-elves/`, …), which may contain `orders/`, `cities/` and so on. Unit concept art goes to `<people>/units/<unit>/<skin>.png` (several sheets per skin: `<skin>-2.png`, …) — the same folders and regional skins as the models in `art/source/` (see [`../ASSETS.md`](../ASSETS.md), Regional skins). Links from `.md` files are relative (`images/...` from `docs/lore/`, `../images/...` from `factions/`). Sources for game models are kept separately, in `art/source/`.
 - **Questions** in templates (`> ❓ …`) are things that still need to be decided. The answer is written in place of the question.
 
 ## Files
@@ -23,6 +23,7 @@ This is where the game world lives: history, geography, magic, peoples, heroes, 
 | [`history.md`](history.md) | chronology: eras and key events before the game starts |
 | [`geography.md`](geography.md) | continents, regions, climate, important places; link to the game maps |
 | [`magic.md`](magic.md) | magic, elements, gods and powers; how they relate to damage types and abilities |
+| [`religions.md`](religions.md) | the faiths of the peoples: beliefs, organization, attitude toward others — the main source of conflict |
 | [`bestiary.md`](bestiary.md) | creatures outside the factions: elementals, monsters, neutral camps |
 | [`campaign.md`](campaign.md) | the single-player campaign story: acts, missions, heroes |
 | [`glossary.md`](glossary.md) | glossary: terms, names, place names (EN / RU) |
@@ -32,7 +33,7 @@ This is where the game world lives: history, geography, magic, peoples, heroes, 
 
 1. **World:** name, essence, main conflict (`world.md`).
 2. **History:** 3–5 eras, key events, why the peoples are at odds (`history.md`).
-3. **Peoples:** following the template in `factions/` — who they are, where they come from, what they want, their heroes.
+3. **Peoples:** following the template in `factions/` — who they are, where they come from, what they want, their hero titles (heroes are titles, not specific characters: no names or backgrounds).
 4. **Geography:** who lives where, disputed lands (that is where the maps will be).
 5. **Magic and gods** — explaining the elements, necrotic power, light.
 6. **Campaign** — once the world and the peoples are accepted.

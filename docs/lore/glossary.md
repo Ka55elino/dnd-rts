@@ -13,7 +13,7 @@ Terms, names and place names. A " ❓" after a name means it is a provisional wo
 | Kordkayer | capital of the Empire | [`geography.md`](geography.md) |
 | Paladin | Empire hero | [`factions/empire.md`](factions/empire.md) |
 | Archmage | Empire hero | [`factions/empire.md`](factions/empire.md) |
-| King | Empire hero | [`factions/empire.md`](factions/empire.md) |
+| Emperor | ruler of the Empire; Empire hero | [`factions/empire.md`](factions/empire.md) |
 | Morkayer | coastal city of the Empire at the river mouth, the main port | [`geography.md`](geography.md) |
 | Nixborg | northern capital of the Empire | [`geography.md`](geography.md) |
 | Northern Lands ❓ | northern region of the Empire | [`geography.md`](geography.md) |
@@ -37,10 +37,24 @@ Terms, names and place names. A " ❓" after a name means it is a provisional wo
 | Rune Chambers | runic enchantment workshops in Monsarx | [`geography.md`](geography.md) |
 | Summit Docks | airship docks on the peaks of Monsarx's mountain | [`geography.md`](geography.md) |
 | Skopeskala | young dwarven city on the eastern ridge, still under construction | [`geography.md`](geography.md) |
-| Drow | the Dark Elves' own name for themselves (or a nickname) | [`factions/dark-elves.md`](factions/dark-elves.md) |
-| Spider Queen | revered by the drow as a goddess, in truth a living being of enormous power (Dark Elf hero); main temple in Melasarach | [`magic.md`](magic.md) |
+| Drow | what others call the dark elves (their own name is Shaessari) | [`factions/dark-elves.md`](factions/dark-elves.md) |
+| Spider Queen | high priestess of the Great Spider and head of the cult; a living being of great power (Dark Elf hero) | [`religions.md`](religions.md) |
 | the Underdark | the underground world of caves and tunnels where the drow live | [`geography.md`](geography.md) |
 | Melasarach | religious center of the Dark Elves | [`geography.md`](geography.md) |
 | Aterliman | underground port of the Dark Elves | [`geography.md`](geography.md) |
 | Alkaris | city of the Alkars in the east | [`geography.md`](geography.md) |
 | Alkarian Necropolis | necropolis of the Alkars with a single warden | [`geography.md`](geography.md) |
+| Primordial energy | the primordial elements (fire, ice, lightning, acid, poison, necrotic, light) from which the world, all living beings and magic emerged; visible as clots of energy, invisible threads permeate the whole world | [`magic.md`](magic.md), [`world.md`](world.md) |
+| Oikouménē | the name of the world: "the inhabited or known world"; one universal name for documents and maps | [`world.md`](world.md) |
+| the One Light | the faith of the Human Empire: the world arose from the primordial Light; a centralized church | [`religions.md`](religions.md) |
+| Great Spider / the Weave | the faith of the Dark Elves: the world is a great Weave spun by the Great Spider; main temple in Melasarach | [`religions.md`](religions.md) |
+| First Giants | in dwarven tradition, ancient beings whose remains became the mountains; not gods | [`religions.md`](religions.md) |
+| Eternal Cycle | the faith of the Alkars: life and death are parts of one process; keepers of the cycle | [`religions.md`](religions.md) |
+| the Living World | the faith of the High Elves: the balance of natural forces; keepers of sacred groves | [`religions.md`](religions.md) |
+| The Age of Unification | the only era before the game: peoples formed societies and the first states, cultures and religions took root | [`history.md`](history.md) |
+| Holy Order | the paladins: the church of the Faith of the One Light in the Empire; legitimizes the emperor but may oppose him | [`factions/empire.md`](factions/empire.md) |
+| King under the Mountain | supreme ruler of the dwarves (Dwarf King hero); rules together with the Council of Houses | [`factions/dwarves.md`](factions/dwarves.md) |
+| Council of Houses | the main decision-making body of the dwarves: laws, taxes, distribution of resources | [`factions/dwarves.md`](factions/dwarves.md) |
+| Liénari | self-name of the High Elves | [`factions/high-elves.md`](factions/high-elves.md) |
+| Shaessari | self-name of the Dark Elves | [`factions/dark-elves.md`](factions/dark-elves.md) |
+| Dragori | self-name of the Dwarves | [`factions/dwarves.md`](factions/dwarves.md) |

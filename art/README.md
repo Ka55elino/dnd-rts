@@ -2,6 +2,17 @@
 
 Source assets (not shipped). Baked, game-ready versions are produced by `tools/vatbake`
 (animated characters) and `tools/meshbake` (static models) into `frontend/public/models/`.
+
+## Layout
+
+Full layout and naming rules: [`../docs/ASSETS.md`](../docs/ASSETS.md); what has to be made: [`../docs/ART_LIST.md`](../docs/ART_LIST.md).
+
+- `source/<faction>/units/<unit>/<skin>.glb` (+ `<skin>_albedo.png`) — units by faction (`empire`, `high-elves`, `dark-elves`, `alkars`, `dwarves`), one file per regional skin.
+- `source/<faction>/buildings/<building>.glb` — buildings and towers of the faction.
+- `source/shared/` — neutral outposts, environment, projectiles.
+- `source/terrain/`, `source/effects/`, `source/ui/` — terrain materials, effect textures, icons / HUD / cursors.
+- `source/buildings/`, `source/grab3d/` — current placeholders (referenced by the bake configs).
+
 All current assets are development placeholders from free model sites with open licenses; for the release they will be replaced with original art.
 
 | File | Source | License |

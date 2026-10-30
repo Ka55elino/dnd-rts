@@ -40,7 +40,7 @@ Effects fire in order. `radius: 0` — the target only (the whole target squad);
 | `buff` | `modifiers`, `duration`, `radius` | temporary modifiers |
 | `zone` | `radius`, `duration`, `interval`, `effects` | an area on the ground: every `interval` s it applies the nested `effects` (their `radius` defaults to the zone radius) |
 | `chain` | `jumps`, `jumpRange`, `falloff`, `effects` | hits a soldier at the target, then jumps to the nearest one not yet hit (up to `jumps` times, no farther than `jumpRange`); each jump is weaker by `falloff` (0.2 = −20%). Nested effects: only `damage` and `status`. Does not hit buildings |
-| `summon` | `horde`, `count`, `duration`, `limit` | summons `count` squads (1 by default) at the center for `duration` s (0 — until killed). Summoned squads don't eat food and, when time runs out, vanish without giving XP to the enemy. `limit: true` — only one summon of this ability at a time, and its cooldown starts only after the summoned squads die (the king's retinue) |
+| `summon` | `horde`, `count`, `duration`, `limit` | summons `count` squads (1 by default) at the center for `duration` s (0 — until killed). Summoned squads don't eat food and, when time runs out, vanish without giving XP to the enemy. `limit: true` — only one summon of this ability at a time, and its cooldown starts only after the summoned squads die (the emperor's retinue) |
 | `teleport` | `radius`, `toBuilding` | the caster's squad (and own squads within `radius` around it) instantly moves to the point, keeping formation. `toBuilding: true` — only to an own completed building (point no farther than 12 m from it), otherwise the cast fails |
 | `transform` | `unit`, `duration` | the squad temporarily becomes another unit (`content/units`): its attacks, armor, speed, size. Health fraction, abilities, hero level and per-level growth are kept; when it ends — back to normal |
 
@@ -65,7 +65,7 @@ They stack (two +15% damage auras = +30%).
 | `resistType` + `resist` | fraction of damage of this type that doesn't go through (elemental protection); only one, the strongest, applies at a time |
 | `abilityHaste` | + fraction of ability cooldown speed (0.33 ≈ −25% time) |
 | `immune` | a status effect that has no effect: `burn`, `slow`, `stun`, `acid`, `poison` (the paladin's "Purity" passive) |
-| `workSpeed` | auras only: + fraction of construction and recruitment speed of **own buildings** in radius (royal oversight) |
+| `workSpeed` | auras only: + fraction of construction and recruitment speed of **own buildings** in radius (imperial oversight) |
 | `rooted` | the squad holds its ground: doesn't move or pursue, can't be trampled, a charge into it is stopped |
 | `speedDamage` | piercing damage to enemies running into the squad, per m/s of their speed (once per second per enemy, with attack bonuses, e.g. ×1.6 vs. cavalry) — spear wall |
 | `formation` | `"wedge"`: triangular formation, point forward |
@@ -103,8 +103,8 @@ All modes referenced by a unit's abilities must exist in its mode ability (check
 - `frost_fan` — `active`, `point`: 60° × 12 m cone, ice + slow (pack leader, lvl 3)
 - `pack_call` — `active`, `self`: summons a wolf rider squad, limited (pack leader, lvl 4)
 - `beast_form` — `active`, `self`: transforms into a beast for 30 s (pack leader, lvl 5)
-- `mass_recall` — `active`, `point`, map-wide range, ultimate: mass teleport to an own building (nobody has it yet; for the future king)
-- Archmage (Kingdom, keep): `element` (mode: fire / ice / lightning — attack type), `elemental_ward` (aura: −30% damage of the chosen element), `summon_elemental` (elemental of the chosen element for 45 s), `arcane_focus` (aura on mages: faster cooldowns), `meteor_shower` (ultimate: 12 m zone for 6 s, damage and effect by element)
+- `mass_recall` — `active`, `point`, map-wide range, ultimate: mass teleport to an own building (nobody has it yet; for the future emperor)
+- Archmage (Empire, keep): `element` (mode: fire / ice / lightning — attack type), `elemental_ward` (aura: −30% damage of the chosen element), `summon_elemental` (elemental of the chosen element for 45 s), `arcane_focus` (aura on mages: faster cooldowns), `meteor_shower` (ultimate: 12 m zone for 6 s, damage and effect by element)
 
 ---
 

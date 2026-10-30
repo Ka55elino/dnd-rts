@@ -8,17 +8,17 @@ Creatures outside the factions or summoned by them.
 
 | Creature | Who summons it | In game | Lore |
 |---|---|---|---|
-| Fire Elemental | Archmage | fire melee, immune to burning | > ❓ |
-| Ice Elemental | Archmage | ice melee, immune to slow | > ❓ |
-| Storm Elemental | Archmage | lightning ranged attack | > ❓ |
-| Ghosts and skeletons | Alkars | temporary units raised from the fallen | > ❓ |
+| Fire Elemental | Archmage | fire melee, immune to burning | a spell born of primordial energy |
+| Ice Elemental | Archmage | ice melee, immune to slow | a spell born of primordial energy |
+| Storm Elemental | Archmage | lightning ranged attack | a spell born of primordial energy |
+| Ghosts and skeletons | Alkars | temporary units raised from the fallen | a spell born of primordial (necrotic) energy |
 
 ## Tamed beasts
 
 | Creature | Who keeps it | Role | Lore |
 |---|---|---|---|
-| Cave Bear | dwarves of Järngród and Monsarx | draft animal (ore, stone, platforms), mine guard, escort for squads in tight passages | huge beasts adapted to life underground; they live in caves on the outskirts of Järngród and serve families and guilds for decades — see [`geography.md`](geography.md). > ❓ A dwarven combat unit (bear riders)? |
-| Spiders (> ❓ species) | priestesses of Melasarach | rites, guarding sanctuaries | kept in closed caves of Melasarach — see [`geography.md`](geography.md); connection to the spider riders and the Spider Queen from FACTIONS.md — > ❓ |
+| Cave Bear | dwarves of Järngród and Monsarx | draft animal (ore, stone, platforms), mine guard, escort for squads in tight passages | huge beasts adapted to life underground; they live in caves on the outskirts of Järngród and serve families and guilds for decades — see [`geography.md`](geography.md). In battle the dwarves use them as mounts for bear riders (see [`../FACTIONS.md`](../FACTIONS.md) §6). |
+| Spiders | priestesses of Melasarach | rites, guarding sanctuaries | ordinary spiders of different sizes, kept in closed caves of Melasarach — see [`geography.md`](geography.md) |
 
 ## Monsters and neutral camps (later)
 

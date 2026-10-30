@@ -19,9 +19,9 @@ What the sketch shows:
 - **Nimrath Sea** between the northern continent and the southern lands.
 - **South:** the southern coast with Helmishahir, lakes, rivers flowing from oases, and desert beyond.
 
-Unlabeled places (whose they are is still to be decided):
-- > ❓ a lone tower by the eastern ridge (an Azatsich outpost?);
-- > ❓ a sea monster (serpent) in the sea to the northwest.
+Unlabeled places:
+- a lone tower by the eastern ridge — a human outpost, simply a watchtower;
+- the sea serpent in the northwest is decorative and has no meaning in the lore.
 
 ## Regions
 
@@ -40,11 +40,11 @@ One region per people, plus contested lands where battles are fought (that is wh
 
 At the center lies the main square with a statue of an ancient king. Next to it are gardens with fountains, and beyond them the Great Council House. The building is made of pale stone, adorned with marble columns and tapestries depicting sessions of the Council and the deeds of past generations. Assemblies are held in its main hall; the side rooms are given over to archives, the councillors' work and state papers. The Council House is majestic but lacks palatial luxury: it is meant to express the continuity of generations and the unity of the Empire's lands, not the power of one man.
 
-The king has his own manor — a modest ruler's house that serves as his personal residence. It is separate from the Council House: state and political decisions are discussed in the Council, while the final word remains with the monarch.
+The emperor has his own manor — a modest ruler's house that serves as his personal residence. It is separate from the Council House: state and political decisions are discussed in the Council, while the final word remains with the monarch.
 
 Nearby stands the Mages' Guild — a large domed building with four towers dedicated to fire, lightning, water and light. The Tower of Fire is faced with reddish stone, the Tower of Lightning has a pointed top and dark walls, the Tower of Water is built of pale stone with blue veins, and the Tower of Light stands out for its whiteness and clean lines. Under the dome are shared halls for research and the exchange of knowledge.
 
-Next to the Mages' Guild is a cathedral surrounded by flowering gardens. Its pale walls are entwined with plants, and inside are frescoes, stained-glass windows, a fountain and a marble statue of a figure in prayer. It is the spiritual heart of the Paladin Order: here paladins gather to pray, take their vows and seek guidance before dangerous campaigns.
+Next to the Mages' Guild is a cathedral surrounded by flowering gardens. Its pale walls are entwined with plants, and inside are frescoes, stained-glass windows, a fountain and a marble statue of a figure in prayer. It is the spiritual heart of the Holy Order: here paladins gather to pray, take their vows and seek guidance before dangerous campaigns.
 
 Kordkayer's inner ring is wealthy and well kept: here stand the spacious houses of influential families long settled in the capital, prosperous merchants and people whose service or business is tied to the heart of the Empire. Their position is not a separate hereditary class status. The outer ring is more working-class: it holds forges, carpentry workshops, warehouses, the masons' complex and the Builders' Guild with its workshops, tool stores, drafting rooms and places for training apprentices. The military yards are there too — stables, barracks, armories and shooting ranges.
 
@@ -356,26 +356,28 @@ Merilinna's defense rests above all on its location. Approaches from the sea are
 
 Merilinna is not just a settlement on an island, but a city that grew inside an ancient forest and faces the open expanse of the Nimrath Sea. To outsiders it seems quiet and almost defenseless, hidden among trees and mists. But its natural fortifications, hidden harbors and knowledge of the sea make the island a reliable refuge and an important elven stronghold.
 
-### > ❓ Forests of the High Elves
+### Forests of the High Elves
+
+Dense forests that bear the same names as the elven cities.
 
 - **Where:** the capital Eldralinna — in the forest above the Strait, south of Rahupaxstad; the island of Merilinna in the Nimrath Sea; the military citadel Vaelralinna — on the rocky shore of the Strait, west of the southern coast, with the sacred lake.
 - **Sacred trees** ("own land" mechanic, healing — [`../FACTIONS.md`](../FACTIONS.md) §3):
 
 ### Dark Elf Lands — Melasarach, Religious Center
 
-**Melasarach** is the greatest religious center of the dark elves, a vast underground city built deep inside a gigantic natural cavern (on the map: the northeast, by the icy sea, beyond the snowy mountains of Monsarx). The main temple of the Spider Queen stands here, and her faith shapes not only the spiritual life of the drow but the structure of their entire society.
+**Melasarach** is the greatest religious center of the dark elves, a vast underground city built deep inside a gigantic natural cavern (on the map: the northeast, by the icy sea, beyond the snowy mountains of Monsarx). The main temple of the Great Spider stands here, and its faith shapes not only the spiritual life of the drow but the structure of their entire society.
 
 The city fills the space between massive stone walls that rise high toward the cavern vaults. Its buildings grow out of the rock, occupy natural ledges, and are linked by bridges, stairways, and galleries. Deeper in, new levels of the city open up, descending underground and vanishing into the darkness of side passages.
 
 Melasarach has no need of sunlight. It is lit by huge colonies of luminescent fungi growing on the cavern walls, along the roads, and on stone terraces. Their cold bluish, violet, and greenish glow reflects off the dark stone, making it feel as if the whole city lies inside a living underground world.
 
-#### Temple of the Spider Queen
+#### Temple of the Great Spider
 
-At the very center of Melasarach rises the temple of the Spider Queen, the largest and most sacred structure in the city. It is built into a massive rock and climbs in several tiers connected by stairways, bridges, and narrow walkways over deep chasms.
+At the very center of Melasarach rises the temple of the Great Spider, the largest and most sacred structure in the city. It is built into a massive rock and climbs in several tiers connected by stairways, bridges, and narrow walkways over deep chasms.
 
 The temple's architecture resembles a gigantic web. Stone arches spread out from the central sanctuary like a spider's legs, slender bridges span the voids, and carved columns intertwine like strands of web. Deep within the complex lie altars, ritual halls, priestess sanctuaries, and sealed chambers accessible only to the highest servants of the cult.
 
-Above the main sanctuary towers an enormous spider statue carved from black stone. Its silhouette is visible from many districts of the city and serves as a constant reminder of the goddess's power.
+Above the main sanctuary towers an enormous spider statue carved from black stone. Its silhouette is visible from many districts of the city and serves as a constant reminder of the Great Spider's power.
 
 The temple is more than a religious building. Decisions made here can change the fate of entire houses. The high priestesses set religious policy, bless military campaigns, and take part in the struggle for power between the aristocratic families.
 
@@ -413,11 +415,11 @@ Melasarach is not limited to the buildings of the central cavern. Around it lies
 
 #### Power: Matriarchy and the Cult
 
-Here matriarchy is upheld by religious tradition. Women head the noble houses, and the most influential of them hold the highest offices in the cult of the Spider Queen. Priestesses wield not only spiritual authority but political power as well.
+Here matriarchy is upheld by religious tradition. Women head the noble houses, and the most influential of them hold the highest offices in the cult of the Great Spider; at its head stands the high priestess, the Spider Queen. Priestesses wield not only spiritual authority but political power as well.
 
 #### The Atmosphere of Melasarach
 
-Melasarach is at once beautiful and hostile. Strands of web hang from the dark vaults above; fungus gardens shimmer in the distance; bridges stretch over chasms toward black towers. At the heart of the city shines the temple of the Spider Queen, surrounded by the palaces of those who hold the most power.
+Melasarach is at once beautiful and hostile. Strands of web hang from the dark vaults above; fungus gardens shimmer in the distance; bridges stretch over chasms toward black towers. At the heart of the city shines the temple of the Great Spider, surrounded by the palaces of those who hold the most power.
 
 Here every inhabitant's standing is evident from where they live, their clothing, the symbols of their house, and their right to pass through certain gates. Even the architecture is a reminder of the social hierarchy: the higher the owner's status, the closer their house is to the temple and the more space, light, and ornament they are allowed.
 
@@ -445,7 +447,7 @@ The farther from the harbor and the main streets, the dimmer the light. The old 
 
 Aterliman remains a dark elf society: it has noble houses, political intrigue, magic, and a strict social hierarchy. However, power belongs not to religious orders but to a council of aristocratic families.
 
-The city stays neutral, since its wealth depends on trade and independence. It does not seek to spread the faith of the Spider Queen and does not consider religious service a prerequisite for high standing.
+The city stays neutral, since its wealth depends on trade and independence. It does not seek to spread the faith of the Great Spider and does not consider religious service a prerequisite for high standing.
 
 #### Power: Matriarchy Without the Cult
 
@@ -459,14 +461,14 @@ The key difference: Aterliman does not reject matriarchy — it simply does not 
 
 A vast underground port surrounded by black cliffs and multilevel architecture, where thousands of luminescent fungi are reflected in the dark seawater. There is no sunlight here — it remains far beyond the mountain labyrinth.
 
-### > ❓ Other Dark Elf Lands
+### Dark Elf Lands — Overview
 
-- **Where:** Melasarach (northeast) and Aterliman (southeast) are underground cities; > ❓ other drow settlements in the Underdark
+- **Where:** Melasarach (northeast) and Aterliman (southeast) are underground cities; there are no other drow settlements
 - **Nature:** caves, underground lakes and seas, fungus gardens, webs
 
 ### Alkar Lands — Alkaris, City of the Alkars
 
-**Alkaris** is the city of the Alkars (see [`factions/alkars.md`](factions/alkars.md)); on the map it lies in the east, beyond the mountain ridge, among the dark lands. Around it are settlements with red tents (> ❓ orc quarters and camps?).
+**Alkaris** is the city of the Alkars (see [`factions/alkars.md`](factions/alkars.md)); on the map it lies in the east, beyond the mountain ridge, among the dark lands. Around it are settlements with red tents — orc camps without names.
 
 - **Outer belt — fortress.** Massive walls of dark volcanic stone, black metal elements, angular towers, mighty buttresses, and jagged silhouettes. The architecture here is almost devoid of ornament: its purpose is to inspire dread and emphasize that the city is impregnable.
 - **Inner city — rich Gothic.** Behind the fortifications lie palaces, aristocratic residences, squares, and grand public buildings. At the center of the city is based the order of mages led by the Dark Mage; the order keeps the knowledge of how orcs are created. Dark stone is combined with costly finishes, graceful arches, stained glass, metal ornament, and the rich clothing of the inhabitants.
@@ -595,7 +597,7 @@ The forges are housed in tall stone halls with powerful hearths, wide chimneys, 
 
 The workshops specialize in different crafts: some produce weapons and armor, others work stone and make mechanisms, tools, fasteners, and parts for mining machines.
 
-Closer to the mines lie ore stores and sorting rooms. Finished goods are sent to other dwarven cities through underground tunnels, and part of the output is supplied to Kordkayer. Thanks to this, Järngród is not only a source of ore but also one of the main industrial centers of the dwarves.
+Closer to the mines lie ore stores and sorting rooms. Finished goods are sent to other dwarven cities through underground tunnels. The dwarves of Järngród and the Empire have only just found each other, and the first part of the output has started going to Kordkayer. Thanks to this, Järngród is not only a source of ore but also one of the main industrial centers of the dwarves.
 
 #### Council House
 
@@ -604,8 +606,6 @@ The Council House stands in the central part of the city, in a separate monument
 At the center of the building is a round council hall. Along the walls are carved stone seats for representatives of the noble families, masters, and elders. In the middle stands a large table of solid stone, on which maps of the mines, tunnels, and dwarven domains are spread out.
 
 Here decisions are made about resource extraction, the distribution of work, trade, and the defense of the underground routes. Representatives of other dwarven cities also meet here.
-
-Separate rooms are set aside for human envoys. Järngród does not flaunt its diplomatic importance: negotiations take place in a calm, businesslike setting, and merchants who arrive officially may not even know they are near one of the main centers of relations between the dwarves and the Empire.
 
 #### Working Dwarves
 
@@ -655,32 +655,30 @@ In time, individual districts may grow so large that squares, markets, workshops
 
 Skopeskala is less a finished city than a future mountain metropolis that the dwarves are literally carving out of the rock.
 
-### > ❓ Other Dwarven Holdings
+### Dwarven Lands — Overview
 
-- **Where:**
+- **Where:** Monsarx, Järngród and Skopeskala; there are no other dwarven settlements
 - **Tunnels** (tunnel mechanics: [`../FACTIONS.md`](../FACTIONS.md) §6):
 
 ### > ❓ Where Are the Celestials
 
 ### Contested Lands
 
-| Place | Formerly held by | What the fighting is over | Game map |
-|---|---|---|---|
-| Plains | > ❓ | > ❓ | `content/maps/plains` |
+None yet. (`content/maps/plains` is a test map and is not part of the lore.)
 
 ## Notable Places
 
 | Place | Where | Known for |
 |---|---|---|
-| Kordkayer | Central Region of the Empire | two-ring capital at the foot of a mountain; Council House, Mages' Guild, cathedral of the Paladin Order |
+| Kordkayer | Central Region of the Empire | two-ring capital at the foot of a mountain; Council House, Mages' Guild, cathedral of the Holy Order |
 | Morkayer | Central Region of the Empire, river mouth at the Nimrath Sea | the Empire's main port: a river running through the whole city, embankments and bridges, a sea harbor with the war fleet, the Great Lighthouse |
 | Nimrath Sea | between the Empire's northern mainland and the southern lands | sea routes between Morkayer and Helmishahir and to distant lands, the island of Merilinna |
 | Eldralinna | forest above the Strait south of Rahupaxstad, west of the mainland | capital of the high elves: temples of pale stone among ancient trees, houses on tree trunks, a network of bridges in the canopy |
 | Vaelralinna | rocky shore of the Strait in the west of the southern coast, in the forests | military citadel of the high elves, the last outpost on the approaches to their lands: walls in several lines, a citadel on the cliffs, a hidden sacred lake |
 | Merilinna | wooded island in the Nimrath Sea | elven city hidden in an ancient forest: hidden harbors, bridges between treetops, the elves' stronghold on the sea routes |
-| Järngród | in the body of a huge rock in the mountains northwest of Kordkayer | underground dwarven city: great halls on many levels, forges and foundries, Council House (negotiations with the Empire), cave bears |
+| Järngród | in the body of a huge rock in the mountains northwest of Kordkayer | underground dwarven city: great halls on many levels, forges and foundries, Council House, first trade with Kordkayer, cave bears |
 | Skopeskala | eastern ridge on the border of the settled lands | young dwarven city, still under construction: quarries, workshops, residential quarters in several crags linked by tunnels |
-| Melasarach | northeast, in a gigantic cavern beyond the snowy mountains, by the icy sea | religious center of the dark elves: temple of the Spider Queen, palaces of the great houses, fungus gardens, spider caves |
+| Melasarach | northeast, in a gigantic cavern beyond the snowy mountains, by the icy sea | religious center of the dark elves: temple of the Great Spider, palaces of the great houses, fungus gardens, spider caves |
 | Aterliman | southeast, beneath the coastal mountains by the Nimrath Sea | underground port of the dark elves, neutral and commercial: harbor with a passage to the sea, council of noble families |
 | Alkaris | east, beyond the mountain ridge, in the dark lands | city of the Alkars: a fortress of volcanic stone outside, rich Gothic palaces inside |
 | Alkarian Necropolis | northeast, stony lands | a vast necropolis with mausoleums and tombs, watched over by a single warden |

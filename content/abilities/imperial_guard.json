@@ -1,0 +1,14 @@
+{
+  "id": "imperial_guard",
+  "name": "Imperial Guard",
+  "kind": "active",
+  "target": "self",
+  "cooldown": 90,
+  "effects": [
+    {
+      "type": "summon",
+      "horde": "imperial_guards",
+      "limit": true
+    }
+  ]
+}

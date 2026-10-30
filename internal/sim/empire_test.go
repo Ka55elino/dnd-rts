@@ -50,7 +50,7 @@ func TestPaladinRadianceAndSmite(t *testing.T) {
 }
 
 func TestKingOversightSpeedsTraining(t *testing.T) {
-	run := func(withKing bool) int {
+	run := func(withEmperor bool) int {
 		w := newTestWorld(t)
 		keep := w.Buildings[0]
 		for _, h := range w.Hordes { // free the food
@@ -61,8 +61,8 @@ func TestKingOversightSpeedsTraining(t *testing.T) {
 			}
 		}
 		w.Step(nil)
-		if withKing {
-			maxHero(t, w, 0, "king", keep.approach(fixed.Vec2{}, fixed.FromInt(3)))
+		if withEmperor {
+			maxHero(t, w, 0, "emperor", keep.approach(fixed.Vec2{}, fixed.FromInt(3)))
 		}
 		w.Step([]Command{{Player: 0, Kind: CmdTrain, TargetBuilding: keep.ID, Name: "builders"}})
 		for i := 1; i < 20*60; i++ {
@@ -75,13 +75,13 @@ func TestKingOversightSpeedsTraining(t *testing.T) {
 	}
 	plain, fast := run(false), run(true)
 	if plain < 0 || fast < 0 || fast >= plain*85/100 {
-		t.Errorf("training: %d ticks without the king, %d with (want ~30%% faster)", plain, fast)
+		t.Errorf("training: %d ticks without the emperor, %d with (want ~30%% faster)", plain, fast)
 	}
 }
 
 func TestKingInspireAndGuard(t *testing.T) {
 	w := newTestWorld(t)
-	k := maxHero(t, w, 0, "king", openSpot(w, -60, 60))
+	k := maxHero(t, w, 0, "emperor", openSpot(w, -60, 60))
 	near, _ := w.SpawnHorde(0, "swordsmen", k.Pos.Add(fixed.V2i(6, 0)), 0)
 	w.Step([]Command{{Player: 0, Kind: CmdCast, Hordes: []HordeID{k.ID}, Name: "inspire"}})
 	w.Step(nil)
@@ -89,11 +89,11 @@ func TestKingInspireAndGuard(t *testing.T) {
 		t.Errorf("inspire: ally attack speed %v", near.Soldiers[0].mods.attackSpeed)
 	}
 	if !approx(near.Soldiers[0].mods.moveSpeed, fixed.FromFraction(15, 100)) {
-		t.Errorf("royal march: ally move speed %v", near.Soldiers[0].mods.moveSpeed)
+		t.Errorf("imperial march: ally move speed %v", near.Soldiers[0].mods.moveSpeed)
 	}
 	n := len(w.Hordes)
-	w.Step([]Command{{Player: 0, Kind: CmdCast, Hordes: []HordeID{k.ID}, Name: "royal_guard"}})
-	if len(w.Hordes) != n+1 || w.Hordes[n].Def.ID != "royal_guards" || len(w.Hordes[n].Soldiers) != 6 {
-		t.Fatal("no royal guard")
+	w.Step([]Command{{Player: 0, Kind: CmdCast, Hordes: []HordeID{k.ID}, Name: "imperial_guard"}})
+	if len(w.Hordes) != n+1 || w.Hordes[n].Def.ID != "imperial_guards" || len(w.Hordes[n].Soldiers) != 6 {
+		t.Fatal("no imperial guard")
 	}
 }

@@ -1,0 +1,9 @@
+{
+  "id": "imperial_march",
+  "name": "Imperial March",
+  "kind": "aura",
+  "radius": 15,
+  "modifiers": {
+    "moveSpeed": 0.15
+  }
+}

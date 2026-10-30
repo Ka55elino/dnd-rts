@@ -89,7 +89,7 @@ Commands that change the world (`spawn`, `build`, `kill`, `heal`, `hit`, `xp`, `
 - **New pack leader abilities** (frost fan, pack call, beast form): `control enemy` → select the pack leader → `xp 1400`.
 - **Chain lightning and blink:** `spawn lightning_mages`, nearby `spawn raiders 2 enemy`.
 - **Archmage and elements:** `spawn archmage` → select → `xp 1400`; the "Element" button switches fire / ice / lightning (LMB — next, RMB — previous); the elemental summon and meteor shower follow the element.
-- **Paladin and King:** `spawn paladin`, `spawn king` → select → `xp 1400`; the King's oversight speeds up recruitment in nearby buildings.
+- **Paladin and Emperor:** `spawn paladin`, `spawn emperor` → select → `xp 1400`; the Emperor's oversight speeds up recruitment in nearby buildings.
 - **Walls and gates:** click an own gatehouse → "Close the gate" / "Open the gate"; select archers → right-click an own wall (they'll climb the stairs); `spawn raiders 3 enemy` outside by the wall; `hit crush 3000` on the segment under the cursor → breach.
 - **Siege:** `spawn trebuchets`, `spawn ballistas`; targets: `spawn swordsmen 2 enemy` farther away (the trebuchet has a 16 m dead zone), `spawn harpies enemy` for the ballistas; towers — click a tower slot on the wall; tower fire — after `give gold 2000` and research in the forge.
 - **Spear wall vs. wedge:** `spawn spearmen` → turn on "Spear Wall"; `spawn knights enemy` farther away → `control enemy`, turn on "Wedge Formation" and attack the spearmen.

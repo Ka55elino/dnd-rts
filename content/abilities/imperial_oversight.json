@@ -1,0 +1,9 @@
+{
+  "id": "imperial_oversight",
+  "name": "Imperial Oversight",
+  "kind": "aura",
+  "radius": 20,
+  "modifiers": {
+    "workSpeed": 0.3
+  }
+}
