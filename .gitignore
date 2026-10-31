@@ -34,3 +34,10 @@ Thumbs.db
 
 # Unused mobile build caches
 .gradle/
+
+# Blender backups
+*.blend1
+
+# Art sources live outside git (local disk, later the NAS) — see art/source/README.md
+art/source/*
+!art/source/README.md
