@@ -1,24 +1,21 @@
 {
-  "$comment": "What to bake. source is relative to the repo root; output goes to frontend/public/models/<id>/. clips: name -> source clip in the glb, or a procedural generator from clips.mjs (\"@swing\", \"@bow\", \"@die\").",
+  "$comment": "What to bake. source is relative to the repo root; output goes to frontend/public/models/<id>/. clips: name -> source clip in the glb, or a procedural generator from clips.mjs (\"@swing\", \"@bow\", \"@die\", grab3d rig only). footBone: bone that measures the stride (default footL). reverse: play the source clip backwards (unbrace = brace reversed). albedo: optional, default textures/<skin>_albedo.png next to the source.",
   "fps": 15,
   "models": [
     {
       "id": "swordsman",
-      "source": "art/source/grab3d/swordsman.glb",
+      "source": "art/source/empire/units/swordsman/central.glb",
       "teamMaterials": [
-        "hat_primary",
-        "top_primary",
-        "back_primary",
-        "handL_primary",
-        "back_accent"
+        "base_team"
       ],
+      "footBone": "mixamorigLeftFoot",
       "clips": {
         "idle": {
           "from": "idle",
           "loop": true
         },
         "walk": {
-          "from": "walk",
+          "from": "run",
           "loop": true
         },
         "run": {
@@ -26,12 +23,26 @@
           "loop": true
         },
         "attack": {
-          "from": "@swing",
+          "from": "attack",
           "loop": false
         },
         "die": {
-          "from": "@die",
+          "from": "die",
           "loop": false
+        },
+        "brace": {
+          "from": "brace",
+          "loop": false
+        },
+        "unbrace": {
+          "from": "brace",
+          "loop": false,
+          "reverse": true
+        },
+        "walk_brace": {
+          "from": "walk_brace",
+          "loop": true,
+          "reverse": true
         }
       }
     },

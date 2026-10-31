@@ -204,6 +204,93 @@ html, body, #app {
     font-size: 11px;
 }
 
+/* ---------- Model overview (dev) ---------- */
+
+.overview {
+    width: 300px;
+    max-height: calc(100% - 64px);
+    overflow-y: auto;
+}
+
+.overview__select {
+    width: 100%;
+    margin-bottom: 10px;
+    padding: 6px 8px;
+    font: inherit;
+    font-size: 13px;
+    color: var(--fg);
+    background: rgba(10, 10, 12, 0.85);
+    border: 1px solid rgba(201, 164, 92, 0.35);
+}
+
+.overview__label {
+    margin: 10px 0 4px;
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    opacity: 0.6;
+}
+
+.overview__clips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+}
+
+.overview__clips .segmented__btn,
+.overview .segmented__btn {
+    padding: 4px 10px;
+    font-size: 13px;
+}
+
+.overview__clips .segmented__btn {
+    border: 1px solid rgba(201, 164, 92, 0.35);
+}
+
+.overview__none {
+    font-size: 12px;
+    opacity: 0.5;
+}
+
+.overview__time {
+    height: 3px;
+    margin: 8px 0;
+    background: rgba(201, 164, 92, 0.2);
+}
+
+.overview__bar {
+    width: 0;
+    height: 100%;
+    background: var(--accent);
+}
+
+.overview__row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.overview__row .bench-overlay__counts {
+    margin-bottom: 0;
+}
+
+.overview__replay {
+    border: 1px solid rgba(201, 164, 92, 0.35);
+}
+
+.overview__team {
+    width: 30px;
+    height: 22px;
+    background: var(--team);
+}
+
+.overview__team.is-active {
+    background: var(--team);
+    outline: 2px solid var(--accent);
+    outline-offset: -4px;
+}
+
+
 .game-hud {
     position: absolute;
     inset: 0;

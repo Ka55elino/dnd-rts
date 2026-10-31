@@ -95,6 +95,10 @@ type Ability struct {
 
 	// Ultimate: the hero's big ability (UI only; rules are in its numbers).
 	Ultimate bool `json:"ultimate,omitempty"`
+
+	// Stance: a toggle that puts the soldiers in a stance (shield wall, spear wall);
+	// while it is on, the client plays the unit's "brace" clip instead of idle.
+	Stance bool `json:"stance,omitempty"`
 }
 
 // ModeChoice is one choice of a mode ability.

@@ -2,6 +2,7 @@
   "id": "spear_wall",
   "name": "Spear Wall",
   "kind": "toggle",
+  "stance": true,
   "modifiers": {
     "rooted": true,
     "speedDamage": 5,

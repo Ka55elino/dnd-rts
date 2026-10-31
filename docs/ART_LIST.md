@@ -19,7 +19,7 @@ Unit models are counted per skin: each skin is a separate textured model with th
 
 ## Empire
 
-Skins: `central`, `northern`, `western`, `southern`, `eastern`. Sources: `art/source/empire/units/<unit>/<skin>.glb` + `<skin>_albedo.png`; concept art: `docs/lore/images/empire/units/<unit>/`.
+Skins: `central`, `northern`, `western`, `southern`, `eastern`. Sources: `art/source/empire/units/<unit>/` (not in git; layout: [ASSETS.md → Unit source layout](ASSETS.md#unit-source-layout)); concept art: `docs/lore/images/empire/units/<unit>/`.
 
 ### Units
 
@@ -94,7 +94,7 @@ Also in the faction's style: construction scaffolding S / M / L, ruins S / M / L
 
 ## High Elves (Liénari)
 
-Skins: `eldralinna`, `vaelralinna`, `merilinna`. Sources: `art/source/high-elves/units/<unit>/<skin>.glb` + `<skin>_albedo.png`; concept art: `docs/lore/images/high-elves/units/<unit>/`.
+Skins: `eldralinna`, `vaelralinna`, `merilinna`. Sources: `art/source/high-elves/units/<unit>/` (not in git; layout: [ASSETS.md → Unit source layout](ASSETS.md#unit-source-layout)); concept art: `docs/lore/images/high-elves/units/<unit>/`.
 
 ### Units
 
@@ -162,7 +162,7 @@ Also in the faction's style: construction scaffolding S / M / L, ruins S / M / L
 
 ## Dark Elves (Shaessari)
 
-Skins: `melasarach`, `aterliman`. Sources: `art/source/dark-elves/units/<unit>/<skin>.glb` + `<skin>_albedo.png`; concept art: `docs/lore/images/dark-elves/units/<unit>/`.
+Skins: `melasarach`, `aterliman`. Sources: `art/source/dark-elves/units/<unit>/` (not in git; layout: [ASSETS.md → Unit source layout](ASSETS.md#unit-source-layout)); concept art: `docs/lore/images/dark-elves/units/<unit>/`.
 
 ### Units
 
@@ -233,7 +233,7 @@ Also in the faction's style: construction scaffolding S / M / L, ruins S / M / L
 
 ## Alkars
 
-Skins: `alkaris`. Sources: `art/source/alkars/units/<unit>/<skin>.glb` + `<skin>_albedo.png`; concept art: `docs/lore/images/alkars/units/<unit>/`.
+Skins: `alkaris`. Sources: `art/source/alkars/units/<unit>/` (not in git; layout: [ASSETS.md → Unit source layout](ASSETS.md#unit-source-layout)); concept art: `docs/lore/images/alkars/units/<unit>/`.
 
 ### Units
 
@@ -309,7 +309,7 @@ Also in the faction's style: construction scaffolding S / M / L, ruins S / M / L
 
 ## Dwarves (Dragori)
 
-Skins: `monsarx`, `jarngrod`, `skopeskala`. Sources: `art/source/dwarves/units/<unit>/<skin>.glb` + `<skin>_albedo.png`; concept art: `docs/lore/images/dwarves/units/<unit>/`.
+Skins: `monsarx`, `jarngrod`, `skopeskala`. Sources: `art/source/dwarves/units/<unit>/` (not in git; layout: [ASSETS.md → Unit source layout](ASSETS.md#unit-source-layout)); concept art: `docs/lore/images/dwarves/units/<unit>/`.
 
 ### Units
 

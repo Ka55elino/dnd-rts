@@ -168,6 +168,8 @@ A versatile foot soldier with sword and shield. Holds positions, protects archer
 
 **Appearance:** mail or lamellar armor, a helmet, a sword and a shield with imperial symbols.
 
+![Swordsman — central skin, concept](../images/empire/units/swordsman/central.png)
+
 <!-- References for the artist (Pinterest):
 https://it.pinterest.com/pin/664703226287990825/ — central
 https://it.pinterest.com/pin/751538256562797775/ — central

@@ -10,14 +10,16 @@ art/source/...glb ──► tools/vatbake  (animated units) ──► frontend/p
 ```
 
 - The artist delivers **source files only** (`.glb` + textures). LODs, VAT textures and compression are produced by the tools; do not deliver LODs by hand.
+- **`art/source/` is not in git** (only its README is): sources live on the local disk, later on the NAS — what is there and where: [`art/source/README.md`](../art/source/README.md). The baked output in `frontend/public/models/` **is committed**: the game builds and runs from a clone without the sources; after changing a source, re-bake and commit the output.
 - After baking, the tool prints the triangle and vertex counts of every LOD and the VAT size — this is how a delivery is checked against the budgets below.
+- To look at a baked model: main menu → **Model Overview** (every unit, machine, building and baked model; play any clip, switch LOD and team color). Both bake tools keep `frontend/public/models/index.json` (the list it reads) up to date.
 - The renderer draws units with instancing: up to **~100,000 soldiers** in a scene. Every rule for units follows from this number.
 
 ### Folder layout and names
 
 | What | Where |
 |---|---|
-| Units (all skins) | `art/source/<faction>/units/<unit>/<skin>.glb` + `<skin>_albedo.png` |
+| Units (all skins) | `art/source/<faction>/units/<unit>/` — see [Unit source layout](#unit-source-layout) |
 | Buildings | `art/source/<faction>/buildings/<building>.glb` + textures |
 | Shared / neutral models | `art/source/shared/<group>/<name>.glb` (outposts, environment, projectiles) |
 | Terrain textures | `art/source/terrain/<material>_albedo.png`, `_normal.png` |
@@ -26,6 +28,36 @@ art/source/...glb ──► tools/vatbake  (animated units) ──► frontend/p
 | Concept art | `docs/lore/images/<faction>/units/<unit>/<skin>.png` (same folder names as the models) |
 
 Factions: `empire`, `high-elves`, `dark-elves`, `alkars`, `dwarves`. Unit and building ids: snake_case, as in [`ART_LIST.md`](ART_LIST.md) (for implemented content they match `content/`). Node, material and file names: Latin letters, digits and `_` only.
+
+### Unit source layout
+
+Every animated unit has one folder; the first one done this way is `art/source/empire/units/swordsman/`.
+
+```
+art/source/<faction>/units/<unit>/
+├── highpoly/
+│   ├── <skin>.glb            detailed model (sculpt or generated): the bake source, never shipped
+│   └── <skin>_posed.glb      optional: the high-poly moved into the low-poly's pose, if they differ
+├── lowpoly/
+│   └── <skin>.blend          game mesh + UVs + skin weights; the rig is LINKED from ../rig/rig.blend
+├── rig/
+│   └── rig.blend             the skeleton, shared by every skin of the unit (one file, one armature)
+├── animations/
+│   ├── animations.blend      every clip as an action (fake user); animated on a library override
+│   │                         of lowpoly/<base skin>.blend, so the mesh is visible while animating
+│   └── source/               references and imports (mocap, Mixamo .fbx) — not read by the tools
+├── textures/
+│   └── <skin>_albedo.png     albedo, alpha = team mask (see Textures → Units)
+└── <skin>.glb                EXPORT: written by tools/blender/export_unit.py, read by tools/vatbake
+```
+
+Rules:
+- **Edit where the data lives.** Bones → `rig/rig.blend`; mesh, UVs, weights → `lowpoly/<skin>.blend`; clips → `animations/animations.blend`. Linking makes every change show up in the other files on reload. Never make the linked rig local inside a lowpoly or animation file.
+- **Action names are the clip names** in `tools/vatbake/models.json` (`idle`, `walk`, `run`, `attack`, `die`, `brace`, `walk_brace`, …).
+- **A new skin** = a new `lowpoly/<skin>.blend` (link the rig from `../rig/rig.blend`), `textures/<skin>_albedo.png`, export to `<skin>.glb`, add an entry to `models.json`. The rig and the animations are reused as they are.
+- **Changing the skeleton** after animation has started breaks every clip of every skin: settle `rig/rig.blend` first.
+- **Export:** `blender -b art/source/<faction>/units/<unit>/lowpoly/<skin>.blend -P tools/blender/export_unit.py` → `<skin>.glb`, then `cd tools/vatbake && npm run bake -- <id>`. `vatbake` finds `textures/<skin>_albedo.png` by itself.
+- Backups and intermediate files (`*.blend1`, `*_old.blend`, test renders) are not kept in the folder.
 
 ## 2. Common rules for all 3D models
 
@@ -84,7 +116,8 @@ Frame rate 15 fps. Total length of all clips ≤ 12 s per model (≈ 180 frames)
 | `die` | no | 1–1.5 s | everyone |
 | `cast` | no | ~1 s | mages, priests, healers, acolytes, heroes |
 | `work` | yes | ~1 s | workers: construction, repair |
-| `brace` | yes | ~1 s | stances: shield wall, spear wall |
+| `walk_brace` | yes | ~1 s | stances: moving with the shield up (optional; without it the unit uses `walk`) |
+| `brace` | no — plays once, then holds its last pose | ~0.5–1 s | stances: shield wall, spear wall (abilities with `"stance": true`); played while the stance is on and the soldier stands; when it is switched off, `vatbake` bakes `unbrace` = `brace` reversed (`"reverse": true` in `models.json`) |
 
 Walk and run cycles are in place (no root motion); feet must not slide visibly at the unit's speed. If a clip is missing, `vatbake` substitutes a procedural one — fine only for placeholders.
 
@@ -151,7 +184,7 @@ Machines also need a wreck model (`<id>_wreck`, ≤ 30% of the machine's budget)
 
 ### Units
 
-> ❓ **Not decided yet.** The goal: good-looking textures while keeping ~100,000 units on screen. The current renderer has no textures on units: material colors are baked into vertex colors. The recommended option below needs engine work (`vatbake` and the unit shader) before textured units can be shown.
+> ✅ **Option B is implemented.** If `<skin>_albedo.png` lies next to the unit's `.glb`, `vatbake` bakes the UVs and the texture (`albedo.bin`, raw RGBA8) and averages the far-LOD vertex colors from it; LOD0/LOD1 read the texture (alpha = team mask), LOD2 uses vertex colors only. Units without an albedo keep flat material colors. Each unit type has its own draw call, so the albedo is simply a uniform of its material (no texture array needed yet). First textured unit: the Empire swordsman (`central`).
 
 | Option | Look | Cost at 100k units | Engine work |
 |---|---|---|---|

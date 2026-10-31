@@ -87,6 +87,16 @@ func (h *Horde) AbilityStates() []AbilityState {
 	return out
 }
 
+// InStance reports whether a stance toggle (shield wall, spear wall) is on.
+func (h *Horde) InStance() bool {
+	for i, a := range h.abilities {
+		if a.Stance && i < len(h.toggled) && h.toggled[i] {
+			return true
+		}
+	}
+	return false
+}
+
 // caster is the soldier abilities come from (the hero / the first soldier).
 func (h *Horde) caster() *Soldier {
 	if len(h.Soldiers) == 0 {

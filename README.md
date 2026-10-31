@@ -122,7 +122,7 @@ go run ./tools/gentrig > internal/fixed/trig_tables.go
 3. Point the content at the model: the `model` field in `content/units/*.json` or `content/buildings/*.json`.
 4. Check the budgets in the bake log and the look in the game.
 
-What has to be made: [`docs/ART_LIST.md`](docs/ART_LIST.md). Licenses of the current placeholders: [`art/README.md`](art/README.md).
+What has to be made: [`docs/ART_LIST.md`](docs/ART_LIST.md). Art sources are not in git; what they are, where they live and the licenses of the current placeholders: [`art/source/README.md`](art/source/README.md).
 
 ## Project layout
 

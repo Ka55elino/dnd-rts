@@ -156,7 +156,7 @@ export interface HordeSnap {
     /** Hero level 1..5, 0 = not a hero. */
     level: number;
     xp: number;
-    /** HORDE_TRANSFORMED | HORDE_SUMMONED. */
+    /** HORDE_TRANSFORMED | HORDE_SUMMONED | HORDE_STANCE. */
     flags: number;
     /** Form size relative to the base unit (1 = normal). */
     scale: number;
@@ -165,6 +165,8 @@ export interface HordeSnap {
 /** HordeSnap.flags */
 export const HORDE_TRANSFORMED = 1;
 export const HORDE_SUMMONED = 2;
+/** A stance toggle (shield wall, spear wall) is on: soldiers play their "brace" clip. */
+export const HORDE_STANCE = 4;
 
 /** A unique horde of the local player: on the field or waiting for revival. */
 export interface HeroSnap {

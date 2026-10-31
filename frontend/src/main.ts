@@ -6,6 +6,7 @@ import { createGameScreen } from "./app/screens/gameScreen";
 import { createEditorScreen } from "./app/screens/editorScreen";
 import { createOptionsScreen } from "./app/screens/optionsScreen";
 import { createBenchmarkScreen } from "./app/screens/benchmarkScreen";
+import { createModelOverviewScreen } from "./app/screens/modelOverviewScreen";
 
 // Esc belongs to the game. Without preventDefault the webview passes the unhandled
 // key up to the native window, and macOS uses it to leave fullscreen.
@@ -32,6 +33,7 @@ const showMenu = (): void =>
             onEditor: () => screens.show(() => createEditorScreen(showMenu)),
             onOptions: () => screens.show(() => createOptionsScreen(showMenu)),
             onBenchmark: () => screens.show(() => createBenchmarkScreen(showMenu)),
+            onModelOverview: () => screens.show(() => createModelOverviewScreen(showMenu)),
         }),
     );
 

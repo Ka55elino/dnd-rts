@@ -6,6 +6,7 @@ export interface MainMenuActions {
     onEditor(): void;
     onOptions(): void;
     onBenchmark(): void;
+    onModelOverview(): void;
 }
 
 export function createMainMenu(actions: MainMenuActions): Screen {
@@ -21,6 +22,7 @@ export function createMainMenu(actions: MainMenuActions): Screen {
                     <button class="menu-btn" data-action="game">Game</button>
                     <button class="menu-btn" data-action="editor">Editor</button>
                     <button class="menu-btn" data-action="options">Options</button>
+                    <button class="menu-btn menu-btn--dev" data-action="models">Model Overview</button>
                     <button class="menu-btn menu-btn--dev" data-action="benchmark">Benchmark</button>
                     <button class="menu-btn" data-action="exit">Exit</button>
                 </nav>
@@ -40,6 +42,9 @@ export function createMainMenu(actions: MainMenuActions): Screen {
                         break;
                     case "benchmark":
                         actions.onBenchmark();
+                        break;
+                    case "models":
+                        actions.onModelOverview();
                         break;
                     case "exit":
                         void Application.Quit();

@@ -465,5 +465,8 @@ func hordeFlags(h *sim.Horde) uint8 {
 	if h.Summoned() {
 		f |= protocol.HordeSummoned
 	}
+	if h.InStance() {
+		f |= protocol.HordeStance
+	}
 	return f
 }

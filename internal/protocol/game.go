@@ -73,7 +73,7 @@ const (
 //	  u32  hp        sum of soldier health (rounded down)
 //	  u32  maxHp     full-strength health (size * unit health)
 //	  u8   level     hero level 1..5, 0 = not a hero
-//	  u8   flags     bit 0: transformed; bit 1: summoned
+//	  u8   flags     bit 0: transformed; bit 1: summoned; bit 2: in a stance (shield / spear wall)
 //	  u16  scale     form size relative to the base unit, ×100 (100 = normal)
 //	  u32  xp        hero experience
 //	soldiers (soldierCount * 24 bytes)
@@ -170,7 +170,7 @@ type HordeState struct {
 	X, Z      float32
 	HP, MaxHP uint32
 	Level     uint8
-	Flags     uint8  // HordeTransformed | HordeSummoned
+	Flags     uint8  // HordeTransformed | HordeSummoned | HordeStance
 	Scale     uint16 // ×100
 	XP        uint32
 }
@@ -179,6 +179,7 @@ type HordeState struct {
 const (
 	HordeTransformed = 1 << 0
 	HordeSummoned    = 1 << 1
+	HordeStance      = 1 << 2 // a stance toggle is on: soldiers play their "brace" clip
 )
 
 // Event kinds.

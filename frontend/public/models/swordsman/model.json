@@ -1,77 +1,104 @@
 {
   "version": 1,
   "fps": 15,
-  "vertexCount": 3323,
-  "frames": 81,
+  "vertexCount": 1319,
+  "frames": 156,
   "texture": {
     "width": 2048,
-    "height": 132,
+    "height": 101,
     "format": "rgba16f"
   },
   "clips": {
     "idle": {
       "start": 0,
-      "frames": 30,
+      "frames": 38,
       "loop": true,
-      "duration": 2
+      "duration": 2.567
     },
     "walk": {
-      "start": 30,
-      "frames": 15,
+      "start": 38,
+      "frames": 11,
       "loop": true,
-      "duration": 1,
-      "groundSpeed": 0.912
+      "duration": 0.733,
+      "groundSpeed": 2.732
     },
     "run": {
-      "start": 45,
-      "frames": 10,
+      "start": 49,
+      "frames": 11,
       "loop": true,
-      "duration": 0.667,
-      "groundSpeed": 1.97
+      "duration": 0.733,
+      "groundSpeed": 2.732
     },
     "attack": {
-      "start": 55,
+      "start": 60,
+      "frames": 24,
+      "loop": false,
+      "duration": 1.533
+    },
+    "die": {
+      "start": 84,
+      "frames": 32,
+      "loop": false,
+      "duration": 2.067
+    },
+    "brace": {
+      "start": 116,
       "frames": 10,
       "loop": false,
       "duration": 0.6
     },
-    "die": {
-      "start": 65,
-      "frames": 16,
+    "unbrace": {
+      "start": 126,
+      "frames": 10,
       "loop": false,
-      "duration": 1
+      "duration": 0.6
+    },
+    "walk_brace": {
+      "start": 136,
+      "frames": 20,
+      "loop": true,
+      "duration": 1.333,
+      "groundSpeed": 0.999
     }
   },
   "bounds": {
     "min": [
-      -1.062,
-      -0.203,
-      -0.926
+      -1.324,
+      -0.399,
+      -0.786
     ],
     "max": [
-      0.739,
-      2.156,
-      0.969
+      1.414,
+      2.126,
+      2.044
     ]
   },
   "geometry": {
     "lod0": {
       "offset": 0,
-      "count": 17754
+      "count": 3396
     },
     "lod1": {
-      "offset": 71016,
-      "count": 7062
+      "offset": 13584,
+      "count": 1353
     },
     "lod2": {
-      "offset": 99264,
-      "count": 1773
+      "offset": 18996,
+      "count": 825
     },
     "colors": {
-      "offset": 106356
+      "offset": 22296
     },
     "positions": {
-      "offset": 119648
+      "offset": 27572
+    },
+    "uvs": {
+      "offset": 43400
     }
+  },
+  "albedo": {
+    "file": "albedo.bin",
+    "width": 512,
+    "height": 512
   }
 }

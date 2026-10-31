@@ -18,6 +18,7 @@ import { Logger, NodeIO } from "@gltf-transform/core";
 import { ALL_EXTENSIONS } from "@gltf-transform/extensions";
 import { dedup, flatten, join, prune, simplify, weld, getBounds } from "@gltf-transform/functions";
 import { MeshoptSimplifier } from "meshoptimizer";
+import { updateModelsIndex } from "../models-index.mjs";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const repo = path.resolve(here, "../..");
@@ -31,6 +32,7 @@ for (const model of config.models) {
   if (only && model.id !== only) continue;
   await bakeModel(model);
 }
+updateModelsIndex(repo, "static", config.models.map((m) => m.id));
 
 async function bakeModel(model) {
   const out = path.join(repo, "frontend/public/models", model.id);

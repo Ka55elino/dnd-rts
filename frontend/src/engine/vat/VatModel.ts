@@ -26,21 +26,34 @@ interface VatMeta {
         lod2?: { offset: number; count: number };
         colors: { offset: number };
         positions: { offset: number };
+        uvs?: { offset: number }; // textured models: 2 floats per vertex
     };
+    /** Textured models: raw RGBA8 albedo (rows top to bottom), alpha = team mask. */
+    albedo?: { file: string; width: number; height: number };
 }
 
 /**
  * A character baked by tools/vatbake: one merged mesh (vertex colors + team
  * mask) and a texture holding every vertex position for every animation frame.
+ * Textured models also carry UVs and an albedo texture (alpha = team mask); the
+ * vertex colors are then averaged from it and used only by the far LOD.
  */
 export class VatModel {
     readonly geometry: THREE.BufferGeometry;
     readonly texture: THREE.DataTexture;
+    /** Albedo (sRGB, mipmapped), or null for vertex-colored models. */
+    readonly albedo: THREE.DataTexture | null;
     /** Index buffers per level of detail (0 = full). Missing levels fall back to the previous one. */
     readonly lodIndex: THREE.BufferAttribute[];
     readonly clips: Record<string, VatClip>;
 
-    private constructor(readonly id: string, readonly meta: VatMeta, geometry: ArrayBuffer, vat: ArrayBuffer) {
+    private constructor(
+        readonly id: string,
+        readonly meta: VatMeta,
+        geometry: ArrayBuffer,
+        vat: ArrayBuffer,
+        albedo: ArrayBuffer | null,
+    ) {
         this.clips = meta.clips;
         const g = meta.geometry;
         const V = meta.vertexCount;
@@ -56,6 +69,7 @@ export class VatModel {
         const rgba = new THREE.InterleavedBuffer(new Uint8Array(geometry, g.colors.offset, V * 4), 4);
         geo.setAttribute("color", new THREE.InterleavedBufferAttribute(rgba, 3, 0, true));
         geo.setAttribute("teamMask", new THREE.InterleavedBufferAttribute(rgba, 1, 3, true));
+        if (g.uvs) geo.setAttribute("uv", new THREE.BufferAttribute(new Float32Array(geometry, g.uvs.offset, V * 2), 2));
         const { min, max } = meta.bounds;
         geo.boundingBox = new THREE.Box3(new THREE.Vector3(...min), new THREE.Vector3(...max));
         geo.boundingSphere = geo.boundingBox.getBoundingSphere(new THREE.Sphere());
@@ -67,6 +81,24 @@ export class VatModel {
         this.texture.magFilter = THREE.NearestFilter;
         this.texture.generateMipmaps = false;
         this.texture.needsUpdate = true;
+
+        const a = meta.albedo;
+        if (a && albedo && g.uvs) {
+            // glTF UVs have v = 0 at the top row, which is the first row of the data: no flip.
+            const tex = new THREE.DataTexture(new Uint8Array(albedo), a.width, a.height, THREE.RGBAFormat, THREE.UnsignedByteType);
+            tex.colorSpace = THREE.SRGBColorSpace;
+            tex.flipY = false;
+            tex.premultiplyAlpha = false; // alpha is the team mask, not coverage
+            tex.wrapS = tex.wrapT = THREE.ClampToEdgeWrapping;
+            tex.magFilter = THREE.LinearFilter;
+            tex.minFilter = THREE.LinearMipmapLinearFilter;
+            tex.generateMipmaps = true;
+            tex.anisotropy = 4;
+            tex.needsUpdate = true;
+            this.albedo = tex;
+        } else {
+            this.albedo = null;
+        }
     }
 
     /** Loads frontend/public/models/<id>/. */
@@ -78,7 +110,10 @@ export class VatModel {
             fetch(`${base}/vat.bin`).then((r) => checked(r, id).arrayBuffer()),
         ]);
         if (meta.version !== 1) throw new Error(`model ${id}: unsupported version ${meta.version}`);
-        return new VatModel(id, meta, geometry, vat);
+        const albedo = meta.albedo
+            ? await fetch(`${base}/${meta.albedo.file}`).then((r) => checked(r, id).arrayBuffer())
+            : null;
+        return new VatModel(id, meta, geometry, vat, albedo);
     }
 
     clip(name: string): VatClip | undefined {
@@ -88,6 +123,7 @@ export class VatModel {
     dispose(): void {
         this.geometry.dispose();
         this.texture.dispose();
+        this.albedo?.dispose();
     }
 }
 
@@ -129,7 +165,8 @@ export class VatRenderer {
         geometry.setAttribute("aAnimStart", this.animStart);
         geometry.setAttribute("aTeam", this.team);
 
-        const { material, uniforms } = createVatMaterial(model);
+        // The far LOD keeps vertex colors (averaged from the albedo by vatbake): no texture reads.
+        const { material, uniforms } = createVatMaterial(model, model.albedo !== null && lod < 2);
         this.uniforms = uniforms;
         this.mesh = new THREE.InstancedMesh(geometry, material, capacity);
         this.mesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
@@ -208,16 +245,20 @@ export class VatRenderer {
 
 /** Lambert material whose vertex positions come from the VAT. Flat shading
  *  (normals from screen-space derivatives) matches the low-poly style and
- *  means no normals need to be baked. */
-function createVatMaterial(model: VatModel) {
+ *  means no normals need to be baked. Textured: the color comes from the albedo
+ *  and its alpha is the team mask; otherwise from the vertex colors. */
+function createVatMaterial(model: VatModel, textured: boolean) {
     const uniforms = {
         uTime: { value: 0 },
         vatTex: { value: model.texture },
         vatWidth: { value: model.meta.texture.width },
         vatVerts: { value: model.meta.vertexCount },
     };
-    const material = new THREE.MeshLambertMaterial({ vertexColors: true, flatShading: true });
+    const material = textured
+        ? new THREE.MeshLambertMaterial({ map: model.albedo, flatShading: true })
+        : new THREE.MeshLambertMaterial({ vertexColors: true, flatShading: true });
     material.onBeforeCompile = (shader) => {
+        if (textured) patchTextured(shader);
         Object.assign(shader.uniforms, uniforms);
         shader.vertexShader = shader.vertexShader
             .replace(
@@ -254,6 +295,25 @@ function createVatMaterial(model: VatModel) {
                 vColor = vec4(tinted, 1.0); // vColor is a vec4 in three r18x`,
             );
     };
-    material.customProgramCacheKey = () => `vat-${model.id}`;
+    material.customProgramCacheKey = () => `vat-${model.id}-${textured ? "albedo" : "colors"}`;
     return { material, uniforms };
+}
+
+/** Textured variant: pass the team color to the fragment shader and tint the
+ *  albedo by its alpha (team mask). Runs before the common VAT patch, so the
+ *  vertex-color tint below never sees <color_vertex>. */
+function patchTextured(shader: THREE.WebGLProgramParametersWithUniforms): void {
+    shader.vertexShader = shader.vertexShader
+        .replace("#include <common>", "#include <common>\nvarying vec3 vTeamColor;")
+        .replace("#include <color_vertex>", "vTeamColor = aTeam;");
+    shader.fragmentShader = shader.fragmentShader
+        .replace("#include <common>", "#include <common>\nvarying vec3 vTeamColor;")
+        .replace(
+            "#include <map_fragment>",
+            /* glsl */ `
+            vec4 albedo = texture2D(map, vMapUv); // linear (sRGB texture)
+            // Same tint as the vertex-color path, which works on sRGB-encoded values.
+            float lum = dot(pow(albedo.rgb, vec3(1.0 / 2.2)), vec3(0.299, 0.587, 0.114));
+            diffuseColor.rgb *= mix(albedo.rgb, vTeamColor * (0.55 + 0.6 * lum), albedo.a);`,
+        );
 }

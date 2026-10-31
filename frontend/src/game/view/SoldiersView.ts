@@ -7,6 +7,7 @@ import {
     SoldierAttacking,
     SoldierKnocked,
     SoldierMoving,
+    HORDE_STANCE,
     type GameSnapshot,
     type HordeSnap,
 } from "../../net/protocol";
@@ -33,7 +34,11 @@ const CLIP_IDLE = 0;
 const CLIP_WALK = 1;
 const CLIP_RUN = 2;
 const CLIP_ATTACK = 3;
-const CLIP_NAMES = ["idle", "walk", "run", "attack"];
+const CLIP_BRACE = 4; // stance (shield wall): plays once, then holds its last pose
+const CLIP_UNBRACE = 5; // leaving the stance: brace backwards, then idle
+const CLIP_WALK_BRACE = 6; // moving in the stance, shield up
+const WALK_BRACE_MAX_RATE = 1.6;
+const CLIP_NAMES = ["idle", "walk", "run", "attack", "brace", "unbrace", "walk_brace"];
 
 export interface HordeTypeInfo {
     name: string;
@@ -219,6 +224,9 @@ export class SoldiersView {
             }
             const clips = CLIP_NAMES.map((n) => model.clip(n));
             const rates = clips.map((c) => (c?.groundSpeed ? t.speed / c.groundSpeed : 1));
+            // The stance slows the horde (shield wall: moveSpeed -40%) but the client only knows
+            // the base speed; cap the shield-up walk so it doesn't play comically fast.
+            rates[CLIP_WALK_BRACE] = Math.min(rates[CLIP_WALK_BRACE], WALK_BRACE_MAX_RATE);
             return { vat, clips, rates, die: model.clip("die") };
         });
 
@@ -283,7 +291,7 @@ export class SoldiersView {
             const animated = f.state[i] === SoldierAttacking || f.state[i] === SoldierKnocked;
             f.swingStart[i] = matched && animated && old.state[p] === f.state[i] ? old.swingStart[p] : now;
 
-            this.chooseClip(f, i, matched ? old : null, p, now);
+            this.chooseClip(f, i, matched ? old : null, p, now, ((h?.flags ?? 0) & HORDE_STANCE) !== 0);
 
             if (matched) {
                 // Interpolate from where it was drawn in the previous snapshot.
@@ -310,8 +318,9 @@ export class SoldiersView {
     }
 
     /** VAT units: picks the animation clip from the simulation state, letting an
-     *  attack clip play to the end even after the short attack state is over. */
-    private chooseClip(f: Frame, i: number, old: Frame | null, p: number, now: number): void {
+     *  attack clip play to the end even after the short attack state is over.
+     *  stance: the horde's shield / spear wall is on — standing soldiers brace. */
+    private chooseClip(f: Frame, i: number, old: Frame | null, p: number, now: number, stance: boolean): void {
         const k = this.kinds[f.kind[i]];
         if (!k?.vat) return;
         const prevClip = old ? old.clip[p] : -1;
@@ -326,8 +335,14 @@ export class SoldiersView {
             f.clip[i] = clip;
             f.clipStart[i] = now;
             return;
+        } else if (f.state[i] === SoldierMoving && stance && k.clips[CLIP_WALK_BRACE]) {
+            clip = CLIP_WALK_BRACE;
         } else if (f.state[i] === SoldierMoving && k.clips[CLIP_WALK]) {
             clip = k.clips[CLIP_RUN] && k.rates[CLIP_WALK] > RUN_THRESHOLD ? CLIP_RUN : CLIP_WALK;
+        } else if (stance && k.clips[CLIP_BRACE]) {
+            clip = CLIP_BRACE;
+        } else if (k.clips[CLIP_UNBRACE] && (prevClip === CLIP_BRACE || (prevClip === CLIP_UNBRACE && now - prevStart < k.clips[CLIP_UNBRACE].duration * 1000))) {
+            clip = CLIP_UNBRACE; // stance switched off: lower the shield, then idle
         } else {
             clip = CLIP_IDLE;
         }
@@ -335,9 +350,13 @@ export class SoldiersView {
         f.clip[i] = clip;
         if (clip === prevClip) {
             f.clipStart[i] = prevStart;
+        } else if (clip === CLIP_BRACE && prevClip === CLIP_WALK_BRACE) {
+            // Stopped in the stance: the shield is already up, hold the brace's last pose.
+            f.clipStart[i] = now - k.clips[CLIP_BRACE]!.duration * 1000;
         } else {
-            // Desynchronise loops so a horde doesn't move in lockstep.
-            const phase = clip === CLIP_ATTACK ? 0 : ((f.ids[i] * 0.618) % 1) * 1000;
+            // Desynchronise loops so a horde doesn't move in lockstep; one-shot clips start at the beginning.
+            const oneShot = clip === CLIP_ATTACK || clip === CLIP_BRACE || clip === CLIP_UNBRACE;
+            const phase = oneShot ? 0 : ((f.ids[i] * 0.618) % 1) * 1000;
             f.clipStart[i] = now - phase;
         }
     }

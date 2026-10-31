@@ -161,7 +161,7 @@ The current state is in `ARCHITECTURE.md`, "Render optimizations". What remains:
 
 ### Art and assets for the HUD and game
 
-Full list of models, textures and icons — [`ART_LIST.md`](ART_LIST.md); technical requirements (polygon and vertex budgets, clips, textures, node names) — [`ASSETS.md`](ASSETS.md). The code currently uses the idle / walk / run / attack / die clips; `cast`, `work`, `brace` and PNG icons by id are hooked up when the art appears.
+Full list of models, textures and icons — [`ART_LIST.md`](ART_LIST.md); technical requirements (polygon and vertex budgets, clips, textures, node names) — [`ASSETS.md`](ASSETS.md). The code currently uses the idle / walk / run / attack / die clips and `brace` (stance toggles); `cast`, `work` and PNG icons by id are hooked up when the art appears.
 
 Right now everything is drawn in code (CSS frames, SVG icons). Replace as assets appear (CC0, generated or our own):
 
