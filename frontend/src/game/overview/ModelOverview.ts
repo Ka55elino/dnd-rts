@@ -42,8 +42,8 @@ const GROUNDS: { id: string; label: string; base?: number; speck?: [number, numb
 /**
  * Dev screen: pick any unit / building / machine (or any baked model), look at it
  * from all sides and play its animation clips: pause, scrub, step frame by frame, or show
- * a strip of poses side by side. Models built by tools/modelc reload automatically after
- * a rebuild (`modelc watch <id>`), keeping the camera, clip and time.
+ * a strip of poses side by side. A model whose model.json carries a "build" stamp reloads
+ * automatically when the stamp changes (a rebuild), keeping the camera, clip and time.
  */
 export class ModelOverview {
     private ctx: RenderContext | null = null;
@@ -175,7 +175,7 @@ export class ModelOverview {
 
     // ---------- hot reload ----------
 
-    /** Reloads the selected model when tools/modelc rebuilt it (the "build" stamp in model.json changed). */
+    /** Reloads the selected model when it was rebuilt (the "build" stamp in model.json changed). */
     private async poll(): Promise<void> {
         const model = this.vat?.model;
         if (!model || this.reloading || !model.meta.build) return;
@@ -474,7 +474,7 @@ export class ModelOverview {
             </div>
             <div class="overview__label">Shading</div>
             <div class="bench-overlay__counts overview__wrap">
-                <button class="segmented__btn" data-smooth="1" title="baked normals + specular (modelc models)">Smooth</button>
+                <button class="segmented__btn" data-smooth="1" title="baked normals + specular (models that have them)">Smooth</button>
                 <button class="segmented__btn" data-smooth="0" title="flat low-poly faces">Flat</button>
                 <button class="segmented__btn" data-shadows title="sun shadows">Shadows</button>
             </div>

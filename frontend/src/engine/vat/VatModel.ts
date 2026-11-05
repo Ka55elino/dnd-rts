@@ -30,11 +30,11 @@ export interface VatMeta {
     };
     /** Textured models: raw RGBA8 albedo (rows top to bottom), alpha = team mask. */
     albedo?: { file: string; width: number; height: number };
-    /** tools/modelc: build time; Model Overview reloads the model when it changes. */
+    /** Optional build time; Model Overview reloads the model when it changes. */
     build?: string;
-    /** tools/modelc: per-frame vertex normals, same layout as the VAT (RGBA8, n * 0.5 + 0.5) -> smooth shading. */
+    /** Optional per-frame vertex normals, same layout as the VAT (RGBA8, n * 0.5 + 0.5) -> smooth shading. */
     normals?: { file: string; format: "rgba8" };
-    /** tools/modelc: material map over the UV atlas (RGBA8: R = specular, G = gloss). */
+    /** Optional material map over the UV atlas (RGBA8: R = specular, G = gloss). */
     material?: { file: string; width: number; height: number };
 }
 

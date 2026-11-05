@@ -42,6 +42,4 @@ Thumbs.db
 art/source/*
 !art/source/README.md
 
-# models-as-code: generated templates, OBJ snapshots (tools/modelc)
-art/build/
 __pycache__/

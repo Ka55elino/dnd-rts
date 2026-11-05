@@ -12,7 +12,8 @@ art/source/...glb ──► tools/vatbake  (animated units) ──► frontend/p
 - The artist delivers **source files only** (`.glb` + textures). LODs, VAT textures and compression are produced by the tools; do not deliver LODs by hand.
 - **`art/source/` is not in git** (only its README is): sources live on the local disk, later on the NAS — what is there and where: [`art/source/README.md`](../art/source/README.md). The baked output in `frontend/public/models/` **is committed**: the game builds and runs from a clone without the sources; after changing a source, re-bake and commit the output.
 - After baking, the tool prints the triangle and vertex counts of every LOD and the VAT size — this is how a delivery is checked against the budgets below.
-- To look at a baked model: main menu → **Model Overview** (every unit, machine, building and baked model; play any clip, switch LOD and team color). Both bake tools keep `frontend/public/models/index.json` (the list it reads) up to date.
+- To look at a baked model: main menu → **Model Overview** (every unit, machine, building and baked model). Clips: play / pause (Space), frame step (← →), scrubbing, the frame number, **Strip** (6 poses side by side). Look: LOD, team color, **Light** (Day / Evening / Overcast / Studio), **Background**, **Ground**, **Smooth / Flat** shading, **Shadows**. A model whose `model.json` has a `build` stamp is reloaded automatically when it is rebuilt. Both bake tools keep `frontend/public/models/index.json` (the list it reads) up to date.
+- Lighting (`frontend/src/engine/lighting.ts`): hemisphere fill + a warm sun with a shadow map that follows the camera target, filmic (ACES) tone mapping; the game uses the Day preset. Only the near LODs (0 and 1) cast shadows — the shadow pass draws every instance again.
 - The renderer draws units with instancing: up to **~100,000 soldiers** in a scene. Every rule for units follows from this number.
 
 ### Folder layout and names
@@ -84,7 +85,7 @@ Units are baked into Vertex Animation Textures: every frame of every clip is sto
 | Mesh | **one** skinned mesh, one skeleton; rider and mount are one model with one skeleton |
 | Skin weights | ≤ 4 bones per vertex |
 | Bones | ≤ 60 (the skeleton does not exist at runtime, but the source must stay sane) |
-| Normals | `vatbake` models: not used, shading is flat (computed on the GPU). `modelc` models: baked per frame (`normals.bin`, the VAT layout, RGBA8) → smooth shading with specular highlights from the material map (`material.bin`: R = specular, G = gloss) |
+| Normals | not baked yet: shading is flat (computed on the GPU). The renderer also accepts optional per-frame normals (`normals.bin`, the VAT layout, RGBA8) for smooth shading, and a material map (`material.bin` over the UV atlas: R = specular, G = gloss) for highlights — `vatbake` does not write them yet |
 | Team color | marked areas (cloak, shield face, banner, trim) — see [Textures](#5-textures) |
 
 LOD0 budgets (counted after vertex welding). LOD1 is 40% and LOD2 10% of LOD0, made automatically: LOD0 is drawn closer than 45 m from the camera, LOD1 up to 110 m, LOD2 beyond.

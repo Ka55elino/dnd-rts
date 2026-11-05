@@ -20,7 +20,6 @@ const UNITS: { id: string; label: string }[] = [
     { id: "cubes", label: "Cubes" },
     { id: "swordsman", label: "Swordsman" },
     { id: "ranger", label: "Ranger" },
-    { id: "proto_knight", label: "Proto knight (modelc)" },
 ];
 const LODS: { lod: Lod | -1; label: string }[] = [
     { lod: -1, label: "Auto" },
