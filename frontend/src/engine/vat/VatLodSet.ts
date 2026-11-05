@@ -36,7 +36,12 @@ export class VatLodSet {
     private camZ = 0;
 
     constructor(readonly model: VatModel, capacity: number) {
-        this.renderers = [new VatRenderer(model, capacity, 0), new VatRenderer(model, capacity, 1), new VatRenderer(model, capacity, 2)];
+        // Shadows only from the near LODs: the shadow pass draws every instance again.
+        this.renderers = [
+            new VatRenderer(model, capacity, 0, { shadows: true }),
+            new VatRenderer(model, capacity, 1, { shadows: true }),
+            new VatRenderer(model, capacity, 2),
+        ];
         this.matrices = this.renderers[0].matrices;
     }
 

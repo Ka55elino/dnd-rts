@@ -12,7 +12,7 @@ export interface VatClip {
     groundSpeed?: number; // m/s at 1x (walk/run)
 }
 
-interface VatMeta {
+export interface VatMeta {
     version: number;
     fps: number;
     vertexCount: number;
@@ -30,6 +30,12 @@ interface VatMeta {
     };
     /** Textured models: raw RGBA8 albedo (rows top to bottom), alpha = team mask. */
     albedo?: { file: string; width: number; height: number };
+    /** tools/modelc: build time; Model Overview reloads the model when it changes. */
+    build?: string;
+    /** tools/modelc: per-frame vertex normals, same layout as the VAT (RGBA8, n * 0.5 + 0.5) -> smooth shading. */
+    normals?: { file: string; format: "rgba8" };
+    /** tools/modelc: material map over the UV atlas (RGBA8: R = specular, G = gloss). */
+    material?: { file: string; width: number; height: number };
 }
 
 /**
@@ -43,6 +49,10 @@ export class VatModel {
     readonly texture: THREE.DataTexture;
     /** Albedo (sRGB, mipmapped), or null for vertex-colored models. */
     readonly albedo: THREE.DataTexture | null;
+    /** Per-frame normals (same layout as `texture`), or null: the model is flat-shaded. */
+    readonly normals: THREE.DataTexture | null;
+    /** Specular (R) and gloss (G) over the UV atlas, or null: a weak uniform highlight. */
+    readonly material: THREE.DataTexture | null;
     /** Index buffers per level of detail (0 = full). Missing levels fall back to the previous one. */
     readonly lodIndex: THREE.BufferAttribute[];
     readonly clips: Record<string, VatClip>;
@@ -53,6 +63,8 @@ export class VatModel {
         geometry: ArrayBuffer,
         vat: ArrayBuffer,
         albedo: ArrayBuffer | null,
+        normals: ArrayBuffer | null = null,
+        material: ArrayBuffer | null = null,
     ) {
         this.clips = meta.clips;
         const g = meta.geometry;
@@ -99,21 +111,49 @@ export class VatModel {
         } else {
             this.albedo = null;
         }
+
+        if (normals) {
+            const n = new THREE.DataTexture(new Uint8Array(normals), t.width, t.height, THREE.RGBAFormat, THREE.UnsignedByteType);
+            n.minFilter = n.magFilter = THREE.NearestFilter;
+            n.generateMipmaps = false;
+            n.needsUpdate = true;
+            this.normals = n;
+        } else {
+            this.normals = null;
+        }
+        const m = meta.material;
+        if (m && material) {
+            const mt = new THREE.DataTexture(new Uint8Array(material), m.width, m.height, THREE.RGBAFormat, THREE.UnsignedByteType);
+            mt.flipY = false;
+            mt.wrapS = mt.wrapT = THREE.ClampToEdgeWrapping;
+            mt.magFilter = THREE.LinearFilter;
+            mt.minFilter = THREE.LinearMipmapLinearFilter;
+            mt.generateMipmaps = true;
+            mt.needsUpdate = true;
+            this.material = mt;
+        } else {
+            this.material = null;
+        }
     }
 
-    /** Loads frontend/public/models/<id>/. */
-    static async load(id: string): Promise<VatModel> {
+    /** Loads frontend/public/models/<id>/. fresh: bypass the HTTP cache (hot reload after a rebuild). */
+    static async load(id: string, fresh = false): Promise<VatModel> {
         const base = `/models/${id}`;
+        const init: RequestInit | undefined = fresh ? { cache: "no-store" } : undefined;
         const [meta, geometry, vat] = await Promise.all([
-            fetch(`${base}/model.json`).then((r) => checked(r, id).json() as Promise<VatMeta>),
-            fetch(`${base}/geometry.bin`).then((r) => checked(r, id).arrayBuffer()),
-            fetch(`${base}/vat.bin`).then((r) => checked(r, id).arrayBuffer()),
+            fetch(`${base}/model.json`, init).then((r) => checked(r, id).json() as Promise<VatMeta>),
+            fetch(`${base}/geometry.bin`, init).then((r) => checked(r, id).arrayBuffer()),
+            fetch(`${base}/vat.bin`, init).then((r) => checked(r, id).arrayBuffer()),
         ]);
         if (meta.version !== 1) throw new Error(`model ${id}: unsupported version ${meta.version}`);
-        const albedo = meta.albedo
-            ? await fetch(`${base}/${meta.albedo.file}`).then((r) => checked(r, id).arrayBuffer())
-            : null;
-        return new VatModel(id, meta, geometry, vat, albedo);
+        const optional = (file?: string) =>
+            file ? fetch(`${base}/${file}`, init).then((r) => checked(r, id).arrayBuffer()) : Promise.resolve(null);
+        const [albedo, normals, material] = await Promise.all([
+            optional(meta.albedo?.file),
+            optional(meta.normals?.file),
+            optional(meta.material?.file),
+        ]);
+        return new VatModel(id, meta, geometry, vat, albedo, normals, material);
     }
 
     clip(name: string): VatClip | undefined {
@@ -124,6 +164,8 @@ export class VatModel {
         this.geometry.dispose();
         this.texture.dispose();
         this.albedo?.dispose();
+        this.normals?.dispose();
+        this.material?.dispose();
     }
 }
 
@@ -145,10 +187,16 @@ export class VatRenderer {
     private readonly uniforms: { uTime: { value: number } };
     private count = 0;
 
+    /**
+     * opts.smooth: smooth shading with the baked normals and specular highlights (default: when the
+     * model has normals); false = the flat low-poly look. opts.shadows: cast shadows (default false;
+     * it draws every instance a second time, so the game enables it only for the near LODs).
+     */
     constructor(
         readonly model: VatModel,
         private readonly capacity: number,
         lod: Lod = 0,
+        opts: { smooth?: boolean; shadows?: boolean } = {},
     ) {
         // Share the model's buffers (no clone: cloning de-interleaves the color
         // attribute), but give this renderer its own instanced attributes.
@@ -166,9 +214,14 @@ export class VatRenderer {
         geometry.setAttribute("aTeam", this.team);
 
         // The far LOD keeps vertex colors (averaged from the albedo by vatbake): no texture reads.
-        const { material, uniforms } = createVatMaterial(model, model.albedo !== null && lod < 2);
+        const textured = model.albedo !== null && lod < 2;
+        const smooth = (opts.smooth ?? true) && model.normals !== null;
+        const { material, depth, uniforms } = createVatMaterial(model, textured, smooth);
         this.uniforms = uniforms;
         this.mesh = new THREE.InstancedMesh(geometry, material, capacity);
+        this.mesh.customDepthMaterial = depth;
+        this.mesh.castShadow = opts.shadows ?? false;
+        this.mesh.receiveShadow = true;
         this.mesh.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
         this.mesh.count = 0;
         this.mesh.frustumCulled = false;
@@ -237,56 +290,88 @@ export class VatRenderer {
         }
     }
 
+    /** Turn shadow casting on / off (it costs a second draw of every instance). */
+    set castShadow(on: boolean) {
+        this.mesh.castShadow = on;
+    }
+
     dispose(): void {
         this.mesh.geometry.dispose();
         (this.mesh.material as THREE.Material).dispose();
+        this.mesh.customDepthMaterial?.dispose();
     }
 }
 
-/** Lambert material whose vertex positions come from the VAT. Flat shading
- *  (normals from screen-space derivatives) matches the low-poly style and
- *  means no normals need to be baked. Textured: the color comes from the albedo
- *  and its alpha is the team mask; otherwise from the vertex colors. */
-function createVatMaterial(model: VatModel, textured: boolean) {
+/** GLSL shared by the color and the shadow-depth materials: the VAT frame of this vertex. */
+const VAT_PARS = /* glsl */ `
+    attribute vec4 aAnim;       // start frame, frame count, frames per second, loop
+    attribute float aAnimStart; // seconds
+    uniform sampler2D vatTex;
+    uniform int vatWidth;
+    uniform int vatVerts;
+    uniform float uTime;
+    ivec2 vatTexel(float frame) {
+        int i = int(frame) * vatVerts + gl_VertexID;
+        return ivec2(i % vatWidth, i / vatWidth);
+    }
+    // The two frames around the current time and the blend between them.
+    vec3 vatFrames() {
+        float vt = max(uTime - aAnimStart, 0.0) * aAnim.z;
+        float fc = aAnim.y;
+        float ff = aAnim.w > 0.5 ? mod(vt, fc) : min(vt, fc - 1.0);
+        float f0 = floor(ff);
+        float f1 = aAnim.w > 0.5 ? mod(f0 + 1.0, fc) : min(f0 + 1.0, fc - 1.0);
+        return vec3(aAnim.x + f0, aAnim.x + f1, ff - f0);
+    }`;
+
+const VAT_POSITION = /* glsl */ `
+    vec3 vf = vatFrames();
+    vec3 transformed = mix(texelFetch(vatTex, vatTexel(vf.x), 0).xyz, texelFetch(vatTex, vatTexel(vf.y), 0).xyz, vf.z);`;
+
+/**
+ * Material whose vertex positions come from the VAT.
+ * - smooth (the model has baked normals): Phong — normals from the normal VAT, specular highlights
+ *   scaled by the material map (R = specular, G = gloss -> shininess);
+ * - otherwise Lambert with flat shading (normals from screen-space derivatives): the low-poly look.
+ * Textured: the color comes from the albedo and its alpha is the team mask; otherwise from the
+ * vertex colors. Also returns the depth material that casts the animated shadow.
+ */
+function createVatMaterial(model: VatModel, textured: boolean, smooth: boolean) {
     const uniforms = {
         uTime: { value: 0 },
         vatTex: { value: model.texture },
+        vatNrm: { value: model.normals },
         vatWidth: { value: model.meta.texture.width },
         vatVerts: { value: model.meta.vertexCount },
     };
-    const material = textured
-        ? new THREE.MeshLambertMaterial({ map: model.albedo, flatShading: true })
-        : new THREE.MeshLambertMaterial({ vertexColors: true, flatShading: true });
+    const gloss = smooth && textured && model.material !== null;
+    let material: THREE.MeshLambertMaterial | THREE.MeshPhongMaterial;
+    if (smooth) {
+        material = new THREE.MeshPhongMaterial({
+            map: textured ? model.albedo : null,
+            vertexColors: !textured,
+            specularMap: gloss ? model.material : null,
+            specular: new THREE.Color(gloss ? 0xffffff : 0x161616),
+            shininess: 30,
+        });
+    } else {
+        material = textured
+            ? new THREE.MeshLambertMaterial({ map: model.albedo, flatShading: true })
+            : new THREE.MeshLambertMaterial({ vertexColors: true, flatShading: true });
+    }
     material.onBeforeCompile = (shader) => {
         if (textured) patchTextured(shader);
         Object.assign(shader.uniforms, uniforms);
         shader.vertexShader = shader.vertexShader
             .replace(
                 "#include <common>",
-                /* glsl */ `#include <common>
-                attribute vec4 aAnim;       // start frame, frame count, frames per second, loop
-                attribute float aAnimStart; // seconds
+                `#include <common>
+                ${VAT_PARS}
+                uniform sampler2D vatNrm;
                 attribute vec3 aTeam;
-                attribute float teamMask;
-                uniform sampler2D vatTex;
-                uniform int vatWidth;
-                uniform int vatVerts;
-                uniform float uTime;
-                vec3 vatFetch(float frame) {
-                    int i = int(frame) * vatVerts + gl_VertexID;
-                    return texelFetch(vatTex, ivec2(i % vatWidth, i / vatWidth), 0).xyz;
-                }`,
+                attribute float teamMask;`,
             )
-            .replace(
-                "#include <begin_vertex>",
-                /* glsl */ `
-                float vt = max(uTime - aAnimStart, 0.0) * aAnim.z;
-                float fc = aAnim.y;
-                float ff = aAnim.w > 0.5 ? mod(vt, fc) : min(vt, fc - 1.0);
-                float f0 = floor(ff);
-                float f1 = aAnim.w > 0.5 ? mod(f0 + 1.0, fc) : min(f0 + 1.0, fc - 1.0);
-                vec3 transformed = mix(vatFetch(aAnim.x + f0), vatFetch(aAnim.x + f1), ff - f0);`,
-            )
+            .replace("#include <begin_vertex>", VAT_POSITION)
             .replace(
                 "#include <color_vertex>",
                 /* glsl */ `
@@ -294,9 +379,36 @@ function createVatMaterial(model: VatModel, textured: boolean) {
                 vec3 tinted = mix(color.rgb, aTeam * (0.55 + 0.6 * lum), teamMask);
                 vColor = vec4(tinted, 1.0); // vColor is a vec4 in three r18x`,
             );
+        if (smooth) {
+            shader.vertexShader = shader.vertexShader.replace(
+                "#include <beginnormal_vertex>",
+                /* glsl */ `
+                vec3 nf = vatFrames();
+                vec3 objectNormal = normalize(mix(texelFetch(vatNrm, vatTexel(nf.x), 0).xyz,
+                                                  texelFetch(vatNrm, vatTexel(nf.y), 0).xyz, nf.z) * 2.0 - 1.0);`,
+            );
+        }
+        if (gloss) {
+            // G of the material map = gloss: from a broad sheen (cloth) to a tight highlight (polished metal).
+            shader.fragmentShader = shader.fragmentShader.replace(
+                "#include <lights_phong_fragment>",
+                /* glsl */ `#include <lights_phong_fragment>
+                material.specularShininess = mix(6.0, 90.0, texture2D(specularMap, vSpecularMapUv).g);`,
+            );
+        }
     };
-    material.customProgramCacheKey = () => `vat-${model.id}-${textured ? "albedo" : "colors"}`;
-    return { material, uniforms };
+    material.customProgramCacheKey = () => `vat-${model.id}-${textured ? "albedo" : "colors"}-${smooth ? "smooth" : "flat"}`;
+
+    // Shadow caster: the same VAT positions, depth only.
+    const depth = new THREE.MeshDepthMaterial({ depthPacking: THREE.RGBADepthPacking });
+    depth.onBeforeCompile = (shader) => {
+        Object.assign(shader.uniforms, uniforms);
+        shader.vertexShader = shader.vertexShader
+            .replace("#include <common>", `#include <common>\n${VAT_PARS}`)
+            .replace("#include <begin_vertex>", VAT_POSITION);
+    };
+    depth.customProgramCacheKey = () => `vat-depth-${model.id}`;
+    return { material, depth, uniforms };
 }
 
 /** Textured variant: pass the team color to the fragment shader and tint the

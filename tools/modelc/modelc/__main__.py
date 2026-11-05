@@ -9,6 +9,12 @@
   atlas <id> --lock         freeze the current UV layout into art/textures/<texture>/atlas.json
                             (after a texture is painted, so later shape changes keep its pixels in place)
   obj <id> [clip@sec ...]   write OBJ snapshots (+ texture) to art/build/<id>/ to look at in any 3D viewer
+  fit <id> <image.png> [--skin name]
+                            move the pieces of an AI-painted atlas into the model's UV rectangles
+                            (AI tools keep the rows and the order, not the coordinates) and save it
+                            as art/textures/<texture>/<skin>.png; locks the atlas
+  render <id> [clip@sec ...] [--views front,threequarter,side,back]
+                            software-rendered PNG (texture, smooth shading, specular) to art/build/<id>/
 """
 import glob
 import os
@@ -57,7 +63,7 @@ def cmd_build(mid):
     built = build(model)
     skin = model.skins[0]
     albedo, src = texture.load_albedo(texture_path(model, skin), built, model.texture_size)
-    info = writer.bake(model, built, albedo, OUT)
+    info = writer.bake(model, built, albedo, OUT, fps=getattr(model, "fps", 15))
     writer.update_index(OUT, [model.id])
     print(f"{model.id}: {info['vertices']} vertices, {info['tris']} tris (LOD1 {info['lod1']}, LOD2 {info['lod2']}), "
           f"{info['frames']} frames {info['clips']}, VAT {info['vat_mb']:.1f} MB, "
@@ -106,6 +112,59 @@ def cmd_atlas(mid, lock):
         print("locked", os.path.relpath(f, REPO))
     for n, (x, y, w, h) in built.regions.items():
         print(f"  {n:10} x={x:.3f} y={y:.3f} w={w:.3f} h={h:.3f}")
+
+
+def cmd_fit(mid, args):
+    from PIL import Image
+    import numpy as np
+    from modelc.fit import fit_atlas
+    skin = None
+    files = [a for a in args if not a.startswith("--")]
+    if "--skin" in args:
+        skin = args[args.index("--skin") + 1]
+        files = [f for f in files if f != skin]
+    if not files:
+        sys.exit("usage: modelc fit <id> <image.png> [--skin name]")
+    model = load(mid)
+    built = build(model)
+    src = np.array(Image.open(files[0]).convert("RGB"))
+    out, report = fit_atlas(src, built.regions, size=max(src.shape[:2]))
+    for line in report:
+        print(" ", line)
+    dst = texture_path(model, skin or model.skins[0])
+    os.makedirs(os.path.dirname(dst), exist_ok=True)
+    Image.fromarray(out).save(dst)
+    print("wrote", os.path.relpath(dst, REPO))
+    cmd_atlas(mid, True)   # the painted texture now fixes the layout
+
+
+def cmd_render(mid, args):
+    from modelc.writer import skin_frame, to_game, smoothing_groups, vertex_normals, material_map
+    from modelc.preview import render
+    views = ("front", "threequarter", "side", "back")
+    shots = []
+    for a in args:
+        if a.startswith("--views="):
+            views = tuple(a.split("=", 1)[1].split(","))
+        else:
+            shots.append(a)
+    model = load(mid)
+    built = build(model)
+    albedo, _ = texture.load_albedo(texture_path(model, model.skins[0]), built, model.texture_size)
+    mat = material_map(built, albedo.shape[0])
+    group = smoothing_groups(built)
+    d = os.path.join(ART, "build", model.id)
+    os.makedirs(d, exist_ok=True)
+    for s in shots or ["rest"]:
+        if s == "rest":
+            pos = to_game(built.verts)
+        else:
+            name, sec = s.split("@")
+            pos = to_game(skin_frame(built, model.skeleton, model.clips[name].pose(float(sec), model.skeleton)))
+        img = render(pos, vertex_normals(pos, built.tris, group), built.uv, built.tris, albedo, mat, views)
+        f = os.path.join(d, "render_" + s.replace("@", "_") + ".png")
+        img.save(f)
+        print("wrote", os.path.relpath(f, REPO))
 
 
 def cmd_obj(mid, shots):
@@ -183,6 +242,10 @@ def main(argv):
         cmd_atlas(rest[0], "--lock" in rest)
     elif cmd == "obj":
         cmd_obj(rest[0], rest[1:])
+    elif cmd == "fit":
+        cmd_fit(rest[0], rest[1:])
+    elif cmd == "render":
+        cmd_render(rest[0], rest[1:])
     elif cmd == "paint":
         cmd_paint(rest[0], "--force" in rest)
     else:

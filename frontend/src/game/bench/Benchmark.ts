@@ -1,4 +1,5 @@
 import * as THREE from "three";
+import { LightRig, lightPreset, setupRenderer } from "../../engine/lighting";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.js";
 import { Stream } from "@wailsio/runtime";
 import { RenderContext } from "../../engine/renderer";
@@ -172,10 +173,12 @@ export class Benchmark {
         this.scene.background = new THREE.Color(0x1d2330);
         this.camera.position.set(0, 180, 220);
 
-        this.scene.add(new THREE.HemisphereLight(0xbfd4ff, 0x3a2f20, 1.0));
-        const sun = new THREE.DirectionalLight(0xffffff, 1.2);
-        sun.position.set(100, 200, 80);
-        this.scene.add(sun);
+        // The game's lighting, without shadow maps (the benchmark measures the units, not shadows).
+        setupRenderer(this.ctx!.renderer, false);
+        const lights = new LightRig();
+        lights.shadows = false;
+        lights.apply(lightPreset("day"), undefined, this.ctx!.renderer);
+        this.scene.add(...lights.objects);
 
         const ground = new THREE.Mesh(
             new THREE.PlaneGeometry(MAP_SIZE, MAP_SIZE),

@@ -84,7 +84,7 @@ Units are baked into Vertex Animation Textures: every frame of every clip is sto
 | Mesh | **one** skinned mesh, one skeleton; rider and mount are one model with one skeleton |
 | Skin weights | ≤ 4 bones per vertex |
 | Bones | ≤ 60 (the skeleton does not exist at runtime, but the source must stay sane) |
-| Normals | not used: shading is flat, computed on the GPU |
+| Normals | `vatbake` models: not used, shading is flat (computed on the GPU). `modelc` models: baked per frame (`normals.bin`, the VAT layout, RGBA8) → smooth shading with specular highlights from the material map (`material.bin`: R = specular, G = gloss) |
 | Team color | marked areas (cloak, shield face, banner, trim) — see [Textures](#5-textures) |
 
 LOD0 budgets (counted after vertex welding). LOD1 is 40% and LOD2 10% of LOD0, made automatically: LOD0 is drawn closer than 45 m from the camera, LOD1 up to 110 m, LOD2 beyond.

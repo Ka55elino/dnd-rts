@@ -1,80 +1,92 @@
 {
   "version": 1,
-  "fps": 15,
-  "vertexCount": 1231,
-  "frames": 95,
+  "fps": 30,
+  "vertexCount": 1836,
+  "frames": 279,
   "texture": {
     "width": 2048,
-    "height": 58,
+    "height": 251,
     "format": "rgba16f"
   },
   "clips": {
     "idle": {
       "start": 0,
-      "frames": 36,
+      "frames": 120,
       "loop": true,
-      "duration": 2.4
+      "duration": 4.0
+    },
+    "brace": {
+      "start": 120,
+      "frames": 22,
+      "loop": false,
+      "duration": 0.7
+    },
+    "unbrace": {
+      "start": 142,
+      "frames": 22,
+      "loop": false,
+      "duration": 0.7
     },
     "walk": {
-      "start": 36,
-      "frames": 15,
+      "start": 164,
+      "frames": 30,
       "loop": true,
       "duration": 1.0,
       "groundSpeed": 1.2
     },
     "run": {
-      "start": 51,
-      "frames": 10,
+      "start": 194,
+      "frames": 20,
       "loop": true,
       "duration": 0.66,
       "groundSpeed": 2.879
     },
     "attack": {
-      "start": 61,
-      "frames": 13,
+      "start": 214,
+      "frames": 25,
       "loop": false,
       "duration": 0.8
     },
     "die": {
-      "start": 74,
-      "frames": 21,
+      "start": 239,
+      "frames": 40,
       "loop": false,
       "duration": 1.3
     }
   },
   "bounds": {
     "min": [
-      -1.263,
-      -0.97,
-      -0.837
+      -1.273,
+      -0.989,
+      -0.846
     ],
     "max": [
-      0.891,
-      2.697,
-      1.436
+      0.926,
+      2.755,
+      1.472
     ]
   },
   "geometry": {
     "lod0": {
       "offset": 0,
-      "count": 4950
+      "count": 7272
     },
     "lod1": {
-      "offset": 19800,
-      "count": 1965
+      "offset": 29088,
+      "count": 2901
     },
     "lod2": {
-      "offset": 27660,
-      "count": 492
+      "offset": 40692,
+      "count": 720
     },
     "colors": {
-      "offset": 29628
+      "offset": 43572
     },
     "positions": {
-      "offset": 34552
+      "offset": 50916
     },
     "uvs": {
-      "offset": 49324
+      "offset": 72948
     }
   },
   "albedo": {
@@ -82,5 +94,15 @@
     "width": 512,
     "height": 512
   },
-  "source": "modelc"
+  "normals": {
+    "file": "normals.bin",
+    "format": "rgba8"
+  },
+  "material": {
+    "file": "material.bin",
+    "width": 512,
+    "height": 512
+  },
+  "source": "modelc",
+  "build": "2026-11-05T17:06:55"
 }

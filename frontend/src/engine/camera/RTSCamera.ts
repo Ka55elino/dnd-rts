@@ -65,6 +65,16 @@ export class RTSCamera {
         this.apply();
     }
 
+    /** The point on the ground the camera looks at. */
+    get focusPoint(): THREE.Vector3 {
+        return this.lookAt;
+    }
+
+    /** Current distance from the camera to its target (zoom). */
+    get zoom(): number {
+        return this.distance;
+    }
+
     /** Moves the camera target to a world position (e.g. the player's start). */
     focus(x: number, z: number): void {
         this.target.set(x, z);

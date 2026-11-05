@@ -28,10 +28,56 @@ def skin_frame(built, sk, pose):
     return out
 
 
+MATERIALS = {   # (specular, gloss) — R and G of material.bin
+    "metal": (0.85, 0.75), "gold": (0.8, 0.6), "leather": (0.25, 0.3), "wood": (0.12, 0.2),
+    "cloth": (0.04, 0.1), "skin": (0.15, 0.25),
+}
+
+
+def smoothing_groups(built):
+    """Vertex -> smoothing group. Lofts are smooth (vertices at the same place on the same piece, like
+    the seam of a ring, share a normal); Extrudes keep hard edges (each face has its own vertices)."""
+    from .geometry import Loft
+    group = np.arange(len(built.verts))
+    keys = {}
+    for i, (v, pi) in enumerate(zip(built.verts, built.piece)):
+        if not isinstance(built.pieces[pi][0], Loft):
+            continue
+        k = (int(pi), *np.round(v / 1e-5).astype(np.int64))
+        group[i] = keys.setdefault(k, i)
+    return group
+
+
+def vertex_normals(pos, tris, group):
+    """Area-weighted smooth normals of a posed frame (pos: V x 3), shared inside each smoothing group."""
+    a, b, c = pos[tris[:, 0]], pos[tris[:, 1]], pos[tris[:, 2]]
+    fn = np.cross(b - a, c - a)
+    acc = np.zeros_like(pos)
+    for k in range(3):
+        np.add.at(acc, group[tris[:, k]], fn)
+    n = acc[group]
+    return n / np.maximum(np.linalg.norm(n, axis=1, keepdims=True), 1e-9)
+
+
+def material_map(built, size):
+    """RGBA8 texture over the UV atlas: R = specular, G = gloss of each part's material."""
+    from PIL import Image, ImageDraw
+    img = Image.new("RGBA", (size, size), (int(0.04 * 255), int(0.1 * 255), 0, 255))
+    d = ImageDraw.Draw(img)
+    for t in built.tris:
+        p = built.pieces[built.piece[t[0]]][0]
+        m = p.material
+        spec, gloss = MATERIALS[m] if isinstance(m, str) else m
+        d.polygon([(built.uv[i, 0] * size, built.uv[i, 1] * size) for i in t],
+                  fill=(int(spec * 255), int(gloss * 255), 0, 255))
+    return np.array(img)
+
+
 def bake(model, built, albedo, out_root, fps=15):
     sk = model.skeleton
     V = len(built.verts)
-    frames_all, meta_clips, frame = [], {}, 0
+    frames_all, normals_all, meta_clips, frame = [], [], {}, 0
+    group = smoothing_groups(built)
     for name, clip in model.clips.items():
         n = max(2, round(clip.duration * fps)) if clip.loop else round(clip.duration * fps) + 1
         meta_clips[name] = {"start": frame, "frames": n, "loop": clip.loop, "duration": round(clip.duration, 3)}
@@ -39,7 +85,9 @@ def bake(model, built, albedo, out_root, fps=15):
             meta_clips[name]["groundSpeed"] = round(clip.ground_speed, 3)
         for f in range(n):
             t = (f / n) * clip.duration if clip.loop else min(f / fps, clip.duration)
-            frames_all.append(to_game(skin_frame(built, sk, clip.pose(t, sk))))
+            pos = to_game(skin_frame(built, sk, clip.pose(t, sk)))
+            frames_all.append(pos)
+            normals_all.append(vertex_normals(pos, built.tris, group))
         frame += n
     total = frame
     allpos = np.stack(frames_all)                              # (frames, V, 3)
@@ -47,6 +95,11 @@ def bake(model, built, albedo, out_root, fps=15):
     vat = np.zeros((TEX_WIDTH * tex_h, 4), dtype=np.float16)
     vat[: V * total, :3] = allpos.reshape(-1, 3)
     vat[: V * total, 3] = 1
+    # normals: same layout as the VAT, RGBA8, n * 0.5 + 0.5
+    nrm = np.zeros((TEX_WIDTH * tex_h, 4), dtype=np.uint8)
+    nrm[: V * total, :3] = np.clip(np.round((np.stack(normals_all).reshape(-1, 3) * 0.5 + 0.5) * 255), 0, 255)
+    nrm[: V * total, 3] = 255
+    mat = material_map(built, albedo.shape[0])
 
     bind = to_game(built.verts).astype(np.float32)
     lod0 = built.tris.astype(np.uint32).reshape(-1)
@@ -70,6 +123,10 @@ def bake(model, built, albedo, out_root, fps=15):
         f.write(vat.tobytes())
     with open(os.path.join(out, "albedo.bin"), "wb") as f:
         f.write(albedo.tobytes())
+    with open(os.path.join(out, "normals.bin"), "wb") as f:
+        f.write(nrm.tobytes())
+    with open(os.path.join(out, "material.bin"), "wb") as f:
+        f.write(mat.tobytes())
     meta = {
         "version": 1, "fps": fps, "vertexCount": V, "frames": total,
         "texture": {"width": TEX_WIDTH, "height": tex_h, "format": "rgba16f"},
@@ -83,13 +140,19 @@ def bake(model, built, albedo, out_root, fps=15):
             "colors": {"offset": col_off}, "positions": {"offset": pos_off}, "uvs": {"offset": uv_off},
         },
         "albedo": {"file": "albedo.bin", "width": int(albedo.shape[1]), "height": int(albedo.shape[0])},
+        # optional (modelc): per-frame vertex normals in the VAT layout (RGBA8, n * 0.5 + 0.5) -> smooth
+        # shading; material map over the UV atlas (RGBA8: R = specular, G = gloss)
+        "normals": {"file": "normals.bin", "format": "rgba8"},
+        "material": {"file": "material.bin", "width": int(mat.shape[1]), "height": int(mat.shape[0])},
         "source": "modelc",
+        # build time: Model Overview polls model.json and reloads the model when this changes
+        "build": __import__("time").strftime("%Y-%m-%dT%H:%M:%S"),
     }
     with open(os.path.join(out, "model.json"), "w") as f:
         f.write(json.dumps(meta, indent=2) + "\n")
     return {"vertices": V, "tris": len(built.tris), "lod1": lod1.size // 3, "lod2": lod2.size // 3,
             "frames": total, "clips": {k: v["frames"] for k, v in meta_clips.items()},
-            "vat_mb": vat.nbytes / 1048576}
+            "vat_mb": (vat.nbytes + nrm.nbytes) / 1048576}
 
 
 def cluster_lod(pos, tris, target):

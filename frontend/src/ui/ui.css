@@ -253,9 +253,11 @@ html, body, #app {
 }
 
 .overview__time {
-    height: 3px;
+    height: 8px;
     margin: 8px 0;
     background: rgba(201, 164, 92, 0.2);
+    cursor: ew-resize;
+    touch-action: none;
 }
 
 .overview__bar {
@@ -276,6 +278,20 @@ html, body, #app {
 
 .overview__replay {
     border: 1px solid rgba(201, 164, 92, 0.35);
+}
+
+.overview__wrap {
+    flex-wrap: wrap;
+}
+
+.overview__row + .overview__row {
+    margin-top: 6px;
+}
+
+.overview__frame {
+    font-size: 12px;
+    font-variant-numeric: tabular-nums;
+    opacity: 0.75;
 }
 
 .overview__team {

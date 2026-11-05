@@ -67,6 +67,35 @@ def slerp(q0, q1, t):
 
 
 # --- easing (t in 0..1) -------------------------------------------------------------------------
+def cubic_bezier(x1, y1, x2, y2):
+    """Easing like CSS transition-timing-function: cubic-bezier(x1, y1, x2, y2): a curve from (0, 0)
+    to (1, 1) with control points (x1, y1), (x2, y2); x = time, y = progress (y may leave 0..1 for
+    an overshoot). Returns f(u) for u = 0..1."""
+    def bez(a, b, s):
+        return 3 * a * s * (1 - s) ** 2 + 3 * b * s * s * (1 - s) + s ** 3
+
+    def f(u):
+        u = min(max(u, 0.0), 1.0)
+        lo, hi = 0.0, 1.0
+        for _ in range(40):  # x(s) is monotonic for x1, x2 in 0..1: bisection
+            s = (lo + hi) / 2
+            if bez(x1, x2, s) < u:
+                lo = s
+            else:
+                hi = s
+        return bez(y1, y2, (lo + hi) / 2)
+    return f
+
+
+def ease_fn(e):
+    """An easing given by name ("in_out"), as cubic-bezier control points (x1, y1, x2, y2), or a function."""
+    if callable(e):
+        return e
+    if isinstance(e, (tuple, list)):
+        return cubic_bezier(*e)
+    return EASE[e]
+
+
 EASE = {
     "linear": lambda t: t,
     "in": lambda t: t * t,

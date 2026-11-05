@@ -2,6 +2,7 @@ import * as THREE from "three";
 import { ContentService } from "../../bindings/dnd-rts/internal/services";
 import { RenderContext } from "../engine/renderer";
 import { RTSCamera } from "../engine/camera/RTSCamera";
+import { LightRig, lightPreset, setupRenderer } from "../engine/lighting";
 import { Terrain, decodeBase64, decodeSamples } from "../engine/terrain/Terrain";
 import { GameConnection } from "../net/gameConnection";
 import { SoldiersView, type HordeTypeInfo } from "./view/SoldiersView";
@@ -52,6 +53,7 @@ export class Game {
     private ctx: RenderContext | null = null;
     private lastHeroes: import("../net/protocol").HeroSnap[] = [];
     private rtsCamera: RTSCamera | null = null;
+    private readonly lights = new LightRig(80, 2048);
     private terrain: Terrain | null = null;
     private soldiers: SoldiersView | null = null;
     private buildings: BuildingsView | null = null;
@@ -549,10 +551,9 @@ export class Game {
         this.scene.background = sky;
         this.scene.fog = new THREE.Fog(sky, 350, 900);
 
-        this.scene.add(new THREE.HemisphereLight(0xdfe8ff, 0x4a3e2a, 1.1));
-        const sun = new THREE.DirectionalLight(0xfff1dc, 1.6);
-        sun.position.set(-150, 260, 120);
-        this.scene.add(sun);
+        setupRenderer(this.ctx!.renderer);
+        this.lights.apply(lightPreset("day"), this.scene, this.ctx!.renderer);
+        this.scene.add(...this.lights.objects);
 
         this.scene.add(terrain.mesh);
         for (const o of soldiers.objects) this.scene.add(o);
@@ -574,6 +575,9 @@ export class Game {
         const terrain = this.terrain!;
 
         this.rtsCamera!.update(dt);
+        // The sun's shadow box follows the camera target and grows when zoomed out.
+        this.lights.setArea(THREE.MathUtils.clamp(this.rtsCamera!.zoom * 1.6, 50, 220));
+        this.lights.follow(this.rtsCamera!.focusPoint);
         this.soldiers!.update(now, (x, z) => terrain.heightAt(x, z), this.selection!.selected, this.rtsCamera!.camera);
         this.projectiles.update(now, (x, z) => terrain.heightAt(x, z));
         this.marker.update(dt);

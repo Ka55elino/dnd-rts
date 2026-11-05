@@ -15,11 +15,14 @@ def swap_side(name):
 
 class Model:
     def __init__(self, id, skeleton, parts, clips, skins=("default",), texture=None, texture_size=512,
-                 budget_tris=3000, foot_bone="foot.L", team_tint=True, wrap_views=2):
+                 budget_tris=3000, foot_bone="foot.L", team_tint=True, wrap_views=2, fps=15):
         """team_tint=False: no part is tinted with the player color (the team is shown by the ring
         under the unit); parts marked team=True keep their painted colors."""
         self.id, self.skeleton, self.parts, self.clips = id, skeleton, parts, clips
         self.team_tint = team_tint
+        # animation samples per second in the VAT (the shader blends linearly between them): 15 is enough
+        # for cycles; 30 keeps fast eased moves (brace, attacks) smooth at twice the VAT size
+        self.fps = fps
         # wrapped parts (Loft) in the texture: 2 = FRONT | BACK halves, 4 = FRONT | LEFT | BACK | RIGHT quarters
         self.wrap_views = wrap_views
         self.skins, self.texture, self.texture_size = list(skins), texture, texture_size
@@ -51,19 +54,21 @@ def build(model):
             for r in missing:
                 locked[r] = (0.0, 0.0, 0.004, 0.004)
         regions = {r: tuple(locked[r]) for r in regions}
-    V, T, UV, BI, BW, COL, TEAM, PART = [], [], [], [], [], [], [], []
+    V, T, UV, BI, BW, COL, TEAM, PART, PIECE = [], [], [], [], [], [], [], [], []
     base = 0
-    for p, m, swapped in pieces:
+    for pi, (p, m, swapped) in enumerate(pieces):
         r = regions[p.uv_region]
         uv = np.column_stack([r[0] + m.uv[:, 0] * r[2], r[1] + m.uv[:, 1] * r[3]])
         bi, bw = _weights(sk, p, m, swapped)
         V.append(m.verts); T.append(m.tris + base); UV.append(uv); BI.append(bi); BW.append(bw)
         COL += [p.color] * len(m.verts); TEAM += [p.team and model.team_tint] * len(m.verts); PART += [p.id] * len(m.verts)
+        PIECE += [pi] * len(m.verts)
         base += len(m.verts)
     b = Built()
     b.verts = np.concatenate(V); b.tris = np.concatenate(T); b.uv = np.concatenate(UV)
     b.bone_idx = np.concatenate(BI); b.bone_w = np.concatenate(BW)
     b.colors = np.array(COL, dtype=float); b.team = np.array(TEAM, dtype=bool); b.part = PART
+    b.piece = np.array(PIECE, dtype=np.int64)   # index into b.pieces per vertex
     b.regions = regions
     b.wrap_views = model.wrap_views
     b.pieces = pieces
