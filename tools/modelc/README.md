@@ -17,7 +17,7 @@ python3 tools/modelc/modelc build proto_knight        # compile → frontend/pub
 python3 tools/modelc/modelc build --all
 python3 tools/modelc/modelc watch proto_knight        # rebuild on every save (art/ and tools/modelc/); Model Overview reloads the model by itself
 python3 tools/modelc/modelc render proto_knight idle@0 brace@0.7  # software-rendered PNG views in art/build/<id>/ (no Blender needed)
-python3 tools/modelc/modelc fit proto_knight ai.png             # move the pieces of an AI-painted atlas into the UV rectangles, save as the skin, lock the atlas
+python3 tools/modelc/modelc fit proto_knight ai.png [--box leg=0.68,0.90]  # move the pieces of an AI-painted atlas into the UV rectangles, save as the skin, lock the atlas
 python3 tools/modelc/modelc template proto_knight     # art/build/<id>/template.png: UV regions + wireframe, to paint on
 python3 tools/modelc/modelc paint proto_knight        # placeholder texture → art/textures/<texture>/<skin>.png
 python3 tools/modelc/modelc obj proto_knight rest walk@0.25 attack@0.47   # OBJ snapshots → art/build/<id>/

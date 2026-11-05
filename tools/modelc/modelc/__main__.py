@@ -1,7 +1,8 @@
 """Command line:  python3 tools/modelc <command> [model id]
 
   list                      models found in art/models/
-  build <id> | --all        compile into frontend/public/models/<id>/ (+ index.json)
+  build <id> | --all        compile into frontend/public/models/<id>/ (+ index.json); also refreshes
+                            art/build/<id>/template.png and template_clean.png
   watch <id>                rebuild on every change of art/ or tools/modelc/
   template <id> [--clean]   write art/build/<id>/template.png (UV regions + wireframe) to paint on;
                             --clean: template_clean.png without wireframe and text, for AI image tools
@@ -9,10 +10,12 @@
   atlas <id> --lock         freeze the current UV layout into art/textures/<texture>/atlas.json
                             (after a texture is painted, so later shape changes keep its pixels in place)
   obj <id> [clip@sec ...]   write OBJ snapshots (+ texture) to art/build/<id>/ to look at in any 3D viewer
-  fit <id> <image.png> [--skin name]
+  fit <id> <image.png> [--skin name] [--box region=x0,x1 ...]
                             move the pieces of an AI-painted atlas into the model's UV rectangles
                             (AI tools keep the rows and the order, not the coordinates) and save it
-                            as art/textures/<texture>/<skin>.png; locks the atlas
+                            as art/textures/<texture>/<skin>.png; locks the atlas. --box: where a
+                            region's painting really is (columns, 0..1) when the automatic split
+                            gets a row wrong
   render <id> [clip@sec ...] [--views front,threequarter,side,back]
                             software-rendered PNG (texture, smooth shading, specular) to art/build/<id>/
 """
@@ -64,6 +67,12 @@ def cmd_build(mid):
     skin = model.skins[0]
     albedo, src = texture.load_albedo(texture_path(model, skin), built, model.texture_size)
     info = writer.bake(model, built, albedo, OUT, fps=getattr(model, "fps", 15))
+    # keep the paint templates in step with the shapes (they used to be written only by `template`)
+    d = os.path.join(ART, "build", model.id)
+    os.makedirs(d, exist_ok=True)
+    for clean in (False, True):
+        texture.template(built, max(1024, model.texture_size), clean=clean).save(
+            os.path.join(d, "template_clean.png" if clean else "template.png"))
     writer.update_index(OUT, [model.id])
     print(f"{model.id}: {info['vertices']} vertices, {info['tris']} tris (LOD1 {info['lod1']}, LOD2 {info['lod2']}), "
           f"{info['frames']} frames {info['clips']}, VAT {info['vat_mb']:.1f} MB, "
@@ -119,16 +128,23 @@ def cmd_fit(mid, args):
     import numpy as np
     from modelc.fit import fit_atlas
     skin = None
-    files = [a for a in args if not a.startswith("--")]
-    if "--skin" in args:
-        skin = args[args.index("--skin") + 1]
-        files = [f for f in files if f != skin]
+    boxes = {}
+    files = []
+    it = iter(args)
+    for a in it:
+        if a == "--skin":
+            skin = next(it)
+        elif a == "--box":           # --box blade=0.51,0.67 : that region's painting is in these columns
+            n, v = next(it).split("=")
+            boxes[n] = tuple(float(x) for x in v.split(","))
+        else:
+            files.append(a)
     if not files:
         sys.exit("usage: modelc fit <id> <image.png> [--skin name]")
     model = load(mid)
     built = build(model)
     src = np.array(Image.open(files[0]).convert("RGB"))
-    out, report = fit_atlas(src, built.regions, size=max(src.shape[:2]))
+    out, report = fit_atlas(src, built.regions, size=max(src.shape[:2]), boxes=boxes)
     for line in report:
         print(" ", line)
     dst = texture_path(model, skin or model.skins[0])

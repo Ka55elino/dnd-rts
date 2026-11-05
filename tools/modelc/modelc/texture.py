@@ -200,7 +200,7 @@ def load_albedo(path, built, size, fill=True):
     else:
         rgb = placeholder(built, 1024)
         src = None
-    if fill:
+    if fill and src:          # painted PNGs only: the placeholder has no background to fill
         rgb = fill_wrapped(rgb, built)
     rgb = np.array(Image.fromarray(rgb).resize((size, size), Image.LANCZOS))
     a = team_mask(built, size)

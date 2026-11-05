@@ -98,9 +98,35 @@ def _split(runs, spans):
     return out[::-1]
 
 
-def fit_atlas(src, regions, size=None):
+def _strip_labels(crop, H):
+    """AI images made on the labelled template copy its text (region names in the top-left corner,
+    "top"/"back" in the top-right) onto the dark margin above the painting. Bright pixels in the top
+    strip of a piece, on an otherwise dark strip, are replaced by the strip's background color."""
+    h = max(6, round(18 * H / 1024))
+    strip = crop[:h].astype(float)
+    lum = strip.mean(2)
+    bg = float(np.median(lum))
+    if bg > 70:                     # the strip is painting, not a dark margin: leave it
+        return crop
+    text = lum > bg + 45
+    # grow the text mask a little (anti-aliased edges)
+    grown = text.copy()
+    grown[1:] |= text[:-1]; grown[:-1] |= text[1:]; grown[:, 1:] |= text[:, :-1]; grown[:, :-1] |= text[:, 1:]
+    if not grown.any():
+        return crop
+    out = crop.copy()
+    fill = np.median(strip[~grown], axis=0) if (~grown).any() else np.array([bg, bg, bg])
+    out[:h][grown] = fill.astype(np.uint8)
+    return out
+
+
+def fit_atlas(src, regions, size=None, strip_labels=True, boxes=None):
     """src: H x W x 3 uint8 (an AI atlas); regions: {name: (x, y, w, h)} in 0..1.
+    boxes: manual corrections {name: (x0, x1)} — the columns (fractions of the image) where that
+    region's painting really is, for rows the automatic split gets wrong (an extra picture, a piece
+    drawn in its neighbour's place). The other regions of the row are split among the remaining paint.
     Returns (image, report) — the image at the source resolution (or `size`)."""
+    boxes = boxes or {}
     H, W = src.shape[:2]
     size = size or W
     mask, bg = content_mask(src)
@@ -127,12 +153,18 @@ def fit_atlas(src, regions, size=None):
         y0, y1 = cuts[si], cuts[si + 1]
         band = mask[y0:y1]
         runs = _runs(mask[c0:c1].mean(0), 0.02, max(3, W // 300))
-        spans = [(r[0] * W, (r[0] + r[2]) * W) for _, r in shelf]
-        groups = _split(runs, spans)
+        fixed = {n: (int(boxes[n][0] * W), int(boxes[n][1] * W)) for n, _ in shelf if n in boxes}
+        auto = [(n, r) for n, r in shelf if n not in fixed]
+        runs = [r for r in runs if not any(r[0] < b1 and r[1] > b0 for b0, b1 in fixed.values())]
+        spans = [(r[0] * W, (r[0] + r[2]) * W) for _, r in auto]
+        groups = _split(runs, spans) if auto else []
         if groups is None:
-            report.append(f"shelf at y={top:.2f}: {len(runs)} pieces of paint for {len(shelf)} regions — left as background")
+            report.append(f"shelf at y={top:.2f}: {len(runs)} pieces of paint for {len(auto)} regions — left as background")
             continue
-        for (name, (rx, ry, rw, rh)), (gx0, gx1) in zip(shelf, groups):
+        assigned = dict(zip([n for n, _ in auto], groups))
+        assigned.update(fixed)
+        for name, (rx, ry, rw, rh) in shelf:
+            gx0, gx1 = assigned[name]
             # rows with paint in the group's columns, inside this shelf's painted row: the longest run
             col = band[:, gx0:gx1].mean(1)
             vr = _runs(col, 0.02, max(3, H // 150))
@@ -140,6 +172,8 @@ def fit_atlas(src, regions, size=None):
                 continue
             gy0, gy1 = max(vr, key=lambda r: r[1] - r[0])
             crop = src[y0 + gy0: y0 + gy1, gx0:gx1]
+            if strip_labels:
+                crop = _strip_labels(crop, H)
             X0, Y0 = int(round(rx * size)), int(round(ry * size))
             X1, Y1 = int(round((rx + rw) * size)), int(round((ry + rh) * size))
             out[Y0:Y1, X0:X1] = np.array(Image.fromarray(crop).resize((X1 - X0, Y1 - Y0), Image.LANCZOS))

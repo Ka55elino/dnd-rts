@@ -1,11 +1,11 @@
 {
   "version": 1,
   "fps": 30,
-  "vertexCount": 1836,
+  "vertexCount": 1331,
   "frames": 279,
   "texture": {
     "width": 2048,
-    "height": 251,
+    "height": 182,
     "format": "rgba16f"
   },
   "clips": {
@@ -56,37 +56,37 @@
   },
   "bounds": {
     "min": [
-      -1.273,
-      -0.989,
-      -0.846
+      -1.306,
+      -1.035,
+      -0.875
     ],
     "max": [
-      0.926,
-      2.755,
-      1.472
+      0.824,
+      2.803,
+      1.517
     ]
   },
   "geometry": {
     "lod0": {
       "offset": 0,
-      "count": 7272
+      "count": 5820
     },
     "lod1": {
-      "offset": 29088,
-      "count": 2901
+      "offset": 23280,
+      "count": 2307
     },
     "lod2": {
-      "offset": 40692,
-      "count": 720
+      "offset": 32508,
+      "count": 570
     },
     "colors": {
-      "offset": 43572
+      "offset": 34788
     },
     "positions": {
-      "offset": 50916
+      "offset": 40112
     },
     "uvs": {
-      "offset": 72948
+      "offset": 56084
     }
   },
   "albedo": {
@@ -104,5 +104,5 @@
     "height": 512
   },
   "source": "modelc",
-  "build": "2026-11-05T17:06:55"
+  "build": "2026-11-05T19:36:22"
 }

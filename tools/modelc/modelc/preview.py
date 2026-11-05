@@ -74,8 +74,8 @@ def render(pos, nrm, uv, tris, albedo, material, views=("front", "threequarter",
             tx = np.clip((u * TW).astype(int), 0, TW - 1); ty = np.clip((vv * TH).astype(int), 0, TH - 1)
             col = A[ty, tx]
             ndl = np.clip(nn @ sun_c, 0, 1)
-            sky = 0.45 + 0.25 * nn[:, 1]
-            shade = col * (sky[:, None] * np.array([0.8, 0.85, 1.0]) + ndl[:, None] * np.array([1.0, 0.95, 0.85]) * 0.9)
+            sky = 0.35 + 0.2 * nn[:, 1]
+            shade = col * (sky[:, None] * np.array([0.8, 0.85, 1.0]) + ndl[:, None] * np.array([1.0, 0.95, 0.85]) * 0.75)
             if M is not None:
                 spec_s, gloss = M[ty, tx, 0], M[ty, tx, 1]
                 h = sun_c + np.array([0, 0, 1.0]); h /= np.linalg.norm(h)
