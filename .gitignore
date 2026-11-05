@@ -41,3 +41,7 @@ Thumbs.db
 # Art sources live outside git (local disk, later the NAS) — see art/source/README.md
 art/source/*
 !art/source/README.md
+
+# models-as-code: generated templates, OBJ snapshots (tools/modelc)
+art/build/
+__pycache__/

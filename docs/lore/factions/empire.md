@@ -157,6 +157,8 @@ A military engineer who accompanies the army. Builds structures, fortifications 
 
 **Appearance:** work clothes, a leather apron, a tool belt, light protection and a small imperial badge.
 
+![Builder — central skin, concept](../images/empire/units/worker/central.png)
+
 <!-- References for the artist (Pinterest):
 https://it.pinterest.com/pin/754564112617363209/
 https://it.pinterest.com/pin/857513585344237137/
@@ -190,6 +192,8 @@ A specialized fighter who protects the formation from cavalry charges and large 
 
 **Appearance:** a long spear, medium armor, a protective plate on the forearm.
 
+![Spearman — central skin, concept](../images/empire/units/spearman/central.png)
+
 <!-- References for the artist (Pinterest):
 https://it.pinterest.com/pin/293859944452619272/
 https://it.pinterest.com/pin/953215077403714447/
@@ -200,6 +204,8 @@ https://it.pinterest.com/pin/953215077403714447/
 Deals steady ranged damage, covers the army's advance and weakens the enemy before the main forces clash. Vulnerable in close combat.
 
 **Appearance:** a bow, a quiver, a padded jacket or leather armor, a minimum of metal details.
+
+![Archer — central skin, concept](../images/empire/units/archer/central.png)
 
 <!-- References for the artist (Pinterest):
 https://it.pinterest.com/pin/738308932706566719/
@@ -212,6 +218,8 @@ An expensive elite warrior meant for swift attacks on vulnerable targets, pursui
 
 **Appearance:** heavy armor, a warhorse, a lance or sword, a cloth surcoat with a coat of arms.
 
+![Knight — central skin, concept](../images/empire/units/knight/central.png)
+
 <!-- References for the artist (Pinterest):
 https://it.pinterest.com/pin/948218896569371199/
 https://it.pinterest.com/pin/724375921290968287/
@@ -223,6 +231,8 @@ A mechanical weapon that launches heavy bolts. Pierces dense formations and deal
 
 **Appearance:** a wooden frame, a tensioning mechanism, metal fittings and wheels for transport.
 
+![Ballista — central skin, concept](../images/empire/units/ballista/central.png)
+
 <!-- References for the artist (Pinterest):
 https://it.pinterest.com/pin/548524429626876672/
 -->
@@ -232,6 +242,8 @@ https://it.pinterest.com/pin/548524429626876672/
 Hurls heavy stone projectiles over long distances. Especially effective against walls, towers and buildings, but slow to turn and poorly protected against attacks.
 
 **Appearance:** a massive wooden structure with a counterweight, ropes, a wheeled platform and stone projectiles.
+
+![Trebuchet — central skin, concept](../images/empire/units/trebuchet/central.png)
 
 <!-- References for the artist (Pinterest):
 https://it.pinterest.com/pin/46865652360692110/
@@ -243,6 +255,8 @@ A mage of the battle wing of the imperial Mages' Guild. Specializes in destructi
 
 **Appearance:** a dark red robe, protective bracers, a staff or wand, glowing orange energy effects.
 
+![Fire Mage — central skin, concept](../images/empire/units/fire_mage/central.png)
+
 <!-- References for the artist (Pinterest):
 https://it.pinterest.com/pin/646196246568536789/
 -->
@@ -252,6 +266,8 @@ https://it.pinterest.com/pin/646196246568536789/
 Controls streams of water, slows enemies, breaks up their formations and supports allies. Their main value is controlling the pace of battle, not maximum direct damage.
 
 **Appearance:** blue-turquoise clothing, silver details, a staff with a water focus, effects of streams and water spheres.
+
+![Water Mage — central skin, concept](../images/empire/units/water_mage/central.png)
 
 <!-- References for the artist (Pinterest):
 https://it.pinterest.com/pin/384143043233963347/

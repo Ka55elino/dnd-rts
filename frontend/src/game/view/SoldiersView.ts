@@ -117,6 +117,8 @@ class Frame {
 export class SoldiersView {
     readonly mesh: THREE.InstancedMesh;
     readonly rings: THREE.InstancedMesh;
+    /** Player-color ring under every visible soldier (the team is not painted on the models). */
+    readonly teamRings: THREE.InstancedMesh;
     /** Ground shadows under flyers. */
     readonly shadows: THREE.InstancedMesh;
     readonly corpses: THREE.InstancedMesh;
@@ -197,6 +199,22 @@ export class SoldiersView {
         this.rings.count = 0;
         this.rings.frustumCulled = false;
 
+        const teamGeo = new THREE.RingGeometry(0.36, 0.46, 16).rotateX(-Math.PI / 2);
+        const teamMat = new THREE.MeshBasicMaterial({
+            color: 0xffffff,
+            transparent: true,
+            opacity: 0.75,
+            depthWrite: false,
+            polygonOffset: true,
+            polygonOffsetFactor: -2,
+        });
+        this.teamRings = new THREE.InstancedMesh(teamGeo, teamMat, capacity);
+        this.teamRings.instanceMatrix.setUsage(THREE.DynamicDrawUsage);
+        this.teamRings.setColorAt(0, new THREE.Color(1, 1, 1));
+        this.teamRings.instanceColor!.setUsage(THREE.DynamicDrawUsage);
+        this.teamRings.count = 0;
+        this.teamRings.frustumCulled = false;
+
         const shadowGeo = new THREE.CircleGeometry(0.6, 16).rotateX(-Math.PI / 2);
         const shadowMat = new THREE.MeshBasicMaterial({
             color: 0x000000,
@@ -230,7 +248,7 @@ export class SoldiersView {
             return { vat, clips, rates, die: model.clip("die") };
         });
 
-        this.objects = [this.mesh, this.corpses, this.rings, this.shadows, ...this.renderers.flatMap((r) => r.meshes)];
+        this.objects = [this.mesh, this.corpses, this.rings, this.teamRings, this.shadows, ...this.renderers.flatMap((r) => r.meshes)];
         this.curr = new Frame(capacity);
         this.next = new Frame(capacity);
         this.prevPos = new Float32Array(capacity * 3);
@@ -373,7 +391,10 @@ export class SoldiersView {
         const pcolors = this.mesh.instanceColor!.array as Float32Array;
         const rm = this.rings.instanceMatrix.array as Float32Array;
         const sm = this.shadows.instanceMatrix.array as Float32Array;
+        const tm = this.teamRings.instanceMatrix.array as Float32Array;
+        const tc = this.teamRings.instanceColor!.array as Float32Array;
         let shadows = 0;
+        let teamRings = 0;
         const dt = this.lastFrame ? Math.min((now - this.lastFrame) / 1000, 0.1) : 0;
         this.lastFrame = now;
         const f = this.curr;
@@ -453,9 +474,14 @@ export class SoldiersView {
                 writeYRotation(target, k, x, y, z, r, s);
             }
 
+            this.teamColors[f.owner[i] % 4].toArray(tc, teamRings * 3);
+            teamRings = this.writeRing(tm, teamRings, renderPos[o], ground, renderPos[o + 2], s);
             if (selected.has(f.hordeOf[i])) rings = this.writeRing(rm, rings, renderPos[o], ground, renderPos[o + 2], s);
         }
 
+        this.teamRings.count = teamRings;
+        this.teamRings.instanceMatrix.needsUpdate = true;
+        this.teamRings.instanceColor!.needsUpdate = true;
         this.mesh.count = placeholders;
         this.mesh.instanceMatrix.needsUpdate = true;
         this.mesh.instanceColor!.needsUpdate = true;

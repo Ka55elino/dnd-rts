@@ -52,9 +52,12 @@ Update this table when files are added or removed (`find art/source -type f -not
 | `empire/units/swordsman/rig/rig.blend` | lowpoly, animations | skeleton (Mixamo, 33 bones) |
 | `empire/units/swordsman/animations/animations.blend` | export | clips: idle, run, attack, die, brace, walk_brace |
 | `empire/units/swordsman/animations/source/mixamo_*.fbx` | — | Mixamo imports the clips were made from (block, death, idle, run, slash, strafe) |
-| `empire/units/swordsman/textures/central_albedo.png` | `vatbake` | 512×512, alpha = team mask |
+| `empire/units/swordsman/textures/central_albedo.png` | `vatbake` | 512×512, alpha = team mask; RGB baked from `central_high.glb` (Meshy) |
+| `empire/units/swordsman/textures/central_albedo_meshy_1024.png` | — | the raw 1024×1024 bake from `central_high.glb` (before downscaling and adding the team mask) |
+| `empire/units/swordsman/textures/central_albedo_trellis.png` | — | the previous albedo, baked from the TRELLIS.2 high-poly (backup) |
 | `empire/units/swordsman/highpoly/central.glb` | texture bake | TRELLIS.2 generation from the concept (13 MB) |
 | `empire/units/swordsman/highpoly/central_posed.glb` | texture bake | the same, moved into the low-poly's pose (20 MB) |
+| `empire/units/swordsman/central_high.glb` | texture bake (current source) | Meshy generation "Crimson Sentinel" from the concept: 79k triangles, 3 × 2048² PBR textures (9 MB) |
 | `grab3d/ranger.glb` | `vatbake` → `ranger` | placeholder, grab3d.com Character Mixer, CC0 1.0 |
 
 ### Machines, buildings (placeholders)
