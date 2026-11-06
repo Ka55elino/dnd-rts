@@ -1,0 +1,15 @@
+{
+  "id": "runemaster",
+  "name": "Rune Master",
+  "unit": "runemaster",
+  "size": 1,
+  "formation": {
+    "columns": 1,
+    "spacing": 1
+  },
+  "cost": {
+    "gold": 1100
+  },
+  "buildTime": 60,
+  "unique": true
+}

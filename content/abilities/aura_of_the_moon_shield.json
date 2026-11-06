@@ -1,0 +1,9 @@
+{
+  "id": "aura_of_the_moon_shield",
+  "name": "Aura of the Moon Shield",
+  "kind": "aura",
+  "radius": 15,
+  "modifiers": {
+    "magicDefense": 3
+  }
+}

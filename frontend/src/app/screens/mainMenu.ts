@@ -3,6 +3,7 @@ import type { Screen } from "../screen";
 
 export interface MainMenuActions {
     onGame(): void;
+    onPlayground(): void;
     onEditor(): void;
     onOptions(): void;
     onBenchmark(): void;
@@ -20,6 +21,7 @@ export function createMainMenu(actions: MainMenuActions): Screen {
                 <h1 class="main-menu__title">dnd-rts</h1>
                 <nav class="main-menu__items">
                     <button class="menu-btn" data-action="game">Game</button>
+                    <button class="menu-btn" data-action="playground">Playground</button>
                     <button class="menu-btn" data-action="editor">Editor</button>
                     <button class="menu-btn" data-action="options">Options</button>
                     <button class="menu-btn menu-btn--dev" data-action="models">Model Overview</button>
@@ -33,6 +35,9 @@ export function createMainMenu(actions: MainMenuActions): Screen {
                 switch (action) {
                     case "game":
                         actions.onGame();
+                        break;
+                    case "playground":
+                        actions.onPlayground();
                         break;
                     case "editor":
                         actions.onEditor();

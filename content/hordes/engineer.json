@@ -1,0 +1,15 @@
+{
+  "id": "engineer",
+  "name": "Dwarf Engineer",
+  "unit": "engineer",
+  "size": 1,
+  "formation": {
+    "columns": 1,
+    "spacing": 1
+  },
+  "cost": {
+    "gold": 900
+  },
+  "buildTime": 60,
+  "unique": true
+}

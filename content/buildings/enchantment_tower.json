@@ -1,0 +1,31 @@
+{
+  "id": "enchantment_tower",
+  "name": "Enchantment Tower",
+  "kind": "building",
+  "model": "enchantment_tower",
+  "footprint": {
+    "x": 10,
+    "y": 10
+  },
+  "health": 1400,
+  "armor": 3,
+  "placement": [
+    "free"
+  ],
+  "buildTime": 22,
+  "cost": {
+    "gold": 180,
+    "wood": 100
+  },
+  "material": "stone",
+  "research": [
+    "elemental_blades_fire",
+    "elemental_blades_ice",
+    "elemental_blades_lightning",
+    "elemental_arrows_fire",
+    "elemental_arrows_ice",
+    "elemental_arrows_lightning",
+    "elven_camouflage",
+    "true_sight"
+  ]
+}

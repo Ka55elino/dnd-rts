@@ -1,0 +1,17 @@
+{
+  "id": "goblin_wolf_riders",
+  "name": "Goblin Wolf Riders",
+  "unit": "goblin_wolf_rider",
+  "size": 10,
+  "formation": {
+    "columns": 5,
+    "spacing": 2.2
+  },
+  "cost": {
+    "gold": 260
+  },
+  "buildTime": 35,
+  "uses": {
+    "food": 12
+  }
+}

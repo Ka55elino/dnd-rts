@@ -2,8 +2,7 @@
   "id": "stables",
   "name": "Stables",
   "kind": "building",
-  "model": "witch_cottage",
-  "modelScale": 2.0,
+  "model": "stables",
   "footprint": {
     "x": 11,
     "y": 10
@@ -11,7 +10,7 @@
   "health": 1400,
   "armor": 3,
   "placement": [
-    "plot"
+    "free"
   ],
   "buildTime": 25,
   "cost": {

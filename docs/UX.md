@@ -17,7 +17,6 @@ The cursor shows what a click at this spot will do. The client decides, as a hin
 | `select` | over an own squad or building |
 | `inspect` | over an enemy or neutral object |
 | `scrollN` … `scrollNW` | mouse at the screen edge (8 px): scrolling in 8 directions |
-| `plot` | over an own free plot or tower slot |
 | `rally` | an own building with recruitment is selected, cursor over the ground (right click — rally point) |
 
 ### Own squads selected (what a right click will do)

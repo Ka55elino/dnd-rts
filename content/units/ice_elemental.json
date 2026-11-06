@@ -1,7 +1,7 @@
 {
   "id": "ice_elemental",
   "name": "Ice Elemental",
-  "model": "",
+  "model": "ice_elemental_simple",
   "health": 450,
   "armor": 0,
   "speed": 4.5,

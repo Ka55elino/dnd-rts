@@ -1,0 +1,16 @@
+{
+  "id": "wards_against_magic",
+  "name": "Wards Against Magic",
+  "cost": {
+    "gold": 250,
+    "metal": 50
+  },
+  "researchTime": 35,
+  "units": [
+    "alkar_swordsman",
+    "alkar_archer"
+  ],
+  "modifiers": {
+    "magicDefense": 3
+  }
+}

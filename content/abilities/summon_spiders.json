@@ -1,0 +1,15 @@
+{
+  "id": "summon_spiders",
+  "name": "Summon Spiders",
+  "kind": "active",
+  "target": "self",
+  "cooldown": 50,
+  "effects": [
+    {
+      "type": "summon",
+      "horde": "spiders",
+      "count": 1,
+      "duration": 40
+    }
+  ]
+}

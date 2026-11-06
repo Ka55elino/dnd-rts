@@ -1,0 +1,18 @@
+{
+  "id": "golems",
+  "name": "Golem",
+  "unit": "golem",
+  "size": 1,
+  "formation": {
+    "columns": 1,
+    "spacing": 1
+  },
+  "cost": {
+    "gold": 500,
+    "metal": 150
+  },
+  "buildTime": 50,
+  "uses": {
+    "food": 10
+  }
+}

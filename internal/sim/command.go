@@ -12,9 +12,9 @@ const (
 	CmdToggle         // Hordes switch toggle ability Name
 	CmdAutocast       // Hordes set autocast of Name on (Count = 1) or off (0)
 	CmdAttackBuilding // attack TargetBuilding
-	CmdBuildOnPlot    // build Name on plot Count of TargetBuilding (a fortress / outpost)
+	_                 // (was: build on a plot; kept so the numbers of the commands below stay the same)
 	CmdCancelBuild    // cancel construction of TargetBuilding
-	CmdBuildFree      // workers (Hordes) put up Name at Target facing Angle
+	CmdBuildFree      // workers (Hordes) put up Name at Target facing Angle (towers: on the own wall near Target)
 	CmdConstruct      // workers (Hordes) help build the unfinished TargetBuilding
 	CmdTrain          // queue horde type Name in TargetBuilding
 	CmdCancelTrain    // remove queue entry Count of TargetBuilding (refund)
@@ -36,6 +36,10 @@ const (
 	CmdDevGive          // add Count of resource Name to Player (negative takes)
 	CmdDevHit           // hit every soldier of Hordes (and the Buildings) for Count damage of type Name
 	CmdDevXP            // give Count experience to the heroes among Hordes
+	CmdDevFog           // fog of war on (Count 1) or off (0)
+	CmdDevTree          // plant Count grown trees around Target
+
+	CmdBuildWall // workers (Hordes) build a wall line of type Name from Target to To
 )
 
 // Command is the only way to change the world. In lockstep multiplayer the
@@ -50,6 +54,7 @@ type Command struct {
 	TargetBuilding BuildingID `json:"targetBuilding,omitempty"` // enemy building (CmdAttackBuilding)
 
 	Angle fixed.Fixed `json:"angle,omitempty"` // building facing, radians (CmdBuildFree)
+	To    fixed.Vec2  `json:"to,omitempty"`    // the end of a wall line (CmdBuildWall)
 
 	// Developer commands.
 	Name      string       `json:"name,omitempty"`

@@ -1,0 +1,9 @@
+{
+  "id": "dark_might",
+  "name": "Dark Might",
+  "kind": "passive",
+  "modifiers": {
+    "extraType": "necrotic",
+    "extraDamage": 0.2
+  }
+}

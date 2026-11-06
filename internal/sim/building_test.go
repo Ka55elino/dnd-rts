@@ -3,7 +3,6 @@ package sim
 import (
 	"testing"
 
-	"dnd-rts/internal/data"
 	"dnd-rts/internal/fixed"
 )
 
@@ -29,8 +28,8 @@ func TestSetupPlacesBuildings(t *testing.T) {
 	if forts != 2 || outposts != len(m.Outposts) {
 		t.Fatalf("fortresses %d, outposts %d", forts, outposts)
 	}
-	if len(w.Walls) != 2 || gates != 4 || walls+gates != 2*len(w.Walls[0].Nodes) {
-		t.Errorf("walls: rings %d, wall segments %d, gate segments %d", len(w.Walls), walls, gates)
+	if len(w.Walls) != 0 || walls+gates != 0 {
+		t.Errorf("a skirmish starts without walls: rings %d, wall segments %d, gates %d", len(w.Walls), walls, gates)
 	}
 	if b := w.Buildings[0]; b.Owner != 0 || b.Def.Kind != "fortress" {
 		t.Errorf("first building: owner %d kind %q, want player 0's fortress", b.Owner, b.Def.Kind)
@@ -54,23 +53,11 @@ func TestBuildingBlocksNav(t *testing.T) {
 	}
 }
 
-// Every plot of every map building must be on open ground and clear of other buildings.
-func TestPlotsAreBuildable(t *testing.T) {
+// The base leaves room inside the wall for the big buildings.
+func TestRoomInsideTheBase(t *testing.T) {
 	w := newTestWorld(t)
-	g := w.Nav.Grid()
-	for _, b := range w.Buildings {
-		for i, plot := range b.Def.Plots {
-			if plot.Class == data.PlotTower {
-				continue // tower sockets sit on the wall
-			}
-			half := plot.Size.DivInt(2)
-			for _, c := range []fixed.Vec2{{}, {X: -half, Y: -half}, {X: half, Y: -half}, {X: -half, Y: half}, {X: half, Y: half}} {
-				q := b.Local(plot.Offset.Add(c))
-				if !g.WalkableAt(q) {
-					t.Errorf("%s %d plot %d: %v is blocked", b.Def.ID, b.ID, i, q)
-				}
-			}
-		}
+	for k := 0; k < 4; k++ {
+		baseSpot(t, w, "mage_guild", k)
 	}
 }
 

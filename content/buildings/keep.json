@@ -3,7 +3,12 @@
   "name": "Keep",
   "kind": "fortress",
   "model": "keep",
-  "modelScale": 1.6,
+  "factionModels": {
+    "high_elves": "keep_high_elves",
+    "dark_elves": "keep_dark_elves",
+    "alkars": "keep_alkars",
+    "dwarves": "keep_dwarves"
+  },
   "footprint": {
     "x": 14,
     "y": 14
@@ -23,47 +28,24 @@
     "archmage",
     "emperor",
     "captain",
-    "warlord"
+    "warlord",
+    "spirits",
+    "elf_ranger",
+    "elf_king",
+    "priestess",
+    "webweavers",
+    "dark_paladin",
+    "dark_archer",
+    "spider_queen",
+    "goblins",
+    "dark_lord",
+    "alkar_dark_mage",
+    "wraith_king",
+    "dwarf_workers",
+    "dwarf_king",
+    "engineer",
+    "runemaster"
   ],
   "material": "stone",
-  "base": {
-    "shape": "circle",
-    "radius": 70,
-    "rings": [
-      {
-        "radius": 26,
-        "count": 4,
-        "offset": 45,
-        "sizes": [
-          "m"
-        ]
-      },
-      {
-        "radius": 39,
-        "count": 6,
-        "offset": 30,
-        "sizes": [
-          "s",
-          "l",
-          "s"
-        ]
-      },
-      {
-        "radius": 53,
-        "count": 6,
-        "offset": 30,
-        "sizes": [
-          "m"
-        ]
-      }
-    ],
-    "gates": [
-      0,
-      180
-    ],
-    "towers": 8,
-    "wall": "castle_wall",
-    "gate": "castle_gate",
-    "stairs": 4
-  }
+  "noBuildRadius": 12
 }

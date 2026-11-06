@@ -618,7 +618,7 @@
 
 .hud-card__grid {
     display: grid;
-    grid-template-columns: repeat(4, 58px);
+    grid-template-columns: repeat(6, 58px);
     grid-template-rows: repeat(3, 58px);
     gap: 7px;
 }
@@ -683,7 +683,7 @@
     position: absolute;
     right: 0;
     bottom: calc(100% + 10px);
-    width: 260px;
+    width: 300px;
     box-sizing: border-box;
     padding: 8px 12px 9px;
     color: #2b2116;
@@ -695,10 +695,31 @@
     pointer-events: none;
 }
 
+/* Tooltip of a hero / selection portrait (game/hud/Hud.ts), the same parchment as the command card's. */
+.hud-tip {
+    position: absolute;
+    left: 0;
+    top: 0;
+    z-index: 30;
+    max-width: 260px;
+    padding: 7px 12px 8px;
+    color: #2b2116;
+    background:
+        radial-gradient(ellipse at 30% 20%, rgba(255, 255, 255, 0.35), transparent 60%),
+        linear-gradient(#efe0bb, #dcc79a);
+    border: 1px solid #7a5a2c;
+    box-shadow: inset 0 0 12px rgba(122, 90, 44, 0.35), 0 4px 12px rgba(0, 0, 0, 0.6);
+    pointer-events: none;
+    white-space: nowrap;
+}
+.hud-tip[hidden] { display: none; }
+
 .hud-card__tip-title { font-family: var(--display); font-size: 14px; font-weight: 700; }
 .hud-card__tip-key { float: right; font-size: 12px; color: #7a5a2c; }
 .hud-card__tip-detail { margin-top: 3px; font-size: 13px; line-height: 1.35; color: #4a3826; }
 .hud-card__tip-detail .res-cost { font-size: 13px; font-weight: 700; }
+/* What an ability does (generated from its numbers): one effect per line. */
+.hud-card__tip-desc { display: inline-block; margin: 3px 0 1px; color: #2b2116; }
 .hud-card__tip-detail .res-cost.is-short { color: #a3291a; }
 
 /* Waiting for the target of a command card order. */
@@ -725,3 +746,7 @@
 
 .radial__tip-req,
 .hud-card__tip-req { color: #a3291a; font-weight: 700; }
+
+/* Own horde that the enemy cannot see (invisible / camouflaged). */
+.horde-label--hidden { opacity: 0.55; }
+.horde-label--hidden .horde-label__text::before { content: "◌ "; }

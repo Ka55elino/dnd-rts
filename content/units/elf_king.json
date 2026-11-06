@@ -1,0 +1,48 @@
+{
+  "id": "elf_king",
+  "name": "Elf King",
+  "model": "elf_king_simple",
+  "health": 1100,
+  "armor": 4,
+  "speed": 7,
+  "radius": 0.8,
+  "mass": 4.5,
+  "melee": {
+    "damage": 44,
+    "range": 1.7,
+    "cooldown": 1.1,
+    "damageType": "slash"
+  },
+  "charge": {
+    "trampleDamage": 35,
+    "knockback": 7
+  },
+  "tags": [
+    "hero",
+    "cavalry",
+    "living"
+  ],
+  "armorClass": "heavy",
+  "magicDefense": 3,
+  "hero": {
+    "xp": [
+      0,
+      150,
+      400,
+      800,
+      1400
+    ],
+    "perLevel": {
+      "damage": 0.1,
+      "armor": 0.5
+    },
+    "healthPerLevel": 0.1
+  },
+  "abilities": [
+    "thicket",
+    "child_of_the_forest",
+    "sacred_tree",
+    "power_of_growth",
+    "awakening_of_the_ents"
+  ]
+}

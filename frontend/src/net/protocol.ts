@@ -57,7 +57,6 @@ export const MsgCmdAttack = 112;
 export const MsgCmdAbility = 113;
 export const MsgCmdConsole = 114;
 export const MsgCmdSiege = 115;
-export const MsgCmdPlot = 116;
 export const MsgCmdCancel = 117;
 export const MsgCmdBuild = 118;
 export const MsgCmdHelp = 119;
@@ -69,6 +68,7 @@ export const MsgCmdHold = 124;
 export const MsgCmdAMove = 125;
 export const MsgCmdPatrol = 126;
 export const MsgCmdFireAt = 133;
+export const MsgCmdWall = 134;
 export const MsgCmdCast = 127;
 export const MsgCmdToggle = 128;
 export const MsgCmdAuto = 129;
@@ -111,8 +111,6 @@ export const isConstructing = (flags: number): boolean => (flags & 1) !== 0;
 export const isCapturing = (flags: number): boolean => (flags & 2) !== 0;
 /** Construction progress (1 when finished), or capture progress while capturing. */
 export const buildProgress = (flags: number): number => (flags & 3 ? ((flags >>> 8) & 0xff) / 255 : 1);
-export const plotOccupied = (b: { flags: number; plotsHi: number }, plot: number): boolean =>
-    plot < 16 ? ((b.flags >>> 16) & (1 << plot)) !== 0 : plot < 48 && (b.plotsHi & (1 << (plot - 16))) !== 0;
 
 /** Soldier animation states (internal/protocol Soldier*). */
 export const SoldierIdle = 0;
@@ -167,6 +165,20 @@ export const HORDE_TRANSFORMED = 1;
 export const HORDE_SUMMONED = 2;
 /** A stance toggle (shield wall, spear wall) is on: soldiers play their "brace" clip. */
 export const HORDE_STANCE = 4;
+/** Invisible to enemies (own hordes are drawn see-through). */
+export const HORDE_HIDDEN = 8;
+/** A ground trap: drawn flat and see-through, no plate. */
+export const HORDE_TRAP = 16;
+
+export interface TreeSnap {
+    x: number;
+    z: number;
+    grown: boolean;
+}
+
+export const FOG_UNEXPLORED = 0;
+export const FOG_EXPLORED = 1;
+export const FOG_VISIBLE = 2;
 
 /** A unique horde of the local player: on the field or waiting for revival. */
 export interface HeroSnap {
@@ -255,7 +267,7 @@ export interface BuildingSnap {
     hp: number;
     maxHp: number;
     flags: number;
-    /** Occupied plots 16–47 (tower sockets of a base wall come last). */
+    /** Reserved (always 0; were occupied build plots). */
     plotsHi: number;
 }
 
@@ -283,6 +295,12 @@ export interface GameSnapshot {
     upgrades: Set<number>;
     /** Local player's unique hordes, in hire order. */
     heroes: HeroSnap[];
+    /** Hordes the player stopped seeing this tick while they are alive (invisible / fog): no corpses. */
+    vanished: Set<number>;
+    /** Trees on the map (empty: none or not sent). */
+    trees: TreeSnap[];
+    /** Fog of war grid (null: no fog): per cell FOG_UNEXPLORED / FOG_EXPLORED / FOG_VISIBLE. */
+    fog: { cols: number; rows: number; cells: Uint8Array } | null;
     projectiles: ProjectileSnap[];
     buildings: BuildingSnap[];
     simMicros: number;
@@ -431,8 +449,29 @@ export function decodeGameSnapshot(buf: ArrayBuffer): GameSnapshot | null {
             xp: v.getUint32(off + 4, true),
         };
     }
+    // Optional tail: vanished hordes, trees, fog of war.
+    const vanished = new Set<number>();
+    const trees: TreeSnap[] = [];
+    let fog: GameSnapshot["fog"] = null;
+    if (off + 8 <= buf.byteLength) {
+        const nv = v.getUint16(off, true);
+        const nt = v.getUint16(off + 2, true);
+        const cols = v.getUint16(off + 4, true);
+        const rows = v.getUint16(off + 6, true);
+        off += 8;
+        for (let i = 0; i < nv; i++, off += 4) vanished.add(v.getUint32(off, true));
+        for (let i = 0; i < nt; i++, off += 12) {
+            trees.push({ x: v.getFloat32(off, true), z: v.getFloat32(off + 4, true), grown: (v.getUint8(off + 8) & 1) !== 0 });
+        }
+        if (cols > 0 && rows > 0 && off + cols * rows <= buf.byteLength) {
+            fog = { cols, rows, cells: new Uint8Array(buf.slice(off, off + cols * rows)) };
+        }
+    }
 
     return {
+        vanished,
+        trees,
+        fog,
         tick,
         hashTick,
         hash,
@@ -457,14 +496,38 @@ export function decodeGameSnapshot(buf: ArrayBuffer): GameSnapshot | null {
     };
 }
 
-export function encodeHello(mapId: string): ArrayBuffer {
-    const name = new TextEncoder().encode(mapId);
-    const buf = new ArrayBuffer(4 + name.length);
+/** Match modes (internal/protocol: ModeSkirmish / ModePlayground). */
+export const ModeSkirmish = 0;
+export const ModePlayground = 1;
+
+export interface HelloOptions {
+    mode?: number;
+    /** Faction ids per player, in player order (empty = the server's defaults). */
+    factions?: string[];
+}
+
+/** Hello: u8 type, u8 version, u16 len, map id; then u8 mode, u8 count, count × (u16 len, faction id). */
+export function encodeHello(mapId: string, opts: HelloOptions = {}): ArrayBuffer {
+    const enc = new TextEncoder();
+    const name = enc.encode(mapId);
+    const factions = (opts.factions ?? []).map((f) => enc.encode(f));
+    const size = 4 + name.length + 2 + factions.reduce((n, f) => n + 2 + f.length, 0);
+    const buf = new ArrayBuffer(size);
     const v = new DataView(buf);
+    const bytes = new Uint8Array(buf);
     v.setUint8(0, MsgHello);
     v.setUint8(1, PROTOCOL_VERSION);
     v.setUint16(2, name.length, true);
-    new Uint8Array(buf, 4).set(name);
+    bytes.set(name, 4);
+    let off = 4 + name.length;
+    v.setUint8(off, opts.mode ?? ModeSkirmish);
+    v.setUint8(off + 1, factions.length);
+    off += 2;
+    for (const f of factions) {
+        v.setUint16(off, f.length, true);
+        bytes.set(f, off + 2);
+        off += 2 + f.length;
+    }
     return buf;
 }
 
@@ -535,18 +598,6 @@ export function encodeSiege(targetBuilding: number, hordeIds: number[]): ArrayBu
     return buf;
 }
 
-/** Build building type `kind` on plot `plot` of fortress / outpost `host`. */
-export function encodePlot(host: number, plot: number, kind: number): ArrayBuffer {
-    const buf = new ArrayBuffer(12);
-    const v = new DataView(buf);
-    v.setUint8(0, MsgCmdPlot);
-    v.setUint8(1, PROTOCOL_VERSION);
-    v.setUint16(2, plot, true);
-    v.setUint32(4, host, true);
-    v.setUint16(8, kind, true);
-    return buf;
-}
-
 /** Workers put up building `kind` at (x, z) facing `angle` (radians, simulation convention). */
 export function encodeBuild(kind: number, x: number, z: number, angle: number, workers: number[]): ArrayBuffer {
     const n = Math.min(workers.length, 256);
@@ -560,6 +611,23 @@ export function encodeBuild(kind: number, x: number, z: number, angle: number, w
     v.setInt32(12, toFixedRaw(z), true);
     v.setInt32(16, toFixedRaw(angle), true);
     for (let i = 0; i < n; i++) v.setUint32(20 + i * 4, workers[i], true);
+    return buf;
+}
+
+/** Workers build a wall line of building `kind` from (x0, z0) to (x1, z1). */
+export function encodeWall(kind: number, x0: number, z0: number, x1: number, z1: number, workers: number[]): ArrayBuffer {
+    const n = Math.min(workers.length, 256);
+    const buf = new ArrayBuffer(24 + n * 4);
+    const v = new DataView(buf);
+    v.setUint8(0, MsgCmdWall);
+    v.setUint8(1, PROTOCOL_VERSION);
+    v.setUint16(2, n, true);
+    v.setUint16(4, kind, true);
+    v.setInt32(8, toFixedRaw(x0), true);
+    v.setInt32(12, toFixedRaw(z0), true);
+    v.setInt32(16, toFixedRaw(x1), true);
+    v.setInt32(20, toFixedRaw(z1), true);
+    for (let i = 0; i < n; i++) v.setUint32(24 + i * 4, workers[i], true);
     return buf;
 }
 

@@ -1,0 +1,17 @@
+{
+  "id": "dark_priests",
+  "name": "Dark Priests",
+  "unit": "dark_priest",
+  "size": 4,
+  "formation": {
+    "columns": 2,
+    "spacing": 1.4
+  },
+  "cost": {
+    "gold": 220
+  },
+  "buildTime": 30,
+  "uses": {
+    "food": 8
+  }
+}

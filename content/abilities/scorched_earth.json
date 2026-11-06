@@ -1,0 +1,24 @@
+{
+  "id": "scorched_earth",
+  "name": "Scorched Earth",
+  "kind": "active",
+  "target": "point",
+  "range": 24,
+  "cooldown": 40,
+  "effects": [
+    {
+      "type": "zone",
+      "radius": 8,
+      "duration": 10,
+      "interval": 1,
+      "effects": [
+        {
+          "type": "status",
+          "status": "burn",
+          "duration": 2,
+          "radius": 0
+        }
+      ]
+    }
+  ]
+}

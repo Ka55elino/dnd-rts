@@ -7,11 +7,24 @@ import (
 
 func TestDecodeHello(t *testing.T) {
 	frame := append([]byte{MsgHello, Version, 6, 0}, "plains"...)
-	if id, err := DecodeHello(frame); err != nil || id != "plains" {
-		t.Fatalf("got %q %v", id, err)
+	if h, err := DecodeHello(frame); err != nil || h.MapID != "plains" || h.Mode != ModeSkirmish || len(h.Factions) != 0 {
+		t.Fatalf("got %+v %v", h, err)
 	}
 	if _, err := DecodeHello(frame[:6]); err == nil {
 		t.Fatal("truncated hello must fail")
+	}
+
+	// playground with two factions
+	pg := append(append([]byte{}, frame...), ModePlayground, 2, 6, 0)
+	pg = append(pg, "empire"...)
+	pg = append(pg, 7, 0)
+	pg = append(pg, "warband"...)
+	h, err := DecodeHello(pg)
+	if err != nil || h.Mode != ModePlayground || len(h.Factions) != 2 || h.Factions[0] != "empire" || h.Factions[1] != "warband" {
+		t.Fatalf("playground hello: got %+v %v", h, err)
+	}
+	if _, err := DecodeHello(pg[:len(pg)-3]); err == nil {
+		t.Fatal("truncated faction must fail")
 	}
 }
 
@@ -112,17 +125,12 @@ func TestConsoleRoundTrip(t *testing.T) {
 	}
 }
 
-func TestPlotAndFlags(t *testing.T) {
-	frame := []byte{MsgCmdPlot, Version, 2, 0, 7, 0, 0, 0, 3, 0, 0, 0}
-	p, err := DecodePlot(frame)
-	if err != nil || p.Plot != 2 || p.Host != 7 || p.Kind != 3 {
-		t.Fatalf("plot %+v %v", p, err)
-	}
-	f := BuildingFlags(true, false, 0.5, 0b101)
-	if f&BuildingConstructing == 0 || (f>>8)&0xff != 127 || f>>16 != 0b101 {
+func TestBuildingFlags(t *testing.T) {
+	f := BuildingFlags(true, false, 0.5)
+	if f&BuildingConstructing == 0 || (f>>8)&0xff != 127 || f>>16 != 0 {
 		t.Fatalf("flags %#x", f)
 	}
-	if BuildingFlags(false, false, 0.5, 0)&BuildingConstructing != 0 {
+	if BuildingFlags(false, false, 0.5)&BuildingConstructing != 0 {
 		t.Error("finished building flagged as constructing")
 	}
 }
@@ -138,5 +146,20 @@ func TestDecodeBuild(t *testing.T) {
 	b, err := DecodeBuild(frame)
 	if err != nil || b.Kind != 2 || b.X != 10<<16 || b.Angle != 3<<16 || len(b.Hordes) != 1 || b.Hordes[0] != 9 {
 		t.Fatalf("%+v %v", b, err)
+	}
+}
+
+func TestDecodeWall(t *testing.T) {
+	frame := make([]byte, 28)
+	frame[0], frame[1] = MsgCmdWall, Version
+	binary.LittleEndian.PutUint16(frame[2:], 1)
+	binary.LittleEndian.PutUint16(frame[4:], 5)
+	binary.LittleEndian.PutUint32(frame[8:], 10<<16)
+	z1 := int32(-3 << 16)
+	binary.LittleEndian.PutUint32(frame[20:], uint32(z1))
+	binary.LittleEndian.PutUint32(frame[24:], 9)
+	c, err := DecodeWall(frame)
+	if err != nil || c.Kind != 5 || c.X0 != 10<<16 || c.Z1 != -3<<16 || len(c.Hordes) != 1 || c.Hordes[0] != 9 {
+		t.Fatalf("wall %+v %v", c, err)
 	}
 }

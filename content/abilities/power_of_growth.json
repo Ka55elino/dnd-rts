@@ -1,0 +1,9 @@
+{
+  "id": "power_of_growth",
+  "name": "Power of Growth",
+  "kind": "aura",
+  "radius": 20,
+  "modifiers": {
+    "treeGrowth": 2
+  }
+}

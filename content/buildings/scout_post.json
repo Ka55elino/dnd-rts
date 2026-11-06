@@ -1,0 +1,24 @@
+{
+  "id": "scout_post",
+  "name": "Scout Post",
+  "kind": "building",
+  "model": "scout_post",
+  "footprint": {
+    "x": 8,
+    "y": 8
+  },
+  "health": 800,
+  "armor": 3,
+  "placement": [
+    "free"
+  ],
+  "buildTime": 15,
+  "cost": {
+    "gold": 80,
+    "wood": 40
+  },
+  "material": "wood",
+  "trains": [
+    "scouts"
+  ]
+}

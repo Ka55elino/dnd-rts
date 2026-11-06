@@ -1,0 +1,26 @@
+{
+  "id": "dark_order_enchantments",
+  "name": "Dark Order Enchantments",
+  "kind": "building",
+  "model": "dark_order_enchantments",
+  "footprint": {
+    "x": 10,
+    "y": 10
+  },
+  "health": 1400,
+  "armor": 3,
+  "placement": [
+    "free"
+  ],
+  "buildTime": 22,
+  "cost": {
+    "gold": 180,
+    "wood": 100
+  },
+  "material": "stone",
+  "research": [
+    "wards_against_magic",
+    "cursed_weapons",
+    "invisibility_detection"
+  ]
+}

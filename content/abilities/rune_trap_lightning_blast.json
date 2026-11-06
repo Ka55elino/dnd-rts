@@ -1,0 +1,21 @@
+{
+  "id": "rune_trap_lightning_blast",
+  "name": "Lightning Rune Trap",
+  "kind": "active",
+  "target": "self",
+  "cooldown": 1,
+  "effects": [
+    {
+      "type": "damage",
+      "damageType": "lightning",
+      "amount": 40,
+      "radius": 4
+    },
+    {
+      "type": "status",
+      "status": "stun",
+      "duration": 1.5,
+      "radius": 4
+    }
+  ]
+}

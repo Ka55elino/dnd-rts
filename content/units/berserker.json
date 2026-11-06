@@ -1,0 +1,24 @@
+{
+  "id": "berserker",
+  "name": "Berserker",
+  "model": "berserker_simple",
+  "health": 140,
+  "armor": 1,
+  "speed": 4.0,
+  "radius": 0.4,
+  "mass": 1.4,
+  "melee": {
+    "damage": 20,
+    "range": 1.4,
+    "cooldown": 1.0,
+    "damageType": "slash"
+  },
+  "tags": [
+    "infantry",
+    "living"
+  ],
+  "armorClass": "light",
+  "abilities": [
+    "rage"
+  ]
+}

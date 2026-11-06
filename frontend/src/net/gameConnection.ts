@@ -6,11 +6,12 @@ import {
     encodeAttack,
     encodeConsole,
     encodeHello,
+    type HelloOptions,
     encodeMove,
     encodeSiege,
-    encodePlot,
     encodeCancel,
     encodeBuild,
+    encodeWall,
     encodeHelp,
     encodeTrain,
     encodeResearch,
@@ -45,10 +46,10 @@ export class GameConnection {
     /** Dev console replies from the server. */
     onConsole: ((out: ConsoleOutput) => void) | null = null;
 
-    constructor(mapId: string, onSnapshot: (snap: GameSnapshot, receivedAt: number) => void) {
+    constructor(mapId: string, onSnapshot: (snap: GameSnapshot, receivedAt: number) => void, hello: HelloOptions = {}) {
         const socket = Stream(STREAM_NAME);
         socket.binaryType = "arraybuffer";
-        socket.onopen = () => socket.send(encodeHello(mapId));
+        socket.onopen = () => socket.send(encodeHello(mapId, hello));
         socket.onmessage = (ev: MessageEvent) => {
             const buf = ev.data as ArrayBuffer;
             if (buf.byteLength === 0) return;
@@ -79,8 +80,9 @@ export class GameConnection {
         this.send(encodeSiege(targetBuilding, hordeIds));
     }
 
-    buildOnPlot(host: number, plot: number, kind: number): void {
-        this.send(encodePlot(host, plot, kind));
+    wall(kind: number, x0: number, z0: number, x1: number, z1: number, workers: number[]): void {
+        if (workers.length === 0) return;
+        this.send(encodeWall(kind, x0, z0, x1, z1, workers));
     }
 
     build(kind: number, x: number, z: number, angle: number, workers: number[]): void {

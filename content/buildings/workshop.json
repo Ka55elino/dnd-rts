@@ -2,8 +2,7 @@
   "id": "workshop",
   "name": "Workshop",
   "kind": "building",
-  "model": "tea_house",
-  "modelScale": 1.25,
+  "model": "workshop",
   "footprint": {
     "x": 13,
     "y": 15
@@ -12,7 +11,7 @@
   "armor": 3,
   "material": "wood",
   "placement": [
-    "plot"
+    "free"
   ],
   "buildTime": 30,
   "cost": {

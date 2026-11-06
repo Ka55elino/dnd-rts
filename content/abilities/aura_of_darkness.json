@@ -1,0 +1,10 @@
+{
+  "id": "aura_of_darkness",
+  "name": "Aura of Darkness",
+  "kind": "aura",
+  "radius": 15,
+  "modifiers": {
+    "extraType": "necrotic",
+    "extraDamage": 0.15
+  }
+}

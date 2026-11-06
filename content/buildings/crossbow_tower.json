@@ -1,0 +1,36 @@
+{
+  "id": "crossbow_tower",
+  "name": "Crossbow Tower",
+  "kind": "building",
+  "model": "crossbow_tower",
+  "footprint": {
+    "x": 6,
+    "y": 6
+  },
+  "health": 1800,
+  "armor": 4,
+  "material": "stone",
+  "placement": [
+    "tower"
+  ],
+  "buildTime": 30,
+  "cost": {
+    "gold": 250,
+    "wood": 100
+  },
+  "attack": {
+    "damage": 12,
+    "range": 30,
+    "cooldown": 1.5,
+    "damageType": "pierce",
+    "projectile": {
+      "speed": 36,
+      "spread": 2
+    },
+    "targets": [
+      "ground",
+      "air"
+    ]
+  },
+  "volley": 4
+}

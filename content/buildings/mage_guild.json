@@ -2,8 +2,7 @@
   "id": "mage_guild",
   "name": "Mage Guild",
   "kind": "building",
-  "model": "mausoleum",
-  "modelScale": 2.4,
+  "model": "mage_guild",
   "footprint": {
     "x": 13,
     "y": 13
@@ -11,7 +10,7 @@
   "health": 1200,
   "armor": 3,
   "placement": [
-    "plot"
+    "free"
   ],
   "buildTime": 30,
   "cost": {

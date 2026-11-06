@@ -1,0 +1,12 @@
+{
+  "id": "spiders",
+  "name": "Spiders",
+  "unit": "spider",
+  "size": 6,
+  "formation": {
+    "columns": 3,
+    "spacing": 1.6
+  },
+  "cost": {},
+  "buildTime": 1
+}

@@ -37,6 +37,9 @@ export class Hud {
     private lastHeroes = "";
     private lastAmounts: number[] = [];
     private lastLocal = -1;
+    /** Tooltip of the portrait under the mouse (hero column, selection). */
+    private readonly tipEl: HTMLDivElement;
+    private hoverKey = "";
 
     constructor(private readonly d: HudDeps) {
         this.root = document.createElement("div");
@@ -74,6 +77,21 @@ export class Hud {
         this.selectionEl.addEventListener("click", (e) => this.clickHorde(e, false));
         this.heroesEl.addEventListener("click", (e) => this.clickHorde(e, false));
         this.heroesEl.addEventListener("dblclick", (e) => this.clickHorde(e, true));
+        this.tipEl = document.createElement("div");
+        this.tipEl.className = "hud-tip";
+        this.tipEl.hidden = true;
+        this.root.appendChild(this.tipEl);
+        for (const el of [this.selectionEl, this.heroesEl]) {
+            el.addEventListener("mouseover", (e) => {
+                const t = (e.target as HTMLElement).closest<HTMLElement>("[data-tip-key]");
+                this.hoverKey = t?.dataset.tipKey ?? "";
+                this.showTip();
+            });
+            el.addEventListener("mouseleave", () => {
+                this.hoverKey = "";
+                this.showTip();
+            });
+        }
         d.overlay.appendChild(this.root);
     }
 
@@ -146,7 +164,7 @@ export class Hud {
                 .map((r) => {
                     const t = this.d.typeOfKind(r.kind);
                     if (!t) return "";
-                    return `<div class="hud-hero is-fallen" title="${escapeHtml(t.name)} has fallen — revive at the castle (level ${r.level})">
+                    return `<div class="hud-hero is-fallen" data-tip-key="fallen:${r.kind}" data-tip-title="${escapeHtml(t.name)}" data-tip="Fallen — revive at the castle (level ${r.level})">
                         <span class="hud-portrait__face">${iconFor(t.id, t.name)}</span>
                         <span class="hud-portrait__level">${r.level}</span>
                     </div>`;
@@ -156,6 +174,27 @@ export class Hud {
             this.heroesEl.innerHTML = heroes;
             this.lastHeroes = heroes;
         }
+        if (this.hoverKey) this.showTip(); // the portraits were rebuilt: refresh the text, keep it in place
+    }
+
+    /** Shows (or hides) the tooltip of the hovered portrait, next to it. */
+    private showTip(): void {
+        const el = this.hoverKey ? this.root.querySelector<HTMLElement>(`[data-tip-key="${this.hoverKey}"]`) : null;
+        if (!el) {
+            this.tipEl.hidden = true;
+            return;
+        }
+        const html = `<div class="hud-card__tip-title">${el.dataset.tipTitle ?? ""}</div>${el.dataset.tip ? `<div class="hud-card__tip-detail">${el.dataset.tip}</div>` : ""}`;
+        if (this.tipEl.innerHTML !== html) this.tipEl.innerHTML = html;
+        this.tipEl.hidden = false;
+        const r = el.getBoundingClientRect();
+        const root = (this.tipEl.offsetParent ?? document.body).getBoundingClientRect();
+        const inHeroes = this.heroesEl.contains(el);
+        const tip = this.tipEl.getBoundingClientRect();
+        // Heroes (left edge): to the right of the portrait; selection (bottom): above it.
+        const x = inHeroes ? r.right + 10 : Math.min(r.left + r.width / 2 - tip.width / 2, root.width - tip.width - 8);
+        const y = inHeroes ? r.top + r.height / 2 - tip.height / 2 : r.top - tip.height - 10;
+        this.tipEl.style.transform = `translate(${Math.max(8, x - root.left).toFixed(0)}px, ${Math.max(8, y - root.top).toFixed(0)}px)`;
     }
 
     dispose(): void {
@@ -166,7 +205,7 @@ export class Hud {
         const hp = h.maxHp > 0 ? h.hp / h.maxHp : 0;
         const count = t.size > 1 ? `<span class="hud-portrait__count">${h.alive}</span>` : "";
         let level = "";
-        let title = `${escapeHtml(t.name)} — ${h.hp}/${h.maxHp}`;
+        let detail = `${t.hero ? "Hero" : t.size > 1 ? `Horde · ${h.alive}/${t.size}` : "Unit"} · ${h.hp}/${h.maxHp} HP`;
         if (h.level > 0) {
             // XP bar: progress inside the current level (full at max level).
             const xp = t.heroXp ?? [];
@@ -174,9 +213,9 @@ export class Hud {
             const to = xp[h.level];
             const p = to === undefined ? 1 : Math.min(1, (h.xp - from) / Math.max(1, to - from));
             level = `<span class="hud-portrait__level">${h.level}</span><span class="hud-portrait__xp" style="--xp:${p.toFixed(3)}"></span>`;
-            title += ` · level ${h.level} · ${to === undefined ? `${h.xp} XP (max)` : `${h.xp}/${to} XP`}`;
+            detail += `<br>Level ${h.level} · ${to === undefined ? `${h.xp} XP (max)` : `${h.xp}/${to} XP`}`;
         }
-        return `<button class="${cls}" data-horde="${h.id}" style="--hp:${hp.toFixed(3)};--team:${cssColor(h.owner)}" title="${title}">
+        return `<button class="${cls}" data-horde="${h.id}" style="--hp:${hp.toFixed(3)};--team:${cssColor(h.owner)}" data-tip-key="${cls.split(" ")[0]}:${h.id}" data-tip-title="${escapeHtml(t.name)}" data-tip="${escapeHtml(detail)}">
             <span class="hud-portrait__face">${iconFor(t.id, t.name)}</span>${count}${level}
         </button>`;
     }

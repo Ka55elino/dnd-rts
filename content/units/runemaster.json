@@ -1,0 +1,54 @@
+{
+  "id": "runemaster",
+  "name": "Rune Master",
+  "model": "runemaster_simple",
+  "health": 700,
+  "armor": 2,
+  "speed": 4,
+  "radius": 0.5,
+  "mass": 3,
+  "ranged": {
+    "damage": 28,
+    "range": 24,
+    "cooldown": 1.6,
+    "damageType": "lightning",
+    "projectile": {
+      "speed": 36,
+      "spread": 1
+    },
+    "targets": [
+      "ground",
+      "air"
+    ]
+  },
+  "tags": [
+    "hero",
+    "infantry",
+    "mage",
+    "ranged",
+    "living"
+  ],
+  "armorClass": "medium",
+  "magicDefense": 6,
+  "hero": {
+    "xp": [
+      0,
+      150,
+      400,
+      800,
+      1400
+    ],
+    "perLevel": {
+      "damage": 0.1,
+      "armor": 0.5
+    },
+    "healthPerLevel": 0.1
+  },
+  "abilities": [
+    "rune_swap",
+    "rune_ward",
+    "rune_trap",
+    "rune_aura",
+    "rune_fusion"
+  ]
+}

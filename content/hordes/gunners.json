@@ -1,0 +1,18 @@
+{
+  "id": "gunners",
+  "name": "Gunners",
+  "unit": "gunner",
+  "size": 16,
+  "formation": {
+    "columns": 4,
+    "spacing": 1.1
+  },
+  "cost": {
+    "gold": 210,
+    "metal": 40
+  },
+  "buildTime": 28,
+  "uses": {
+    "food": 10
+  }
+}

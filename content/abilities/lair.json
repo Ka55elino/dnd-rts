@@ -1,0 +1,23 @@
+{
+  "id": "lair",
+  "name": "Lair",
+  "kind": "active",
+  "target": "self",
+  "cooldown": 25,
+  "effects": [
+    {
+      "type": "zone",
+      "radius": 8,
+      "duration": 12,
+      "interval": 1,
+      "effects": [
+        {
+          "type": "status",
+          "status": "slow",
+          "duration": 1.2,
+          "radius": 0
+        }
+      ]
+    }
+  ]
+}

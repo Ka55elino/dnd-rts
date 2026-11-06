@@ -30,6 +30,11 @@ type mods struct {
 	speedDamage              fixed.Fixed
 	formation                string
 	charge                   fixed.Fixed
+	reflect                  fixed.Fixed
+	noHeal                   bool
+	invisible, camouflage    bool
+	inTrees                  bool
+	detect                   fixed.Fixed
 }
 
 func (m *mods) add(x *data.Modifiers) {
@@ -48,6 +53,12 @@ func (m *mods) add(x *data.Modifiers) {
 	m.rooted = m.rooted || x.Rooted
 	m.speedDamage += x.SpeedDamage
 	m.charge += x.Charge
+	m.reflect += x.Reflect
+	m.noHeal = m.noHeal || x.NoHeal
+	m.invisible = m.invisible || x.Invisible
+	m.camouflage = m.camouflage || x.Camouflage
+	m.inTrees = m.inTrees || x.InTrees
+	m.detect = max(m.detect, x.Detect)
 	if x.Formation != "" {
 		m.formation = x.Formation
 	}
@@ -89,6 +100,7 @@ func (w *World) updateMods() {
 		b.workSpeed = 0 // auras add it again below
 	}
 	for _, h := range w.Hordes {
+		h.rangedLocked = h.Unit.Ranged != nil && !w.Meets(h.Owner, h.Unit.Ranged.Requires)
 		var own mods
 		mode := h.Mode()
 		for i, a := range h.abilities {

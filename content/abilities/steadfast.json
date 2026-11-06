@@ -1,0 +1,8 @@
+{
+  "id": "steadfast",
+  "name": "Steadfast",
+  "kind": "passive",
+  "modifiers": {
+    "stunImmune": true
+  }
+}

@@ -1,0 +1,16 @@
+{
+  "id": "undermine",
+  "name": "Undermine",
+  "kind": "active",
+  "target": "point",
+  "range": 80,
+  "cooldown": 240,
+  "onBuilding": true,
+  "ultimate": true,
+  "effects": [
+    {
+      "type": "build",
+      "building": "undermine_tunnel"
+    }
+  ]
+}

@@ -72,6 +72,13 @@ func (w *World) applyDev(c Command) {
 			}
 		}
 		w.removeDead()
+	case CmdDevFog:
+		w.SetFog(c.Count != 0)
+	case CmdDevTree:
+		for k := 0; k < max(c.Count, 1); k++ {
+			w.addTree(c.Target.Add(fixed.FromAngle(fixed.FromFraction(2399, 1000).MulInt(k)).Scale(fixed.FromFraction(3, 2).MulInt(k).Sqrt().MulInt(2))), true)
+		}
+		w.rebuildBlocked()
 	case CmdDevXP:
 		for _, id := range c.Hordes {
 			if h := w.Horde(id); h != nil {

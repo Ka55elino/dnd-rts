@@ -1,7 +1,7 @@
 {
   "id": "paladin",
   "name": "Paladin",
-  "model": "",
+  "model": "paladin_simple",
   "health": 950,
   "armor": 4,
   "speed": 4.2,

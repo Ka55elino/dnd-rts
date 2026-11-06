@@ -1,0 +1,21 @@
+{
+  "id": "debuff",
+  "name": "Curse of Weakness",
+  "kind": "active",
+  "target": "unit",
+  "range": 22,
+  "cooldown": 20,
+  "autocast": true,
+  "effects": [
+    {
+      "type": "buff",
+      "duration": 8,
+      "modifiers": {
+        "damage": -0.2,
+        "armor": -2
+      },
+      "radius": 4,
+      "affects": "enemies"
+    }
+  ]
+}

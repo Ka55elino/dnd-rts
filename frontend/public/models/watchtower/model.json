@@ -1,0 +1,30 @@
+{
+  "version": 1,
+  "lods": [
+    {
+      "file": "lod0.glb",
+      "triangles": 328
+    },
+    {
+      "file": "lod1.glb",
+      "triangles": 328
+    },
+    {
+      "file": "lod2.glb",
+      "triangles": 156
+    }
+  ],
+  "bounds": {
+    "min": [
+      -2.27,
+      -0.006,
+      -3.26
+    ],
+    "max": [
+      2.27,
+      8.705,
+      2.55
+    ]
+  },
+  "build": 1793993045983
+}

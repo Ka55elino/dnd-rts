@@ -1,0 +1,23 @@
+{
+  "id": "poison_trap",
+  "name": "Poison Trap",
+  "model": "poison_trap_simple",
+  "health": 40,
+  "armor": 0,
+  "speed": 0,
+  "radius": 0.5,
+  "mass": 1,
+  "tags": [
+    "trap"
+  ],
+  "armorClass": "light",
+  "abilities": [
+    "buried"
+  ],
+  "trap": {
+    "radius": 2.5,
+    "ability": "poison_trap_blast"
+  },
+  "sight": 6,
+  "xp": 5
+}

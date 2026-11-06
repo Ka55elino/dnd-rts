@@ -1,5 +1,6 @@
 import * as THREE from "three";
-import { StaticModel } from "../../engine/models/StaticModel";
+import { StaticModel, tintTeam } from "../../engine/models/StaticModel";
+import { PLAYER_COLORS } from "./SoldiersView";
 
 /**
  * Machines (ballistas, trebuchets, catapults, rams) drawn with static models
@@ -36,6 +37,7 @@ export class MachinesView {
     readonly group = new THREE.Group();
     private readonly live = new Map<number, Machine>();
     private frame = 0;
+    private readonly teamMats = new Map<string, THREE.Material>();
 
     constructor(private readonly models: Map<number, StaticModel>) {} // by horde kind
 
@@ -69,11 +71,12 @@ export class MachinesView {
     }
 
     /** One machine this frame (soldier id, render position, facing, shooting since `shotStart` ms or -1). */
-    place(id: number, kind: number, x: number, y: number, z: number, rot: number, scale: number, shotStart: number, now: number): void {
+    place(id: number, kind: number, owner: number, x: number, y: number, z: number, rot: number, scale: number, shotStart: number, now: number): void {
         let m = this.live.get(id);
         if (!m) {
             const model = this.models.get(kind)!;
             const obj = model.instance(1);
+            tintTeam(obj, PLAYER_COLORS[owner % PLAYER_COLORS.length], this.teamMats);
             m = { obj, parts: findParts(obj), x, z, roll: 0, shotAt: -1, seen: 0 };
             this.live.set(id, m);
             this.group.add(obj);
@@ -104,6 +107,7 @@ export class MachinesView {
         for (const m of this.live.values()) this.group.remove(m.obj);
         this.live.clear();
         for (const model of new Set(this.models.values())) model.dispose();
+        for (const mat of this.teamMats.values()) mat.dispose();
     }
 }
 

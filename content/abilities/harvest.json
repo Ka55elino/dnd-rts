@@ -1,0 +1,8 @@
+{
+  "id": "harvest",
+  "name": "Harvest",
+  "kind": "passive",
+  "modifiers": {
+    "damageTaken": -0.1
+  }
+}

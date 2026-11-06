@@ -1,7 +1,7 @@
 {
   "id": "griffon_rider",
   "name": "Griffon Rider",
-  "model": "",
+  "model": "griffon_rider_simple",
   "health": 220,
   "armor": 2,
   "speed": 8,

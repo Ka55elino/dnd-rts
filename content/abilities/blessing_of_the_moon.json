@@ -1,0 +1,10 @@
+{
+  "id": "blessing_of_the_moon",
+  "name": "Blessing of the Moon",
+  "kind": "passive",
+  "modifiers": {
+    "immune": "poison",
+    "resistType": "necrotic",
+    "resist": 1
+  }
+}

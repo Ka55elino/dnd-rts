@@ -12,6 +12,8 @@ export interface WallSegment {
     thickness: number; // footprint across
     walkHeight: number;
     gate: boolean;
+    /** Construction progress 0..1 (1 = finished): a foundation rises out of the ground. */
+    progress?: number;
 }
 
 const CAPACITY = 1200; // wall rows (two per segment): enough for 8 bases
@@ -33,6 +35,9 @@ export class WallsView {
     private readonly floor: THREE.InstancedMesh;
     private readonly posts: THREE.InstancedMesh;
     private readonly picker: THREE.InstancedMesh;
+    /** Round joints where a wall turns: a stone drum to the walkway and a parapet ring on top. */
+    private readonly joints: THREE.InstancedMesh;
+    private readonly jointRims: THREE.InstancedMesh;
     private pickIds: number[] = [];
     private dirty = true;
     private readonly modelLength: number;
@@ -66,9 +71,24 @@ export class WallsView {
         const stone = new THREE.MeshLambertMaterial({ color: 0x8f8778 });
         this.floor = this.boxes(stone, CAPACITY);
         this.posts = this.boxes(stone, CAPACITY);
+        this.joints = this.instanced(new THREE.CylinderGeometry(1, 1, 1, 24).translate(0, 0.5, 0), new THREE.MeshLambertMaterial({ color: 0xa19b91 }));
+        this.jointRims = this.instanced(
+            new THREE.CylinderGeometry(1, 1, 1, 24, 1, true).translate(0, 0.5, 0),
+            new THREE.MeshLambertMaterial({ color: 0xb8b3a8, side: THREE.DoubleSide }),
+        );
         this.picker = new THREE.InstancedMesh(new THREE.BoxGeometry(1, 1, 1).translate(0, 0.5, 0), new THREE.MeshBasicMaterial({ visible: false }), CAPACITY);
         this.picker.count = 0;
         this.group.add(this.picker);
+    }
+
+    private instanced(geo: THREE.BufferGeometry, mat: THREE.Material): THREE.InstancedMesh {
+        const mesh = new THREE.InstancedMesh(geo, mat, CAPACITY);
+        mesh.count = 0;
+        mesh.frustumCulled = false;
+        mesh.castShadow = true;
+        mesh.receiveShadow = true;
+        this.group.add(mesh);
+        return mesh;
     }
 
     private boxes(mat: THREE.Material, n: number): THREE.InstancedMesh {
@@ -82,6 +102,14 @@ export class WallsView {
 
     set(s: WallSegment): void {
         this.segs.set(s.id, s);
+        this.dirty = true;
+    }
+
+    /** A segment under construction grew (or finished). */
+    setProgress(id: number, progress: number): void {
+        const s = this.segs.get(id);
+        if (!s || s.progress === progress) return;
+        s.progress = progress;
         this.dirty = true;
     }
 
@@ -117,7 +145,7 @@ export class WallsView {
             const off = s.thickness / 2 - this.modelDepth / 2;
             const sx = (s.length / this.modelLength) * 1.03; // a touch of overlap hides the joints
             for (const side of [1, -1]) {
-                this.row.compose(this.v.set(0, 0, side * off), this.q.setFromAxisAngle(this.up, side > 0 ? 0 : Math.PI), this.s.set(sx, 1, 1));
+                this.row.compose(this.v.set(0, 0, side * off), this.q.setFromAxisAngle(this.up, side > 0 ? 0 : Math.PI), this.s.set(sx, height(s), 1));
                 this.row.premultiply(this.seg);
                 const i = counts[level]++;
                 for (const part of this.levels[level]) {
@@ -136,10 +164,47 @@ export class WallsView {
 
     dispose(): void {
         for (const parts of this.levels) for (const p of parts) this.group.remove(p.mesh); // geometry / materials belong to the model
-        for (const b of [this.floor, this.posts, this.picker]) {
+        for (const b of [this.floor, this.posts, this.picker, this.joints, this.jointRims]) {
             b.geometry.dispose();
             (b.material as THREE.Material).dispose();
         }
+    }
+
+    /**
+     * Joints (mirror of sim.WallJoints): where the centre-line tips of two finished wall segments
+     * meet at an angle, a drum of the wall's thickness fills the corner, up to the walkway, with a
+     * parapet ring above.
+     */
+    private rebuildJoints(): void {
+        const tips: { x: number; z: number; ax: number; az: number; s: WallSegment }[] = [];
+        for (const s of this.segs.values()) {
+            if (s.gate || height(s) < 1) continue;
+            const ax = Math.cos(s.rot);
+            const az = -Math.sin(s.rot); // the segment's axis along the wall
+            for (const k of [-1, 1]) tips.push({ x: s.x + (k * ax * s.length) / 2, z: s.z + (k * az * s.length) / 2, ax, az, s });
+        }
+        let n = 0;
+        for (let i = 0; i < tips.length; i++) {
+            for (let j = i + 1; j < tips.length; j++) {
+                const a = tips[i];
+                const b = tips[j];
+                if (a.s === b.s || Math.hypot(a.x - b.x, a.z - b.z) > 0.5) continue;
+                if (Math.abs(a.ax * b.ax + a.az * b.az) >= 0.985 || n >= CAPACITY) continue; // straight on
+                const r = a.s.thickness / 2;
+                const x = (a.x + b.x) / 2;
+                const z = (a.z + b.z) / 2;
+                const y = Math.min(a.s.y, b.s.y);
+                this.m.compose(this.v.set(x, y, z), this.q.identity(), this.s.set(r, a.s.walkHeight, r));
+                this.joints.setMatrixAt(n, this.m);
+                this.m.compose(this.v.set(x, y + a.s.walkHeight, z), this.q.identity(), this.s.set(r, 1.0, r));
+                this.jointRims.setMatrixAt(n, this.m);
+                n++;
+            }
+        }
+        this.joints.count = n;
+        this.jointRims.count = n;
+        this.joints.instanceMatrix.needsUpdate = true;
+        this.jointRims.instanceMatrix.needsUpdate = true;
     }
 
     private segmentMatrix(s: WallSegment): void {
@@ -154,8 +219,8 @@ export class WallsView {
         this.pickIds = [];
         for (const s of this.segs.values()) {
             this.segmentMatrix(s);
-            // Walkway slab on top (over gates too: the arch).
-            this.m.compose(this.v.set(0, s.walkHeight - 0.35, 0), this.q.identity(), this.s.set(s.length * 1.02, 0.35, s.thickness - 0.4)).premultiply(this.seg);
+            // Walkway slab on top (over gates too: the arch); a foundation's rises with it.
+            this.m.compose(this.v.set(0, s.walkHeight * height(s) - 0.35, 0), this.q.identity(), this.s.set(s.length * 1.02, 0.35, s.thickness - 0.4)).premultiply(this.seg);
             this.floor.setMatrixAt(f++, this.m);
             if (s.gate) {
                 for (let k = 0; k < POSTS; k++) {
@@ -170,8 +235,14 @@ export class WallsView {
         }
         this.floor.count = f;
         this.posts.count = p;
+        this.rebuildJoints();
         this.picker.count = this.pickIds.length;
         for (const b of [this.floor, this.posts, this.picker]) b.instanceMatrix.needsUpdate = true;
         this.picker.computeBoundingSphere();
     }
+}
+
+/** Height factor of a segment: a foundation grows from 15% to full. */
+function height(s: WallSegment): number {
+    return s.progress === undefined || s.progress >= 1 ? 1 : 0.15 + 0.85 * s.progress;
 }

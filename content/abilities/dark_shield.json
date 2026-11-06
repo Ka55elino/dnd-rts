@@ -1,0 +1,17 @@
+{
+  "id": "dark_shield",
+  "name": "Dark Shield",
+  "kind": "active",
+  "target": "self",
+  "cooldown": 60,
+  "effects": [
+    {
+      "type": "buff",
+      "duration": 5,
+      "modifiers": {
+        "reflect": 1
+      },
+      "radius": 0
+    }
+  ]
+}

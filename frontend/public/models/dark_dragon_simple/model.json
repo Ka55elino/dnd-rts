@@ -1,0 +1,96 @@
+{
+  "version": 1,
+  "fps": 15,
+  "vertexCount": 312,
+  "frames": 67,
+  "texture": {
+    "width": 2048,
+    "height": 11,
+    "format": "rgba16f"
+  },
+  "clips": {
+    "idle": {
+      "start": 0,
+      "frames": 14,
+      "loop": true,
+      "duration": 0.9
+    },
+    "walk": {
+      "start": 14,
+      "frames": 10,
+      "loop": true,
+      "duration": 0.7,
+      "groundSpeed": 3.0
+    },
+    "run": {
+      "start": 24,
+      "frames": 8,
+      "loop": true,
+      "duration": 0.55,
+      "groundSpeed": 8.0
+    },
+    "attack": {
+      "start": 32,
+      "frames": 13,
+      "loop": false,
+      "duration": 0.8
+    },
+    "die": {
+      "start": 45,
+      "frames": 22,
+      "loop": false,
+      "duration": 1.4
+    }
+  },
+  "bounds": {
+    "min": [
+      -3.6,
+      -2.565,
+      -3.263
+    ],
+    "max": [
+      3.631,
+      5.473,
+      2.791
+    ]
+  },
+  "geometry": {
+    "lod0": {
+      "offset": 0,
+      "count": 1152
+    },
+    "lod1": {
+      "offset": 4608,
+      "count": 459
+    },
+    "lod2": {
+      "offset": 6444,
+      "count": 108
+    },
+    "colors": {
+      "offset": 6876
+    },
+    "positions": {
+      "offset": 8124
+    },
+    "uvs": {
+      "offset": 11868
+    }
+  },
+  "albedo": {
+    "file": "albedo.bin",
+    "width": 256,
+    "height": 256
+  },
+  "normals": {
+    "file": "normals.bin",
+    "format": "rgba8"
+  },
+  "material": {
+    "file": "material.bin",
+    "width": 256,
+    "height": 256
+  },
+  "source": "modelc",
+  "build": "2026-11-05T23:44:50"
+}

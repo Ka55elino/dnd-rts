@@ -2,8 +2,7 @@
   "id": "watchtower",
   "name": "Watchtower",
   "kind": "building",
-  "model": "wooden_watchtower",
-  "modelScale": 1.2,
+  "model": "watchtower",
   "footprint": {
     "x": 4.5,
     "y": 5

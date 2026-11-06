@@ -1,0 +1,15 @@
+{
+  "id": "elf_ranger",
+  "name": "Elf Ranger",
+  "unit": "elf_ranger",
+  "size": 1,
+  "formation": {
+    "columns": 1,
+    "spacing": 1
+  },
+  "cost": {
+    "gold": 1000
+  },
+  "buildTime": 60,
+  "unique": true
+}

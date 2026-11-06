@@ -1,0 +1,16 @@
+{
+  "id": "spirit_cleanse",
+  "name": "Cleanse",
+  "kind": "active",
+  "target": "unit",
+  "range": 15,
+  "cooldown": 20,
+  "autocast": true,
+  "affects": "allies",
+  "effects": [
+    {
+      "type": "dispel",
+      "radius": 4
+    }
+  ]
+}

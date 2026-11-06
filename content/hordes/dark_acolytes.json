@@ -1,0 +1,18 @@
+{
+  "id": "dark_acolytes",
+  "name": "Dark Acolytes",
+  "unit": "dark_acolyte",
+  "size": 6,
+  "formation": {
+    "columns": 3,
+    "spacing": 1.4
+  },
+  "cost": {
+    "gold": 250,
+    "metal": 30
+  },
+  "buildTime": 32,
+  "uses": {
+    "food": 10
+  }
+}

@@ -1,0 +1,44 @@
+{
+  "id": "dark_lord",
+  "name": "Dark Lord",
+  "model": "dark_lord_simple",
+  "health": 1050,
+  "armor": 4,
+  "speed": 4.2,
+  "radius": 0.6,
+  "mass": 4,
+  "melee": {
+    "damage": 48,
+    "range": 1.7,
+    "cooldown": 1.2,
+    "damageType": "necrotic"
+  },
+  "tags": [
+    "hero",
+    "infantry",
+    "living"
+  ],
+  "armorClass": "heavy",
+  "magicDefense": 3,
+  "hero": {
+    "xp": [
+      0,
+      150,
+      400,
+      800,
+      1400
+    ],
+    "perLevel": {
+      "damage": 0.1,
+      "armor": 0.5
+    },
+    "healthPerLevel": 0.1
+  },
+  "abilities": [
+    "scattering_wave",
+    "dark_might",
+    "plague",
+    "cursed_presence",
+    "dominion_of_darkness"
+  ]
+}

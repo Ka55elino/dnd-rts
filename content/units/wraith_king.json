@@ -1,0 +1,44 @@
+{
+  "id": "wraith_king",
+  "name": "Wraith King",
+  "model": "wraith_king_simple",
+  "health": 900,
+  "armor": 3,
+  "speed": 4.4,
+  "radius": 0.55,
+  "mass": 3,
+  "melee": {
+    "damage": 42,
+    "range": 1.6,
+    "cooldown": 1.1,
+    "damageType": "necrotic"
+  },
+  "tags": [
+    "hero",
+    "infantry",
+    "undead"
+  ],
+  "armorClass": "medium",
+  "magicDefense": 4,
+  "hero": {
+    "xp": [
+      0,
+      150,
+      400,
+      800,
+      1400
+    ],
+    "perLevel": {
+      "damage": 0.1,
+      "armor": 0.5
+    },
+    "healthPerLevel": 0.1
+  },
+  "abilities": [
+    "wraith_retinue",
+    "chill_of_the_grave",
+    "soul_harvest",
+    "dominion_over_the_dead",
+    "wraith_horde"
+  ]
+}

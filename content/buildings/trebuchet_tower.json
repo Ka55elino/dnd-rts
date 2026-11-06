@@ -2,8 +2,7 @@
   "id": "trebuchet_tower",
   "name": "Trebuchet Tower",
   "kind": "building",
-  "model": "castle_tower",
-  "modelScale": 1.05,
+  "model": "trebuchet_tower",
   "footprint": {
     "x": 6.8,
     "y": 6.8

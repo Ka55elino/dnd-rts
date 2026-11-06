@@ -1,0 +1,16 @@
+{
+  "id": "place_paralysis_trap",
+  "name": "Place Paralysis Trap",
+  "kind": "active",
+  "target": "point",
+  "range": 18,
+  "cooldown": 15,
+  "effects": [
+    {
+      "type": "summon",
+      "horde": "paralysis_traps",
+      "count": 1,
+      "maxAlive": 5
+    }
+  ]
+}

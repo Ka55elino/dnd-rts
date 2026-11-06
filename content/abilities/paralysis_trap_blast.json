@@ -1,0 +1,15 @@
+{
+  "id": "paralysis_trap_blast",
+  "name": "Paralysis Trap",
+  "kind": "active",
+  "target": "self",
+  "cooldown": 1,
+  "effects": [
+    {
+      "type": "status",
+      "status": "stun",
+      "duration": 4,
+      "radius": 3
+    }
+  ]
+}

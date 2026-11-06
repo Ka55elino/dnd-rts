@@ -1,0 +1,15 @@
+{
+  "id": "shadow_camouflage",
+  "name": "Camouflage",
+  "cost": {
+    "gold": 200,
+    "wood": 100
+  },
+  "researchTime": 40,
+  "tags": [
+    "infantry"
+  ],
+  "modifiers": {
+    "camouflage": true
+  }
+}

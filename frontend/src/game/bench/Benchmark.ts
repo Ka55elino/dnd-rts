@@ -18,8 +18,8 @@ const BENCH_SPEED = 3; // internal/bench speed (units per second), to match run 
 /** What to draw for each entity. */
 const UNITS: { id: string; label: string }[] = [
     { id: "cubes", label: "Cubes" },
-    { id: "swordsman", label: "Swordsman" },
-    { id: "ranger", label: "Ranger" },
+    { id: "swordsman_simple", label: "Swordsman" },
+    { id: "archer_simple", label: "Archer" },
 ];
 const LODS: { lod: Lod | -1; label: string }[] = [
     { lod: -1, label: "Auto" },

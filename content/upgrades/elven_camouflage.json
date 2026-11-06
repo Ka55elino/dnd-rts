@@ -1,0 +1,16 @@
+{
+  "id": "elven_camouflage",
+  "name": "Camouflage",
+  "cost": {
+    "gold": 200,
+    "wood": 150
+  },
+  "researchTime": 40,
+  "tags": [
+    "infantry"
+  ],
+  "modifiers": {
+    "camouflage": true,
+    "inTrees": true
+  }
+}

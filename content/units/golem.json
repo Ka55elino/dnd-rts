@@ -1,0 +1,44 @@
+{
+  "id": "golem",
+  "name": "Golem",
+  "model": "golem_simple",
+  "health": 900,
+  "armor": 5,
+  "speed": 3.4,
+  "radius": 1.0,
+  "mass": 10,
+  "melee": {
+    "damage": 38,
+    "range": 2.0,
+    "cooldown": 1.5,
+    "damageType": "crush"
+  },
+  "ranged": {
+    "damage": 25,
+    "range": 20,
+    "cooldown": 3,
+    "damageType": "fire",
+    "projectile": {
+      "speed": 30,
+      "spread": 2
+    },
+    "targets": [
+      "ground",
+      "air"
+    ],
+    "requires": {
+      "upgrades": [
+        "fire_rune"
+      ]
+    }
+  },
+  "tags": [
+    "monster",
+    "mechanical"
+  ],
+  "armorClass": "heavy",
+  "magicDefense": 3,
+  "abilities": [
+    "golem_rune"
+  ]
+}

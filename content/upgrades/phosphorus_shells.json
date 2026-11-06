@@ -1,0 +1,9 @@
+{
+  "id": "phosphorus_shells",
+  "name": "Phosphorus Shells",
+  "cost": {
+    "gold": 200,
+    "metal": 50
+  },
+  "researchTime": 30
+}

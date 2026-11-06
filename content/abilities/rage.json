@@ -1,0 +1,9 @@
+{
+  "id": "rage",
+  "name": "Rage",
+  "kind": "passive",
+  "modifiers": {
+    "damage": 0.15,
+    "attackSpeed": 0.1
+  }
+}

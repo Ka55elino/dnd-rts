@@ -1,0 +1,17 @@
+{
+  "id": "wrath_of_the_ancestors",
+  "name": "Wrath of the Ancestors",
+  "kind": "active",
+  "target": "self",
+  "cooldown": 40,
+  "effects": [
+    {
+      "type": "buff",
+      "duration": 10,
+      "modifiers": {
+        "attackType": "radiant"
+      },
+      "radius": 0
+    }
+  ]
+}

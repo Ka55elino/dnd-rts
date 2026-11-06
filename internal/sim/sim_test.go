@@ -25,6 +25,7 @@ func newTestWorld(t *testing.T) *World {
 	if err := SetupSkirmish(w, "plains", []PlayerSetup{{0, "empire"}, {1, "warband"}}); err != nil {
 		t.Fatal(err)
 	}
+	w.SetFog(false) // most tests are about other rules; fog tests turn it on
 	return w
 }
 
@@ -93,9 +94,31 @@ func TestMoveTargetClampedToMap(t *testing.T) {
 	}
 }
 
+// newWalledWorld: like newTestWorld, but the keeps have a ready-made walled base (the generator a
+// campaign map uses): a circle of radius 70, gates at the front and the back.
+func newWalledWorld(t *testing.T) *World {
+	t.Helper()
+	cat, err := data.Load(os.DirFS("../../content"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	cat.Buildings["keep"].Base = data.TestBaseLayout()
+	cat.ExpandBase("keep")
+	hf, err := terrain.ForMap(os.DirFS("../../content"), cat.Maps["plains"])
+	if err != nil {
+		t.Fatal(err)
+	}
+	w := NewWorld(cat, hf)
+	if err := SetupSkirmish(w, "plains", []PlayerSetup{{0, "empire"}, {1, "warband"}}); err != nil {
+		t.Fatal(err)
+	}
+	w.SetFog(false)
+	return w
+}
+
 // Same commands → same world on every platform.
 func TestSimDeterminismGolden(t *testing.T) {
-	const golden uint64 = 0x8b82c812895c9dd7
+	const golden uint64 = 0x2b6ee573f1d450b2
 
 	w := newTestWorld(t)
 	for tick := 0; tick < 600; tick++ {

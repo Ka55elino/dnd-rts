@@ -1,0 +1,24 @@
+{
+  "id": "sacred_tree",
+  "name": "Sacred Tree",
+  "kind": "active",
+  "target": "point",
+  "range": 25,
+  "cooldown": 60,
+  "onTree": true,
+  "effects": [
+    {
+      "type": "zone",
+      "radius": 10,
+      "duration": 20,
+      "interval": 1,
+      "effects": [
+        {
+          "type": "heal",
+          "amount": 8,
+          "affects": "allies"
+        }
+      ]
+    }
+  ]
+}

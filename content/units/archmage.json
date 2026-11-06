@@ -1,7 +1,7 @@
 {
   "id": "archmage",
   "name": "Archmage",
-  "model": "",
+  "model": "archmage_simple",
   "health": 650,
   "armor": 1,
   "speed": 4,

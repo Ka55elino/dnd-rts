@@ -1,0 +1,31 @@
+{
+  "id": "black_hail",
+  "name": "Black Hail",
+  "kind": "active",
+  "target": "point",
+  "range": 34,
+  "cooldown": 150,
+  "effects": [
+    {
+      "type": "zone",
+      "radius": 10,
+      "duration": 4,
+      "interval": 0.5,
+      "effects": [
+        {
+          "type": "damage",
+          "damageType": "pierce",
+          "amount": 15,
+          "radius": 0
+        },
+        {
+          "type": "damage",
+          "damageType": "necrotic",
+          "amount": 10,
+          "radius": 0
+        }
+      ]
+    }
+  ],
+  "ultimate": true
+}

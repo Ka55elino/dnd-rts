@@ -1,0 +1,21 @@
+{
+  "id": "twinblade",
+  "name": "Twinblade",
+  "model": "twinblade_simple",
+  "health": 110,
+  "armor": 2,
+  "speed": 3.8,
+  "radius": 0.4,
+  "mass": 1,
+  "melee": {
+    "damage": 14,
+    "range": 1.4,
+    "cooldown": 0.9,
+    "damageType": "slash"
+  },
+  "tags": [
+    "infantry",
+    "living"
+  ],
+  "armorClass": "medium"
+}

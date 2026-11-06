@@ -1,0 +1,29 @@
+{
+  "id": "rune_swap",
+  "name": "Rune",
+  "kind": "mode",
+  "cooldown": 5,
+  "modes": [
+    {
+      "id": "fire",
+      "name": "Fire Rune",
+      "modifiers": {
+        "attackType": "fire"
+      }
+    },
+    {
+      "id": "ice",
+      "name": "Frost Rune",
+      "modifiers": {
+        "attackType": "ice"
+      }
+    },
+    {
+      "id": "lightning",
+      "name": "Lightning Rune",
+      "modifiers": {
+        "attackType": "lightning"
+      }
+    }
+  ]
+}

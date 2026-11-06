@@ -14,7 +14,9 @@
     "barracks",
     "farm",
     "forge",
-    "archer_tower"
+    "archer_tower",
+    "castle_wall",
+    "castle_gate"
   ],
   "start": [
     "raiders",

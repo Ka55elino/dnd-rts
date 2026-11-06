@@ -1,0 +1,19 @@
+{
+  "id": "airships",
+  "name": "Airship",
+  "unit": "airship",
+  "size": 1,
+  "formation": {
+    "columns": 1,
+    "spacing": 1
+  },
+  "cost": {
+    "gold": 450,
+    "wood": 150,
+    "metal": 80
+  },
+  "buildTime": 50,
+  "uses": {
+    "food": 12
+  }
+}

@@ -242,20 +242,7 @@ func (w *World) StateHash() uint64 {
 		for _, on := range x.toggled {
 			b(on)
 		}
-		b(x.selfBuild)
-		if x.host != nil {
-			u(uint64(x.host.ID))
-			u(uint64(x.plot))
-		} else {
-			u(0)
-		}
-		for _, p := range x.plotUsers {
-			if p != nil {
-				u(uint64(p.ID))
-			} else {
-				u(0)
-			}
-		}
+		b(x.onWall)
 	}
 	return h.Sum64()
 }

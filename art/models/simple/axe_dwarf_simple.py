@@ -1,0 +1,19 @@
+"""Axe Dwarf (Dwarves: heavy armour, a two-handed axe) — stand-in from plain shapes (art/models/simple/kit.py)."""
+from modelc import Model
+from art.skeletons.humanoid import HUMANOID
+from art.anims import humanoid as anim
+from art.models.simple.kit import *
+
+MODEL = Model(
+    id="axe_dwarf_simple",
+    skeleton=HUMANOID,
+    parts=humanoid(torso=STEEL, arms=STEEL, forearms=(0.22, 0.30, 0.48), legs=(0.22, 0.30, 0.48), shins=STEEL, head='helmet', skin=(0.80, 0.62, 0.50), build=1.35) + beard((0.50, 0.28, 0.14)) + greataxe(),
+    clips={
+        "idle": anim.idle(stance=anim.TOOL_RELAXED, tip=0.01),
+        "walk": anim.walk(stride=0.6, carry=anim.TOOL_RELAXED),
+        "run": anim.run(carry=anim.TOOL_RELAXED),
+        "attack": anim.attack_sword(rest=anim.TOOL_RELAXED),
+        "die": anim.die(),
+    },
+    texture=None, texture_size=256, budget_tris=1400, scale=0.78,
+)

@@ -1,0 +1,12 @@
+{
+  "id": "poison_traps",
+  "name": "Poison Trap",
+  "unit": "poison_trap",
+  "size": 1,
+  "formation": {
+    "columns": 1,
+    "spacing": 1
+  },
+  "cost": {},
+  "buildTime": 1
+}

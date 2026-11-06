@@ -1,0 +1,25 @@
+{
+  "id": "web",
+  "name": "Web",
+  "kind": "active",
+  "target": "point",
+  "range": 14,
+  "cooldown": 30,
+  "autocast": true,
+  "effects": [
+    {
+      "type": "zone",
+      "radius": 5,
+      "duration": 8,
+      "interval": 1,
+      "effects": [
+        {
+          "type": "status",
+          "status": "slow",
+          "duration": 1.2,
+          "radius": 0
+        }
+      ]
+    }
+  ]
+}

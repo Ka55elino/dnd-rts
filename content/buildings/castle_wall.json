@@ -10,5 +10,13 @@
   "health": 3000,
   "armor": 6,
   "material": "stone",
-  "walkHeight": 5.6
+  "walkHeight": 5.6,
+  "placement": [
+    "wall"
+  ],
+  "buildTime": 6,
+  "cost": {
+    "gold": 15,
+    "wood": 10
+  }
 }

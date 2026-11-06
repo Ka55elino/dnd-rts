@@ -1,0 +1,39 @@
+{
+  "id": "dark_elves",
+  "name": "Dark Elves",
+  "color": "#5a2e6e",
+  "hordes": [
+    "webweavers",
+    "blade_dancers",
+    "crossbowmen",
+    "scouts",
+    "spider_riders",
+    "dark_priests",
+    "dark_mages",
+    "dark_dragons",
+    "dark_paladin",
+    "dark_archer",
+    "spider_queen"
+  ],
+  "start": [
+    "blade_dancers",
+    "crossbowmen",
+    "spider_riders",
+    "dark_paladin",
+    "webweavers"
+  ],
+  "fortress": "keep",
+  "buildings": [
+    "fighting_pits",
+    "shooting_range",
+    "scout_post",
+    "spider_caves",
+    "dark_church",
+    "dark_dragon_lair",
+    "alchemy_workshop",
+    "spider_farm",
+    "crossbow_tower",
+    "castle_wall",
+    "castle_gate"
+  ]
+}

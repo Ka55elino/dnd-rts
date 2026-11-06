@@ -1,0 +1,21 @@
+{
+  "id": "poisoned_weapons",
+  "name": "Poisoned Weapons",
+  "cost": {
+    "gold": 250,
+    "metal": 50
+  },
+  "researchTime": 35,
+  "units": [
+    "blade_dancer",
+    "crossbowman",
+    "scout",
+    "spider_rider",
+    "dark_paladin",
+    "dark_archer"
+  ],
+  "modifiers": {
+    "extraType": "poison",
+    "extraDamage": 0.15
+  }
+}

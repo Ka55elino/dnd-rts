@@ -1,0 +1,20 @@
+{
+  "id": "scattering_wave",
+  "name": "Scattering Wave",
+  "kind": "active",
+  "target": "self",
+  "cooldown": 30,
+  "effects": [
+    {
+      "type": "damage",
+      "damageType": "crush",
+      "amount": 40,
+      "radius": 8
+    },
+    {
+      "type": "knockback",
+      "force": 8,
+      "radius": 8
+    }
+  ]
+}

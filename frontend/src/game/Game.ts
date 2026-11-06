@@ -4,6 +4,8 @@ import { RenderContext } from "../engine/renderer";
 import { RTSCamera } from "../engine/camera/RTSCamera";
 import { LightRig, lightPreset, setupRenderer } from "../engine/lighting";
 import { Terrain, decodeBase64, decodeSamples } from "../engine/terrain/Terrain";
+import { FogOfWar } from "../engine/terrain/FogOfWar";
+import { TreesView } from "./view/TreesView";
 import { GameConnection } from "../net/gameConnection";
 import { SoldiersView, type HordeTypeInfo } from "./view/SoldiersView";
 import { MoveMarker } from "./view/MoveMarker";
@@ -12,7 +14,7 @@ import { HordeLabels } from "./hud/HordeLabels";
 import { Effects } from "./view/Effects";
 import { StatusEffectsView } from "./view/StatusEffectsView";
 import { AbilityPreview } from "./view/AbilityPreview";
-import { EVENT_CHAIN, EVENT_CONE, NEUTRAL, STATUS_GROUNDED, STATUS_ON_WALL, isConstructing, type GameSnapshot } from "../net/protocol";
+import { EVENT_CHAIN, EVENT_CONE, NEUTRAL, STATUS_GROUNDED, STATUS_ON_WALL, isConstructing, type GameSnapshot, type HelloOptions } from "../net/protocol";
 import { VatModel } from "../engine/vat/VatModel";
 import { SelectionController } from "./input/SelectionController";
 import { BuildingsView, type BuildingTypeInfo } from "./view/BuildingsView";
@@ -57,12 +59,13 @@ export class Game {
     private terrain: Terrain | null = null;
     private soldiers: SoldiersView | null = null;
     private buildings: BuildingsView | null = null;
+    private fog: FogOfWar | null = null;
+    private trees: TreesView | null = null;
     private devConsole: DevConsole | null = null;
     private buildPanel: BuildPanel | null = null;
     /** Last mouse position over the canvas (client px), for the cursor. */
     private mouseClient: { x: number; y: number } | null = null;
     private cursorAt = 0;
-    private readonly cursorRay = new THREE.Raycaster();
     private placement: Placement | null = null;
     private hudView: Hud | null = null;
     private minimap: Minimap | null = null;
@@ -99,6 +102,7 @@ export class Game {
     private panelTimer = 0;
     private stopped = false;
     private mapId = DEFAULT_MAP;
+    private hello: HelloOptions = {};
     private navOverlay = false;
 
     private readonly scene = new THREE.Scene();
@@ -106,8 +110,10 @@ export class Game {
 
     constructor(private readonly container: HTMLElement) {}
 
-    start(mapId = DEFAULT_MAP): void {
+    /** hello: the match to ask the server for (mode, factions); default a skirmish. */
+    start(mapId = DEFAULT_MAP, hello: HelloOptions = {}): void {
         this.mapId = mapId;
+        this.hello = hello;
         window.addEventListener("keydown", this.onKeyDown);
         this.hud = document.createElement("div");
         this.hud.className = "game-hud";
@@ -162,6 +168,10 @@ export class Game {
         this.soldiers?.dispose();
         this.buildings?.dispose();
         this.buildings = null;
+        this.trees?.dispose();
+        this.trees = null;
+        this.fog?.dispose();
+        this.fog = null;
         this.statusFx.dispose();
         this.preview.dispose();
         for (const m of this.models.values()) m.dispose();
@@ -209,6 +219,12 @@ export class Game {
             samples: decodeSamples(data.samples ?? ""),
         });
         this.terrain = terrain;
+        const fog = new FogOfWar(data.width, data.height);
+        fog.patch(terrain.mesh.material as THREE.Material);
+        this.fog = fog;
+        const trees = new TreesView((x, z) => terrain.heightAt(x, z));
+        for (const m of trees.materials) fog.patch(m);
+        this.trees = trees;
 
         const types: HordeTypeInfo[] = (hordeTypes ?? []).map((t) => ({
             name: t.name,
@@ -224,6 +240,7 @@ export class Game {
             ranged: t.ranged ?? false,
             antiAir: t.antiAir ?? false,
             climbs: t.climbs ?? false,
+            trap: t.trap ?? false,
         }));
         const btypes: BuildingTypeInfo[] = (buildingTypes ?? []).map((t) => ({
             id: t.id,
@@ -236,11 +253,12 @@ export class Game {
             placement: t.placement ?? [],
             buildTime: t.buildTime,
             noBuildRadius: t.noBuildRadius,
-            plots: t.plots ?? [],
-            base: t.base ? { outline: t.base.outline ?? [], gates: t.base.gates ?? [], towers: t.base.towers ?? [] } : null,
+            base: t.base ? { outline: t.base.outline ?? [], gates: t.base.gates ?? [] } : null,
             walkHeight: t.walkHeight ?? 0,
             toggles: t.toggles ?? [],
             garrison: t.garrison ?? false,
+            tunnel: t.tunnel ?? false,
+            factionModels: (t.factionModels ?? {}) as Record<string, string>,
             cost: t.cost ?? {},
             trains: t.trains ?? [],
             research: t.research ?? [],
@@ -257,6 +275,8 @@ export class Game {
         ]);
         this.models = models;
         this.buildings = buildings;
+        let players: import("../net/protocol").PlayerSnap[] = [];
+        buildings.factionOf = (owner) => factionList[players.find((p) => p.id === owner)?.faction ?? -1]?.id;
         const wallType = btypes.find((t) => t.kind === "wall");
         if (this.stopped) {
             buildings.dispose();
@@ -286,7 +306,11 @@ export class Game {
 
         this.connection = new GameConnection(mapId, (snap, at) => {
             soldiers.pushSnapshot(snap, at);
+            players = snap.players;
             buildings.pushSnapshot(snap);
+            trees.push(snap.trees);
+            fog.push(snap.fog);
+            buildings.applyFog(fog.enabled ? (x, z) => fog.explored(x, z) : null, snap.localPlayer);
             economy.resources = snap.resources;
             tech.update(snap);
             this.lastHeroes = snap.heroes;
@@ -298,7 +322,7 @@ export class Game {
             this.spawnCastEffects(snap, terrain);
             this.lastSnap = snap;
             if (snap.over) this.showResult(snap.winner);
-        });
+        }, this.hello);
         this.devConsole = new DevConsole({
             overlay: this.hud!,
             hordeTypes: (hordeTypes ?? []).map((t) => t.id),
@@ -347,12 +371,7 @@ export class Game {
                 this.marker.show(x, terrain.heightAt(x, z), z);
             },
         });
-        // Plot classes as the content defines them (class → side), smallest first.
-        const plotClasses = [...new Map(btypes.flatMap((t) => t.plots.filter((p) => p.class).map((p) => [p.class, p.size] as const))).entries()].sort(
-            (a, b) => a[1] - b[1],
-        );
         this.buildPanel = new BuildPanel({
-            plotClassFor: (w, d) => plotClasses.find(([, size]) => Math.max(w, d) <= size)?.[0] ?? "",
             overlay: this.hud!,
             buildings,
             economy,
@@ -378,15 +397,9 @@ export class Game {
                 return f && { buildings: f.buildings ?? [], hordes: f.hordes ?? [] };
             },
             queue: (id) => queues.get(id),
-            hordePos: (id) => soldiers.hordes.get(id),
             onTrain: (b, kind) => this.connection?.train(b, kind),
             onUntrain: (b, i) => this.connection?.untrain(b, i),
-            onBuild: (host, plot, kind) => this.connection?.buildOnPlot(host, plot, kind),
             onCancel: (id) => this.connection?.cancelBuild(id),
-            onPlace: (kind, workers) => {
-                placement.start(kind, workers);
-                buildPanel.setSuppressed(true);
-            },
         });
         const buildPanel = this.buildPanel;
         const placement = new Placement({
@@ -399,6 +412,7 @@ export class Game {
             nav: navBlocked,
             localPlayer: () => this.localPlayer,
             onPlace: (kind, x, z, angle, workers) => this.connection?.build(kind, x, z, angle, workers),
+            onWall: (kind, x0, z0, x1, z1, workers) => this.connection?.wall(kind, x0, z0, x1, z1, workers),
         });
         this.placement = placement;
         const ownSelected = (): number[] => [...(this.selection?.selected ?? [])].filter((id) => soldiers.hordes.get(id)?.owner === this.localPlayer);
@@ -494,10 +508,24 @@ export class Game {
             },
             onOwnBuilding: (id, ids, point) => {
                 const b = buildings.info(id);
+                const builders = ids.filter((h) => soldiers.typeOf(h)?.worker);
+                // Workers on an own foundation or a damaged building (walls too): build / repair it.
+                if (b && builders.length > 0 && (isConstructing(b.snap.flags) || b.snap.hp < b.snap.maxHp)) {
+                    this.connection?.helpBuild(id, builders);
+                    this.marker.show(b.snap.x, terrain.heightAt(b.snap.x, b.snap.z), b.snap.z, 0xffd76a);
+                    return true;
+                }
                 if (b?.type?.kind === "wall" || b?.type?.kind === "gate") {
                     // Onto the wall (the server sends foot soldiers up the stairs; others walk to the spot below).
                     this.connection?.move(point.x, point.z, ids);
                     this.marker.show(point.x, point.y, point.z);
+                    return true;
+                }
+                // Tunnel entrance (dwarves): the hordes go through the network and come out here.
+                const fortressTunnel = b?.type?.kind === "fortress" && (factionList[this.localFaction]?.fortressTunnel ?? false);
+                if (b && (b.type?.tunnel || fortressTunnel) && !isConstructing(b.snap.flags)) {
+                    this.connection?.move(b.snap.x, b.snap.z, ids);
+                    this.marker.show(b.snap.x, point.y, b.snap.z, 0xc8a060);
                     return true;
                 }
                 const workers = ids.filter((h) => soldiers.typeOf(h)?.worker);
@@ -522,8 +550,6 @@ export class Game {
                 this.marker.show(ground.x, ground.y, ground.z, 0x7dc8ff);
             },
             onClickWorld: (ray, ground) => {
-                const plot = buildings.pickPlot(ground, this.localPlayer, ray);
-                if (plot) return buildPanel.showPlot(plot);
                 const b = buildings.pick(ray, ground);
                 if (b && b.owner === this.localPlayer) return buildPanel.showBuilding(b.id);
                 buildPanel.clear();
@@ -565,6 +591,12 @@ export class Game {
         this.scene.add(this.statusFx.points);
         this.scene.add(this.preview.group);
         this.scene.add(buildings.group);
+        if (this.trees) this.scene.add(this.trees.group);
+    }
+
+    /** Runs a dev console line (the Playground's buttons use it). */
+    devCommand(line: string): void {
+        this.connection?.console(line, 0, 0, []);
     }
 
     private loop = (): void => {
@@ -581,6 +613,7 @@ export class Game {
         this.soldiers!.update(now, (x, z) => terrain.heightAt(x, z), this.selection!.selected, this.rtsCamera!.camera);
         this.projectiles.update(now, (x, z) => terrain.heightAt(x, z));
         this.marker.update(dt);
+        this.fog?.update(dt);
         this.buildings?.animate(dt);
         this.effects.update(dt);
         this.updatePreview(dt, terrain);
@@ -770,7 +803,6 @@ export class Game {
         if (own.length === 0) {
             const panelBuilding = this.buildPanel?.building ?? 0;
             const pb = panelBuilding ? buildings.info(panelBuilding) : undefined;
-            if (buildings.pickPlot(t.ground, this.localPlayer, this.selectionRay(m))) return "plot";
             if (pb && pb.type?.trains.length && !isConstructing(pb.snap.flags) && !t.building && !t.allyHorde && !t.enemyHorde) return "rally";
             if (t.allyHorde || (t.building && t.building.owner === this.localPlayer)) return "select";
             if (t.enemyHorde || t.building) return "inspect";
@@ -790,16 +822,6 @@ export class Game {
             return "move";
         }
         return "move";
-    }
-
-    /** A ray under client point m (for plots on the wall walkway). */
-    private selectionRay(m: { x: number; y: number }): THREE.Raycaster | undefined {
-        const canvas = this.ctx?.renderer.domElement;
-        const cam = this.rtsCamera?.camera;
-        if (!canvas || !cam) return undefined;
-        const r = canvas.getBoundingClientRect();
-        this.cursorRay.setFromCamera(new THREE.Vector2(((m.x - r.left) / r.width) * 2 - 1, -((m.y - r.top) / r.height) * 2 + 1), cam);
-        return this.cursorRay;
     }
 
     /** Enters / leaves "click a target" mode for a command card order. */
@@ -870,7 +892,7 @@ export class Game {
         }
     }
 
-    /** Keeps the radial command ring on its plot / building / workers. */
+    /** Keeps the radial command ring on its building / workers. */
     private positionRadial(width: number, height: number): void {
         const panel = this.buildPanel;
         const a = panel?.anchor();
@@ -941,7 +963,7 @@ export class Game {
         const hint = document.createElement("div");
         hint.className = "game-hud__hint";
         hint.textContent =
-            "LMB select / drag box · Shift add · RMB move / attack · click plots and buildings for the command ring · minimap: LMB move camera, RMB send selection · 1 hero ability · WASD / edges pan · wheel zoom · Q/E rotate · F2 console · F3 walkability · F4 debug · Esc back";
+            "LMB select / drag box · Shift add · RMB move / attack · click buildings (or select builders) for the command ring · minimap: LMB move camera, RMB send selection · 1 hero ability · WASD / edges pan · wheel zoom · Q/E rotate · F2 console · F3 walkability · F4 debug · Esc back";
         this.hud?.appendChild(hint);
         window.setTimeout(() => hint.classList.add("is-faded"), 12_000);
     }

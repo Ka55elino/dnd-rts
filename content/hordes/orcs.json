@@ -1,0 +1,17 @@
+{
+  "id": "orcs",
+  "name": "Orcs",
+  "unit": "orc",
+  "size": 20,
+  "formation": {
+    "columns": 5,
+    "spacing": 1.2
+  },
+  "cost": {
+    "gold": 130
+  },
+  "buildTime": 20,
+  "uses": {
+    "food": 10
+  }
+}

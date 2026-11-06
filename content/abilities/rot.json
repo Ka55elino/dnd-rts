@@ -1,0 +1,10 @@
+{
+  "id": "rot",
+  "name": "Rot",
+  "kind": "aura",
+  "radius": 8,
+  "modifiers": {
+    "armor": -2
+  },
+  "affects": "enemies"
+}

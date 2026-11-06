@@ -1,0 +1,42 @@
+{
+  "id": "dark_dragon",
+  "name": "Dark Dragon",
+  "model": "dark_dragon_simple",
+  "health": 1400,
+  "armor": 4,
+  "speed": 6,
+  "radius": 1.6,
+  "mass": 12,
+  "flying": true,
+  "melee": {
+    "damage": 40,
+    "range": 2.6,
+    "cooldown": 1.4,
+    "damageType": "slash",
+    "targets": [
+      "ground",
+      "air"
+    ]
+  },
+  "ranged": {
+    "damage": 30,
+    "range": 20,
+    "cooldown": 2.5,
+    "damageType": "fire",
+    "projectile": {
+      "speed": 28,
+      "spread": 2
+    },
+    "targets": [
+      "ground",
+      "air"
+    ],
+    "splash": 3
+  },
+  "tags": [
+    "monster",
+    "flying"
+  ],
+  "armorClass": "heavy",
+  "magicDefense": 3
+}

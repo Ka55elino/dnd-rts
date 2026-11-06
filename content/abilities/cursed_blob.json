@@ -1,0 +1,32 @@
+{
+  "id": "cursed_blob",
+  "name": "Cursed Blob",
+  "kind": "active",
+  "target": "point",
+  "range": 24,
+  "cooldown": 25,
+  "autocast": true,
+  "effects": [
+    {
+      "type": "damage",
+      "damageType": "necrotic",
+      "amount": 35,
+      "radius": 6
+    },
+    {
+      "type": "status",
+      "status": "acid",
+      "duration": 4,
+      "radius": 6
+    },
+    {
+      "type": "buff",
+      "duration": 8,
+      "modifiers": {
+        "damage": -0.2
+      },
+      "radius": 6,
+      "affects": "enemies"
+    }
+  ]
+}

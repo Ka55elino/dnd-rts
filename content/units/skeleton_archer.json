@@ -1,0 +1,29 @@
+{
+  "id": "skeleton_archer",
+  "name": "Skeleton Archer",
+  "model": "skeleton_archer_simple",
+  "health": 50,
+  "armor": 0.5,
+  "speed": 3.6,
+  "radius": 0.4,
+  "mass": 1,
+  "ranged": {
+    "damage": 7,
+    "range": 26,
+    "cooldown": 1.6,
+    "projectile": {
+      "speed": 30,
+      "spread": 3
+    },
+    "targets": [
+      "ground",
+      "air"
+    ]
+  },
+  "tags": [
+    "infantry",
+    "undead",
+    "ranged"
+  ],
+  "armorClass": "light"
+}

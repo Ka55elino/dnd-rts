@@ -1,0 +1,12 @@
+{
+  "id": "skeleton_swordsmen",
+  "name": "Skeleton Swordsmen",
+  "unit": "skeleton_swordsman",
+  "size": 10,
+  "formation": {
+    "columns": 5,
+    "spacing": 1.1
+  },
+  "cost": {},
+  "buildTime": 1
+}

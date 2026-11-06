@@ -1,0 +1,21 @@
+{
+  "id": "rune_trap_fire_blast",
+  "name": "Fire Rune Trap",
+  "kind": "active",
+  "target": "self",
+  "cooldown": 1,
+  "effects": [
+    {
+      "type": "damage",
+      "damageType": "fire",
+      "amount": 40,
+      "radius": 4
+    },
+    {
+      "type": "status",
+      "status": "burn",
+      "duration": 3,
+      "radius": 4
+    }
+  ]
+}

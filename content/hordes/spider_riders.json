@@ -1,0 +1,18 @@
+{
+  "id": "spider_riders",
+  "name": "Spider Riders",
+  "unit": "spider_rider",
+  "size": 8,
+  "formation": {
+    "columns": 4,
+    "spacing": 2.4
+  },
+  "cost": {
+    "gold": 320,
+    "wood": 40
+  },
+  "buildTime": 40,
+  "uses": {
+    "food": 15
+  }
+}

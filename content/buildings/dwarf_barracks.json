@@ -1,0 +1,25 @@
+{
+  "id": "dwarf_barracks",
+  "name": "Barracks",
+  "kind": "building",
+  "model": "dwarf_barracks",
+  "footprint": {
+    "x": 10,
+    "y": 10
+  },
+  "health": 1400,
+  "armor": 3,
+  "placement": [
+    "free"
+  ],
+  "buildTime": 22,
+  "cost": {
+    "gold": 180,
+    "wood": 100
+  },
+  "material": "stone",
+  "trains": [
+    "axe_dwarves",
+    "gunners"
+  ]
+}

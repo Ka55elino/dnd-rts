@@ -1,0 +1,18 @@
+{
+  "id": "alkar_archers",
+  "name": "Alkar Archers",
+  "unit": "alkar_archer",
+  "size": 16,
+  "formation": {
+    "columns": 4,
+    "spacing": 1.2
+  },
+  "cost": {
+    "gold": 200,
+    "wood": 50
+  },
+  "buildTime": 28,
+  "uses": {
+    "food": 12
+  }
+}

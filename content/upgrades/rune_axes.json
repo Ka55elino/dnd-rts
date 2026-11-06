@@ -1,0 +1,18 @@
+{
+  "id": "rune_axes",
+  "name": "Rune Axes",
+  "cost": {
+    "gold": 250,
+    "metal": 100
+  },
+  "researchTime": 35,
+  "units": [
+    "axe_dwarf",
+    "bear_rider",
+    "dwarf_king"
+  ],
+  "modifiers": {
+    "extraType": "lightning",
+    "extraDamage": 0.15
+  }
+}

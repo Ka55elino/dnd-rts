@@ -1,0 +1,15 @@
+{
+  "id": "mine_blast",
+  "name": "Mine",
+  "kind": "active",
+  "target": "self",
+  "cooldown": 1,
+  "effects": [
+    {
+      "type": "damage",
+      "damageType": "crush",
+      "amount": 90,
+      "radius": 4
+    }
+  ]
+}

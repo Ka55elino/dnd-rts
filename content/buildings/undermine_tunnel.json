@@ -1,0 +1,19 @@
+{
+  "id": "undermine_tunnel",
+  "name": "Undermine Passage",
+  "kind": "building",
+  "model": "undermine_tunnel",
+  "footprint": {
+    "x": 8,
+    "y": 8
+  },
+  "health": 500,
+  "armor": 3,
+  "placement": [
+    "free"
+  ],
+  "buildTime": 1,
+  "cost": {},
+  "material": "stone",
+  "tunnel": true
+}

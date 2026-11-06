@@ -1,0 +1,14 @@
+{
+  "id": "grow_tree",
+  "name": "Grow Tree",
+  "kind": "active",
+  "target": "point",
+  "range": 12,
+  "cooldown": 10,
+  "effects": [
+    {
+      "type": "tree",
+      "count": 1
+    }
+  ]
+}

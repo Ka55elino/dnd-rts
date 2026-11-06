@@ -8,14 +8,27 @@ import (
 // Horde is a group of soldiers that moves and fights as one.
 // Pos/Facing describe the formation anchor; soldiers follow their slots.
 type Horde struct {
-	ID       HordeID
-	Owner    PlayerID
-	Kind     int // index into Catalog.HordeIDs (sent to the client)
-	Def      *data.Horde
-	Unit     *data.Unit
-	Pos      fixed.Vec2
-	Facing   fixed.Fixed // radians, direction the formation faces
-	Soldiers []*Soldier  // alive soldiers, sorted by ID; slot = index
+	ID    HordeID
+	Owner PlayerID
+	Kind  int // index into Catalog.HordeIDs (sent to the client)
+	Def   *data.Horde
+	Unit  *data.Unit
+	// rangedLocked: the unit's ranged attack needs an upgrade the owner doesn't have yet.
+	rangedLocked bool
+	// Invisibility (visibility.go): concealed this tick (invisible, camouflaged or in smoke),
+	// stealthy (invisible / camouflaged itself: it doesn't pick fights), seen by (bit per player),
+	// shown until.
+	hidden      bool
+	stealth     bool
+	seenBy      uint64
+	revealUntil uint32
+	// Tunnels (tunnels.go): heading for an entrance, or inside the network.
+	tunnel *tunnelTrip
+	// buildQueue: more foundations to build after the current one (a wall line), nearest first.
+	buildQueue []*Building
+	Pos        fixed.Vec2
+	Facing     fixed.Fixed // radians, direction the formation faces
+	Soldiers   []*Soldier  // alive soldiers, sorted by ID; slot = index
 
 	moving   bool
 	ordered  bool // moving because of an explicit move order (ignores enemies)
@@ -82,7 +95,16 @@ type Horde struct {
 
 // Ranged reports whether the horde is currently fighting with its ranged
 // attack (volleys, soldiers keep formation) rather than in melee.
-func (h *Horde) Ranged() bool { return h.Unit.Ranged != nil && !h.melee }
+func (h *Horde) Ranged() bool { return h.rangedAttack() != nil && !h.melee }
+
+// rangedAttack is the unit's ranged attack, or nil when it has none or its requirements
+// (Attack.Requires: an upgrade) are not met yet.
+func (h *Horde) rangedAttack() *data.Attack {
+	if h.Unit.Ranged == nil || h.rangedLocked {
+		return nil
+	}
+	return h.Unit.Ranged
+}
 
 // InMelee reports whether the horde uses its melee attack right now.
 func (h *Horde) InMelee() bool { return !h.Ranged() && h.Unit.Melee != nil }
@@ -90,23 +112,23 @@ func (h *Horde) InMelee() bool { return !h.Ranged() && h.Unit.Melee != nil }
 // currentAttack is the attack of the current mode (nil: the unit has none).
 func (h *Horde) currentAttack() *data.Attack {
 	if h.Ranged() {
-		return h.Unit.Ranged
+		return h.rangedAttack()
 	}
 	if h.Unit.Melee != nil {
 		return h.Unit.Melee
 	}
-	return h.Unit.Ranged
+	return h.rangedAttack()
 }
 
 // canTarget reports whether any attack of the horde can hit the enemy horde.
 func (h *Horde) canTarget(e *Horde) bool {
-	return meleeReaches(h, e) || h.Unit.Ranged.CanHit(e.Airborne())
+	return meleeReaches(h, e) || h.rangedAttack().CanHit(e.Airborne())
 }
 
 // longestReach: engage distance of the longest-range attack (for aggro).
 func (h *Horde) longestReach() fixed.Fixed {
 	r := fixed.Fixed(0)
-	for _, a := range []*data.Attack{h.Unit.Melee, h.Unit.Ranged} {
+	for _, a := range []*data.Attack{h.Unit.Melee, h.rangedAttack()} {
 		if a != nil {
 			r = max(r, h.attackRange(a))
 		}
@@ -118,8 +140,8 @@ func (h *Horde) longestReach() fixed.Fixed {
 // shoot from afar and draw weapons when the enemy closes in. Returns false if
 // no attack can hit the enemy.
 func (h *Horde) selectMode(e *Horde, dist fixed.Fixed) bool {
-	mc, rc := meleeReaches(h, e), h.Unit.Ranged.CanHit(e.Airborne())
-	if rc && h.Unit.Ranged.MinRange > 0 && dist < h.Unit.Ranged.MinRange+engageBase {
+	mc, rc := meleeReaches(h, e), h.rangedAttack().CanHit(e.Airborne())
+	if rc && h.rangedAttack().MinRange > 0 && dist < h.rangedAttack().MinRange+engageBase {
 		rc = false // too close for a trebuchet
 	}
 	switch {
@@ -139,7 +161,7 @@ func (h *Horde) selectSiegeMode() bool {
 	switch {
 	case h.Unit.Melee.CanHit(false):
 		h.melee = true
-	case h.Unit.Ranged.CanHit(false):
+	case h.rangedAttack().CanHit(false):
 		h.melee = false
 	default:
 		return false
@@ -247,6 +269,8 @@ func (h *Horde) clearOrders() {
 	h.pending = nil
 	h.wallEnter, h.wallExit = nil, nil
 	h.hasFireAt = false
+	h.tunnel = nil
+	h.buildQueue = nil
 }
 
 // stopOrder: stand still and forget all orders (auto-aggro still applies).
@@ -297,7 +321,7 @@ func (h *Horde) engageDist() fixed.Fixed {
 
 // attackRange: ranged attacks get the range modifier of the horde's first soldier.
 func (h *Horde) attackRange(a *data.Attack) fixed.Fixed {
-	if a == h.Unit.Ranged && len(h.Soldiers) > 0 {
+	if a == h.rangedAttack() && len(h.Soldiers) > 0 {
 		bonus := h.Soldiers[0].mods.rangeMul
 		if h.wall != nil {
 			bonus += wallRangeBonus
@@ -308,6 +332,12 @@ func (h *Horde) attackRange(a *data.Attack) fixed.Fixed {
 }
 
 func (h *Horde) update(w *World) {
+	if h.InTunnel() || h.IsTrap() {
+		return // underground / a trap waiting (traps.go)
+	}
+	if h.construct == nil && len(h.buildQueue) > 0 {
+		w.continueBuildQueue(h)
+	}
 	if h.groundTicks > 0 {
 		h.groundTicks--
 	}
@@ -424,13 +454,17 @@ func (h *Horde) updateCombat(w *World) {
 		return
 	}
 	// Auto-aggro: an idle (or attack-moving) horde attacks the nearest enemy
-	// in range; holding hordes only what is already in reach; workers never.
-	if h.attack == nil && !h.ordered && !h.IsWorker() {
+	// in range; holding hordes only what is already in reach; workers and hidden hordes (they
+	// would give themselves away) never.
+	if h.attack == nil && !h.ordered && !h.IsWorker() && !h.hidden {
 		reach := h.longestReach() + aggroExtra
 		if h.hold || h.wall != nil || h.Rooted() {
 			reach = h.longestReach()
 		}
 		h.attack = w.nearestEnemyHorde(h, reach)
+	}
+	if h.attack != nil && !w.VisibleTo(h.attack, h.Owner) {
+		h.attack = nil // it vanished (invisibility)
 	}
 	if h.attack != nil && !h.selectMode(h.attack, h.Pos.Dist(h.attack.Pos)) {
 		h.attack = nil // nothing can hit it (e.g. flying, no anti-air)
@@ -492,7 +526,7 @@ func (h *Horde) updateSiege(w *World) {
 
 // updateVolley fires at the attack target when in range and reloaded.
 func (h *Horde) updateVolley(w *World) {
-	if h.Unit.Ranged == nil {
+	if h.rangedAttack() == nil {
 		return
 	}
 	if h.volleyCooldown > 0 {
@@ -506,12 +540,12 @@ func (h *Horde) updateVolley(w *World) {
 	}
 	switch {
 	case h.hasFireAt:
-		if d := h.Pos.Dist(h.fireAt); d > h.attackRange(h.Unit.Ranged)+engageBase || d < h.Unit.Ranged.MinRange {
+		if d := h.Pos.Dist(h.fireAt); d > h.attackRange(h.rangedAttack())+engageBase || d < h.rangedAttack().MinRange {
 			return
 		}
 		w.fireVolley(h, h.fireAt, w.enemyBuildingAt(h.Owner, h.fireAt))
 	case h.siege != nil:
-		if d := h.siege.DistTo(h.Pos); d > h.engageDist() || d < h.Unit.Ranged.MinRange {
+		if d := h.siege.DistTo(h.Pos); d > h.engageDist() || d < h.rangedAttack().MinRange {
 			return
 		}
 		w.fireVolley(h, h.siege.Pos, h.siege)
@@ -523,7 +557,7 @@ func (h *Horde) updateVolley(w *World) {
 	default:
 		return
 	}
-	h.volleyCooldown = cooldownTicks(h.Unit.Ranged.Cooldown)
+	h.volleyCooldown = cooldownTicks(h.rangedAttack().Cooldown)
 }
 
 // waypoint returns where the horde should head this tick: straight to the
@@ -650,7 +684,7 @@ func (h *Horde) speedNow(w *World) fixed.Fixed {
 
 // orderAttackGround: shoot at a ground point (ranged hordes only), walking into range first.
 func (h *Horde) orderAttackGround(w *World, p fixed.Vec2) {
-	if h.Unit.Ranged == nil {
+	if h.rangedAttack() == nil {
 		return
 	}
 	h.clearOrders()
@@ -663,10 +697,10 @@ func (h *Horde) orderAttackGround(w *World, p fixed.Vec2) {
 // updateFireAt: walk into range of the fire point (not on walls / rooted), then stand and shoot.
 func (h *Horde) updateFireAt(w *World) {
 	h.melee = false
-	reach := h.attackRange(h.Unit.Ranged) + engageBase
+	reach := h.attackRange(h.rangedAttack()) + engageBase
 	d := h.Pos.Dist(h.fireAt)
 	switch {
-	case d <= reach && d >= h.Unit.Ranged.MinRange:
+	case d <= reach && d >= h.rangedAttack().MinRange:
 		h.fighting = true
 		h.moving = false
 		if to := h.fireAt.Sub(h.Pos); !to.IsZero() {
@@ -681,7 +715,7 @@ func (h *Horde) updateFireAt(w *World) {
 		if dir.IsZero() {
 			dir = fixed.FromAngle(h.Facing)
 		}
-		want := max(reach-fixed.FromInt(2), h.Unit.Ranged.MinRange+fixed.FromInt(2))
+		want := max(reach-fixed.FromInt(2), h.rangedAttack().MinRange+fixed.FromInt(2))
 		if p, ok := w.targetFor(h, h.fireAt.Add(dir.Scale(want))); ok {
 			h.setDestination(p)
 		}

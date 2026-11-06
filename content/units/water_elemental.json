@@ -1,0 +1,25 @@
+{
+  "id": "water_elemental",
+  "name": "Water Elemental",
+  "model": "water_elemental_simple",
+  "health": 450,
+  "armor": 0,
+  "speed": 4.5,
+  "radius": 0.8,
+  "mass": 4,
+  "melee": {
+    "damage": 24,
+    "range": 1.8,
+    "cooldown": 1.2,
+    "damageType": "ice"
+  },
+  "tags": [
+    "elemental",
+    "monster"
+  ],
+  "armorClass": "medium",
+  "magicDefense": 4,
+  "resist": {
+    "ice": 0.5
+  }
+}

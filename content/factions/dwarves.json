@@ -1,0 +1,41 @@
+{
+  "id": "dwarves",
+  "name": "Dwarves",
+  "color": "#8a6a3a",
+  "hordes": [
+    "dwarf_workers",
+    "axe_dwarves",
+    "gunners",
+    "airships",
+    "mortars",
+    "bear_riders",
+    "golems",
+    "dwarf_king",
+    "engineer",
+    "runemaster"
+  ],
+  "start": [
+    "axe_dwarves",
+    "gunners",
+    "bear_riders",
+    "dwarf_king",
+    "dwarf_workers"
+  ],
+  "fortress": "keep",
+  "buildings": [
+    "dwarf_barracks",
+    "dwarf_workshop",
+    "bear_grounds",
+    "golem_workshop",
+    "dwarf_forge",
+    "rune_hall",
+    "tunnel",
+    "dwarf_farm",
+    "mortar_tower",
+    "gunner_tower",
+    "rune_tower",
+    "castle_wall",
+    "castle_gate"
+  ],
+  "fortressTunnel": true
+}

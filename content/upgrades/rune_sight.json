@@ -1,0 +1,15 @@
+{
+  "id": "rune_sight",
+  "name": "Rune Sight",
+  "cost": {
+    "gold": 150,
+    "metal": 50
+  },
+  "researchTime": 30,
+  "buildings": [
+    "rune_tower"
+  ],
+  "modifiers": {
+    "detect": 30
+  }
+}

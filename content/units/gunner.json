@@ -1,0 +1,39 @@
+{
+  "id": "gunner",
+  "name": "Gunner",
+  "model": "gunner_simple",
+  "health": 90,
+  "armor": 1.5,
+  "speed": 3.2,
+  "radius": 0.4,
+  "mass": 1,
+  "melee": {
+    "damage": 7,
+    "range": 1.2,
+    "cooldown": 1.0,
+    "damageType": "crush"
+  },
+  "ranged": {
+    "damage": 16,
+    "range": 28,
+    "cooldown": 2.4,
+    "damageType": "pierce",
+    "projectile": {
+      "speed": 60,
+      "spread": 2
+    },
+    "targets": [
+      "ground",
+      "air"
+    ]
+  },
+  "tags": [
+    "infantry",
+    "ranged",
+    "living"
+  ],
+  "armorClass": "medium",
+  "abilities": [
+    "smoke_screen"
+  ]
+}

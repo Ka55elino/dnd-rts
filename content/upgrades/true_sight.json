@@ -1,0 +1,15 @@
+{
+  "id": "true_sight",
+  "name": "True Sight",
+  "cost": {
+    "gold": 150,
+    "wood": 100
+  },
+  "researchTime": 30,
+  "buildings": [
+    "magic_tower"
+  ],
+  "modifiers": {
+    "detect": 30
+  }
+}

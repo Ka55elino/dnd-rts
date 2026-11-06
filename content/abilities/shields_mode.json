@@ -1,0 +1,10 @@
+{
+  "id": "shields_mode",
+  "name": "Shields",
+  "kind": "toggle",
+  "stance": true,
+  "modifiers": {
+    "rangedTaken": -0.5,
+    "moveSpeed": -0.2
+  }
+}

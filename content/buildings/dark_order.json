@@ -1,0 +1,25 @@
+{
+  "id": "dark_order",
+  "name": "Dark Order",
+  "kind": "building",
+  "model": "dark_order",
+  "footprint": {
+    "x": 10,
+    "y": 10
+  },
+  "health": 1400,
+  "armor": 3,
+  "placement": [
+    "free"
+  ],
+  "buildTime": 22,
+  "cost": {
+    "gold": 180,
+    "wood": 100
+  },
+  "material": "stone",
+  "trains": [
+    "alkar_swordsmen",
+    "alkar_archers"
+  ]
+}

@@ -2,30 +2,13 @@
   "id": "sawmill",
   "name": "Sawmill",
   "kind": "outpost",
-  "model": "keep",
-  "modelScale": 0.9,
+  "model": "sawmill",
   "footprint": {
     "x": 8,
     "y": 8
   },
   "health": 2000,
   "armor": 3,
-  "plots": [
-    {
-      "offset": {
-        "x": -14,
-        "y": 0
-      },
-      "class": "m"
-    },
-    {
-      "offset": {
-        "x": 14,
-        "y": 0
-      },
-      "class": "m"
-    }
-  ],
   "noBuildRadius": 20,
   "capture": {
     "time": 10,

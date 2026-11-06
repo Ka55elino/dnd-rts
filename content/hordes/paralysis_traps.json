@@ -1,0 +1,12 @@
+{
+  "id": "paralysis_traps",
+  "name": "Paralysis Trap",
+  "unit": "paralysis_trap",
+  "size": 1,
+  "formation": {
+    "columns": 1,
+    "spacing": 1
+  },
+  "cost": {},
+  "buildTime": 1
+}

@@ -8,23 +8,23 @@ import (
 	"dnd-rts/internal/sim/nav"
 )
 
-// Base walls (docs/BASES.md): a fortress with a walled base gets its wall
-// segments and gates as buildings when it is placed. Walls block movement;
-// gates block everyone but their owner (each player paths on its own copy of
-// the grid). Infantry climbs the walls by the stairs inside the base and
-// walks along the top: the walkway is the loop of segment centres.
+// Walls (docs/BASES.md). Workers build them as lines of segments (walls.go: layWall); a fortress
+// with a prepared base (campaign) gets a closed ring of segments when it is placed. Walls block
+// movement; open gates let everyone through, closed ones nobody. Infantry climbs the walls by
+// their stairs and walks along the top: the walkway is the chain of segment centres.
 
-// WallRing is the wall of one base.
+// WallRing is one wall: a closed loop around a base, or an open line built by workers.
 type WallRing struct {
 	Owner      PlayerID
 	Fortress   *Building
-	Nodes      []fixed.Vec2 // segment centres, around the base in order
+	Nodes      []fixed.Vec2 // segment centres, in order
 	Out        []fixed.Vec2 // outward direction at each node
 	Segs       []*Building  // the segment buildings (dead ones = gaps)
 	Stairs     []wallStair
 	WalkHeight fixed.Fixed
 	segLen     fixed.Fixed // average distance between nodes
 	tower      bool        // a garrison building (watchtower): one node, one horde, packed tight
+	open       bool        // a line (its ends don't join): the walkway stops at the first and last node
 }
 
 type wallStair struct {
@@ -79,9 +79,6 @@ func (w *World) placeBuilding(owner PlayerID, buildingType string, pos fixed.Vec
 		ID: w.nextBuilding, Owner: owner, Kind: slices.Index(w.Catalog.BuildingIDs, buildingType), Def: def,
 		Pos: pos, Facing: fixed.NormalizeAngle(facing), HP: def.Health, captureBy: Neutral,
 		gateOpen: def.Kind == data.BuildingGate, gateWant: def.Kind == data.BuildingGate, // gates start open
-	}
-	if len(def.Plots) > 0 {
-		b.plotUsers = make([]*Building, len(def.Plots))
 	}
 	b.toggled = make([]bool, len(def.Toggles))
 	w.nextBuilding++
@@ -224,20 +221,32 @@ func (w *World) wallAt(p PlayerID, pos fixed.Vec2) (*WallRing, fixed.Fixed, bool
 
 // ringPoint: the walkway point at position s (fractional node index).
 func (r *WallRing) point(s fixed.Fixed) fixed.Vec2 {
-	n := len(r.Nodes)
-	i := s.Int() % n
+	i, j := r.span(s)
 	t := s - fixed.FromInt(s.Int())
-	return r.Nodes[i].Add(r.Nodes[(i+1)%n].Sub(r.Nodes[i]).Scale(t))
+	return r.Nodes[i].Add(r.Nodes[j].Sub(r.Nodes[i]).Scale(t))
 }
 
 func (r *WallRing) outAt(s fixed.Fixed) fixed.Vec2 {
+	i, j := r.span(s)
+	return r.Out[i].Add(r.Out[j]).Normalize()
+}
+
+// span: the nodes before and after walkway position s (a line ends at its last node).
+func (r *WallRing) span(s fixed.Fixed) (int, int) {
 	n := len(r.Nodes)
+	if r.open {
+		i := min(max(s.Int(), 0), n-1)
+		return i, min(i+1, n-1)
+	}
 	i := s.Int() % n
-	return r.Out[i].Add(r.Out[(i+1)%n]).Normalize()
+	return i, (i + 1) % n
 }
 
 // ringDelta: signed shortest way from s to t around the loop (in nodes).
 func (r *WallRing) ringDelta(s, t fixed.Fixed) fixed.Fixed {
+	if r.open {
+		return t - s
+	}
 	n := fixed.FromInt(len(r.Nodes))
 	d := t - s
 	for d > n.DivInt(2) {
@@ -251,6 +260,9 @@ func (r *WallRing) ringDelta(s, t fixed.Fixed) fixed.Fixed {
 
 func (r *WallRing) wrap(s fixed.Fixed) fixed.Fixed {
 	n := fixed.FromInt(len(r.Nodes))
+	if r.open {
+		return s.Clamp(0, n-fixed.One)
+	}
 	for s < 0 {
 		s += n
 	}
@@ -262,6 +274,9 @@ func (r *WallRing) wrap(s fixed.Fixed) fixed.Fixed {
 
 // walkable: units can stand on node i (a standing wall segment; gatehouses break the walkway).
 func (r *WallRing) walkable(i int) bool {
+	if r.open && (i < 0 || i >= len(r.Segs)) {
+		return false // past the end of a line
+	}
 	b := r.Segs[(i%len(r.Segs)+len(r.Segs))%len(r.Segs)]
 	return b.Alive() && b.Def.Kind != data.BuildingGate && !b.UnderConstruction()
 }
@@ -288,6 +303,9 @@ func (r *WallRing) path(s, t fixed.Fixed) (fixed.Fixed, bool) {
 	if clear(d) {
 		return d, true
 	}
+	if r.open {
+		return 0, false
+	}
 	other := d - fixed.FromInt(n)
 	if d < 0 {
 		other = d + fixed.FromInt(n)
@@ -301,6 +319,9 @@ func (r *WallRing) path(s, t fixed.Fixed) (fixed.Fixed, bool) {
 // segAt: the segment under walkway position s (nearest node).
 func (r *WallRing) segAt(s fixed.Fixed) *Building {
 	i := (s + fixed.One/2).Int() % len(r.Nodes)
+	if r.open {
+		i = min(max((s+fixed.One/2).Int(), 0), len(r.Nodes)-1)
+	}
 	return r.Segs[i]
 }
 
@@ -339,11 +360,20 @@ func (w *World) orderOntoWall(h *Horde, r *WallRing, goal fixed.Fixed) {
 	if si < 0 {
 		return
 	}
+	// The foot of the stair may be covered (a building or a tree right in front of a
+	// watchtower): use the nearest open ground next to it, if there is one close enough.
+	foot, ok := w.walkableTarget(r.Stairs[si].ground)
+	if !ok || foot.Dist(r.Stairs[si].ground) > stairDetour {
+		return
+	}
 	h.clearOrders()
-	h.wallEnter = &wallEnter{ring: r, stair: si, goal: goal}
+	h.wallEnter = &wallEnter{ring: r, stair: si, goal: goal, foot: foot}
 	h.ordered = true
-	h.setDestination(r.Stairs[si].ground)
+	h.setDestination(foot)
 }
+
+// stairDetour: how far from a blocked stair foot the entry point may be.
+var stairDetour = fixed.FromInt(8)
 
 // orderOffWall: walk the walkway to the stair nearest to target, go down, then move there.
 func (w *World) orderOffWall(h *Horde, target fixed.Vec2) {
@@ -362,6 +392,7 @@ type wallEnter struct {
 	ring  *WallRing
 	stair int
 	goal  fixed.Fixed
+	foot  fixed.Vec2 // where the horde steps on: the stair's foot, or open ground next to it
 }
 
 type wallExit struct {
@@ -378,11 +409,13 @@ func (w *World) updateWall(h *Horde) bool {
 			h.wallEnter = nil
 			return false
 		}
-		if h.Pos.Dist(st.ground) <= stairReach {
+		if h.Pos.Dist(e.foot) <= stairReach {
 			h.wallEnter = nil
 			h.wall, h.wallS, h.wallTo = e.ring, fixed.FromInt(st.node), e.goal
 			h.moving, h.ordered = false, false
 			h.Pos = e.ring.point(h.wallS)
+		} else if !h.moving {
+			h.wallEnter = nil // stopped short (no way there): give up, don't hold the tower
 		}
 		return h.wall != nil
 	}

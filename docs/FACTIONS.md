@@ -39,7 +39,7 @@ Every faction has roughly the same set of roles, so balance has a common baselin
 - Heroes and units have **cooldowns only**, no mana.
 - **Flying units — right away**, in the first version of the shared mechanics.
 - **Melee and ranged attacks.** A unit can have only a melee attack, only a ranged one, or both. If both, the unit shoots from afar and switches to melee when the enemy comes close (or by stance, like the Elf Ranger). Each attack has its own damage type, damage, range and cooldown **[mechanic: multiple attacks per unit]**.
-- **Walls for all factions**: segments placed by dragging, gates (only own units pass), tower plots on walls **[mechanic: walls — done for the base]**.
+- **Walls for all factions**: workers lay wall lines by dragging, gatehouses go over a finished stretch, defensive towers anywhere along the own wall **[mechanic: walls — done]**.
 - **Day and night.** The game has a day/night cycle; at night unit vision is reduced (except for those who see at night as well as by day) **[mechanic: day / night, vision and fog of war]**.
 - **Own land** — the area around one's own buildings (and special objects, e.g. the elves' sacred trees). The radius is set per building / object in JSON. Some factions get bonuses on it (elves heal) **[mechanic: territory]**.
 - **Trees** — map objects: impassable for squads (forest), provide cover, can burn and be cut down, regrow over time **[mechanic: trees as objects]**.
@@ -162,7 +162,7 @@ Settlements can be walled in **[mechanic: walls — done for the base]**:
 
 - Workers build **wall segments** between posts (by dragging, as in Stronghold / BFME2); a segment is a structure with HP, stone
 - **Gates** — a segment that own squads can pass through, but enemies cannot **[mechanic: passability by owner — done for the base]**
-- Walls have **tower slots** — plots like those around the keep, but on the wall (e.g. on the posts between segments). A tower is built on such a plot and stands on the wall **[mechanic: plots on walls — done for the base]**
+- **Towers go on the walls**: workers put a defensive tower anywhere along the own wall (not on a gatehouse, not on another tower); it stands on the wall **[mechanic: towers on walls — done]**
 - Walls block navigation; the enemy must break them (crushing damage) or go around
 
 ### Buildings
@@ -170,16 +170,16 @@ Settlements can be walled in **[mechanic: walls — done for the base]**:
 | Building | Placement | What it does | Requires |
 |---|---|---|---|
 | **Keep** | map (player slot) | main building; workers, heroes | — |
-| **Barracks** | plot | swordsmen, spearmen | — |
-| **Archery Range** | plot | archers | — |
+| **Barracks** | free | swordsmen, spearmen | — |
+| **Archery Range** | free | archers | — |
 | **Stables** | free | knights | barracks **[mechanic: requirements — done]** |
 | **Workshop** | free | ballistae, trebuchets | — |
 | **Mage Guild** | free | mages, healers | — |
-| **Forge** | plot | weapon, armor and engine upgrades (see below) **[mechanic: upgrades]** | — |
+| **Forge** | free | weapon, armor and engine upgrades (see below) **[mechanic: upgrades]** | — |
 | **Farm** | free | food | — (needed for the army cap) |
-| **Walls and gates** | free, by dragging | see above | — |
+| **Walls and gates** | wall lines by dragging; gatehouses over a finished stretch | see above | — |
 
-Placement (plot or free) is a proposal, to be adjusted.
+Every building is put up by workers anywhere on open ground ; walls are lines dragged by workers; towers — on the own wall ([`BASES.md`](BASES.md)).
 
 **Forge upgrades** — bought once and apply to all of the player's squads and structures, including those already recruited. Level 2 requires level 1. Numbers are starting values.
 
@@ -195,7 +195,7 @@ Builders, healers, mages and heroes are not upgraded by the forge.
 
 **Fire mode** (after the upgrade, toggled separately for each squad and each tower): **fire** is added to piercing damage (burning, sets wooden structures alight), but piercing damage **loses its chance to ignore armor**. The choice: fire against crowds, light armor and wooden structures; regular arrows against heavy armor.
 
-**Defensive structures** **[mechanic: attacking buildings — done]** — built on plots around the keep and on **tower slots on walls**:
+**Defensive structures** **[mechanic: attacking buildings — done]** — built by workers on the **own wall**:
 
 | Tower | Damage | Targets | Special |
 |---|---|---|---|
@@ -282,7 +282,7 @@ No open questions for the Empire.
 
 **Decided (heroes):** experience for kills and capturing outposts; respawn in the keep for gold and a long time; mass teleport — only to own buildings; the Emperor's retinue lives until it dies; the focus aura affects all mages; the elemental protection aura changes immediately with the element.
 
-**Decided:** fire arrows for ballistae are toggled, like the archers'; both fire arrow upgrades also apply to the corresponding towers, and fire mode on towers is toggleable too; in fire mode piercing damage does not ignore armor; forge upgrades — weapons ×2, armor ×2, fire arrows, fire arrows for ballistae, improved mechanism; the storm deals damage; mages hit air (anti-air); three kinds of mages — fire (Pillar of Fire), water (Storm), lightning (Chain Lightning); heal is an ability with autocast; fire arrows are bought at the forge; healers heal only the living; builders repair structures, ballistae and trebuchets; fire arrows — a purchasable upgrade + a toggleable ability; towers are built on separate plots on walls; the forge is needed; the trebuchet existing as both a unit and a tower is fine.
+**Decided:** fire arrows for ballistae are toggled, like the archers'; both fire arrow upgrades also apply to the corresponding towers, and fire mode on towers is toggleable too; in fire mode piercing damage does not ignore armor; forge upgrades — weapons ×2, armor ×2, fire arrows, fire arrows for ballistae, improved mechanism; the storm deals damage; mages hit air (anti-air); three kinds of mages — fire (Pillar of Fire), water (Storm), lightning (Chain Lightning); heal is an ability with autocast; fire arrows are bought at the forge; healers heal only the living; builders repair structures, ballistae and trebuchets; fire arrows — a purchasable upgrade + a toggleable ability; towers are built by workers anywhere along the own wall; the forge is needed; the trebuchet existing as both a unit and a tower is fine.
 
 ## 3. High Elves
 
@@ -303,18 +303,18 @@ No open questions for the Empire.
 | Building | Placement | What it does |
 |---|---|---|
 | **Keep** | map (player slot) | main building; **spirits** (builders), heroes |
-| **Order of the Sword** | plot | swordsmen with a double-bladed sword and a shield |
-| **Order of Archers** | plot | archers |
+| **Order of the Sword** | free | swordsmen with a double-bladed sword and a shield |
+| **Order of Archers** | free | archers |
 | **Griffon tower** | free | griffon riders (air) |
 | **Tiger pen** | free | tiger riders (cavalry) |
 | **Spirit garden** | free | elementals: water, fire, storm |
-| **Enchantment tower** | plot | upgrades (see below) |
+| **Enchantment tower** | free | upgrades (see below) |
 | **Moonwell** | free | food; **grows trees** around itself |
-| **Walls and gates** | free, by dragging | as for the Empire |
+| **Walls and gates** | wall lines by dragging | as for the Empire |
 
-Placement is a proposal, to be adjusted.
+Every building is put up by workers anywhere on open ground; towers — on the own wall.
 
-**Defensive structures** (plots around the keep and on walls):
+**Defensive structures** (on the own wall):
 
 | Tower | Damage | Targets |
 |---|---|---|
@@ -400,7 +400,7 @@ No open questions for the High Elves.
 - **Playstyle:** scouting, invisible strikes against the economy and buildings, webs and traps on the enemy's path, poison and curses before the decisive clash
 - **Racial traits:**
   - **See at night as well as by day** **[mechanic: day / night]**
-  - **Walls** around settlements (segments, gates, tower slots)
+  - **Walls** around settlements (segments, gates, towers on the wall)
   - **Web** — a ground surface that slows all units inside it (except friendly units with "Spider Boots"); created by spider riders and the Spider Queen **[mechanic: ground surfaces]**
 - **Strengths:** sabotage and invisibility, poison and necrotic damage, webs and traps, control (paralysis, grounding flyers)
 - **Weaknesses:** **head-on fights**, **small squads**, light armor on almost everything
@@ -412,17 +412,17 @@ No open questions for the High Elves.
 | Building | Placement | What it does |
 |---|---|---|
 | **Keep** | map (player slot) | main building; webweavers, heroes |
-| **Fighting Pits** | plot | blade dancers |
-| **Shooting Range** | plot | crossbowmen |
+| **Fighting Pits** | free | blade dancers |
+| **Shooting Range** | free | crossbowmen |
 | **Scout Post** | free | scouts |
 | **Spider Caves** | free | spider riders |
 | **Dark Church** | free | dark priests, dark mages |
 | **Dark Dragon Lair** | free | dark dragon — **maximum 1 per lair** **[mechanic: per-building unit limit]** |
-| **Alchemy Workshop** | plot | upgrades (see below) |
+| **Alchemy Workshop** | free | upgrades (see below) |
 | **Spider Farm** | free | food |
-| **Walls and Gates** | free, drag-placed | same as the Empire |
+| **Walls and Gates** | wall lines by dragging | same as the Empire |
 
-Placement is a proposal, to be adjusted.
+Every building is put up by workers anywhere on open ground; towers — on the own wall.
 
 **Defensive structures:**
 
@@ -528,20 +528,20 @@ No open questions on the Dark Elves.
 | Building | Placement | What it does |
 |---|---|---|
 | **Keep** | map (player slot) | main building; goblins, heroes |
-| **Orc Pits** | plot | orcs, berserkers, orc hunters, orc spearmen |
-| **Dark Order** | plot | Alkar swordsmen, Alkar archers (Alkar elite) |
+| **Orc Pits** | free | orcs, berserkers, orc hunters, orc spearmen |
+| **Dark Order** | free | Alkar swordsmen, Alkar archers (Alkar elite) |
 | **Harpy Nest** | free | harpies (air) |
 | **Wolf Den** | free | goblin wolf riders |
 | **Dark Cult** | free | dark acolytes |
 | **Troll Arena** | free | siege trolls |
-| **Workshop** | plot | upgrades (see below) |
-| **Dark Order Enchantments** | plot | order upgrades (see below) |
+| **Workshop** | free | upgrades (see below) |
+| **Dark Order Enchantments** | free | order upgrades (see below) |
 | **Goblin Farm** | free | food |
-| **Walls and Gates** | free, drag-placed | as for everyone |
-| **Crossbow Tower** | plot near the keep / on the wall | piercing, ranged, **anti-air** |
-| **Wraith Tower** | plot near the keep / on the wall | **necrotic** damage; with the "Invisibility Detection" upgrade (order enchantments) **sees invisible units** |
+| **Walls and Gates** | wall lines by dragging | as for everyone |
+| **Crossbow Tower** | on the wall | piercing, ranged, **anti-air** |
+| **Wraith Tower** | on the wall | **necrotic** damage; with the "Invisibility Detection" upgrade (order enchantments) **sees invisible units** |
 
-Placement is a proposal, to be adjusted.
+Every building is put up by workers anywhere on open ground; towers — on the own wall.
 
 ### Units
 
@@ -644,7 +644,7 @@ No open questions on the Alkars (summon numbers — during balancing, in JSON).
 
 - **Playstyle:** slow but inexorable: sturdy infantry supported by mortars, airships and golems; fast redeployment through tunnels between their outposts
 - **Racial traits:**
-  - **Tunnels** — a unique building type: built on a **dedicated plot** at friendly **outposts**; the **keep** has a built-in tunnel (the keep itself is an entrance). The tunnel network connects all friendly entrances; a squad enters at one place and exits at another — **one squad at a time**. An entrance **can be destroyed**; **the enemy cannot pass through the tunnels** **[mechanic: tunnels — transfer between buildings]**
+  - **Tunnels** — a unique building type: built by workers anywhere (e.g. at friendly **outposts**); the **keep** has a built-in tunnel (the keep itself is an entrance). The tunnel network connects all friendly entrances; a squad enters at one place and exits at another — **one squad at a time**. An entrance **can be destroyed**; **the enemy cannot pass through the tunnels** **[mechanic: tunnels — transfer between buildings]**
   - **Walls** — as for all factions
 - **Strengths:** armor, machines and gunpowder, runes, defense, mobility via tunnels
 - **Weaknesses:** **slow** (low movement speed on almost everything)
@@ -656,19 +656,19 @@ No open questions on the Alkars (summon numbers — during balancing, in JSON).
 | Building | Placement | What it does |
 |---|---|---|
 | **Keep** | map (player slot) | main building; workers, heroes |
-| **Barracks** | plot | axe dwarves, gunners |
+| **Barracks** | free | axe dwarves, gunners |
 | **Workshop** | free | airships, mortars |
 | **Bear Grounds** | free | bear riders |
 | **Golem Workshop** | free | golems — **maximum 1 per workshop**; choice of golem element (with runes) |
-| **Forge** | plot | upgrades (see below) |
-| **Rune Hall** | plot | rune upgrades (see below) |
-| **Tunnel** | dedicated plot at a friendly outpost (built into the keep) | entrance / exit of the tunnel network; destructible |
+| **Forge** | free | upgrades (see below) |
+| **Rune Hall** | free | rune upgrades (see below) |
+| **Tunnel** | free (built into the keep) | entrance / exit of the tunnel network; destructible |
 | **Farm** | free | food |
-| **Walls and Gates** | free, drag-placed | as for everyone |
+| **Walls and Gates** | wall lines by dragging | as for everyone |
 
-Placement is a proposal, to be adjusted.
+Every building is put up by workers anywhere on open ground; towers — on the own wall.
 
-**Defensive structures** (plots near the keep and on walls):
+**Defensive structures** (on the own wall):
 
 | Tower | Damage | Targets |
 |---|---|---|
@@ -748,7 +748,7 @@ Medium armor. Melee and ranged attacks use the element of the **selected rune**:
 
 No open questions on the Dwarves.
 
-**Decided:** food — farm; tunnel — a building type on a dedicated plot at outposts, built into the keep, one squad at a time, destructible, the enemy cannot pass; workers have no armor and capture outposts; gunners and the gunner tower hit air; airships and mortars have heavy armor; a golem without a rune deals bludgeoning damage, the element is chosen in the golem workshop and applies immediately; rune tower — damage by selected rune, hits air, invisibility detection is a Rune Hall upgrade; the enemy cannot see rune traps; Undermine — one squad at a time, can be destroyed.
+**Decided:** food — farm; tunnel — a building type put up anywhere by workers, built into the keep, one squad at a time, destructible, the enemy cannot pass; workers have no armor and capture outposts; gunners and the gunner tower hit air; airships and mortars have heavy armor; a golem without a rune deals bludgeoning damage, the element is chosen in the golem workshop and applies immediately; rune tower — damage by selected rune, hits air, invisibility detection is a Rune Hall upgrade; the enemy cannot see rune traps; Undermine — one squad at a time, can be destroyed.
 
 ## 7. Celestials
 
@@ -790,7 +790,7 @@ Collected from the tags above. This feeds the "Common mechanics" block in `ROADM
 | Toggleable damage type and abilities that depend on the selected mode | Empire (Archmage) | medium |
 | Auras on buildings (construction and recruitment speed), group teleport | Empire (Emperor) | medium |
 | Attacking buildings (towers), incl. anti-air and minimum range | Empire, Dwarves, everyone | high |
-| Drag-placed walls, gates (passable only for the owner), tower slots on walls | Empire, Dwarves | medium |
+| Drag-placed walls, gates (passable only for the owner), towers on walls | Empire, Dwarves | medium |
 | Siege engines (range, buildings only, crew) | Empire, Alkars, Dwarves | medium |
 | Toggleable modes and stances (shield wall, spear wall, fire arrows) | Empire, Dwarves | high |
 | Damage that depends on the target's speed (spear wall vs charge) | Empire | medium |

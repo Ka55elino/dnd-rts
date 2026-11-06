@@ -2,8 +2,7 @@
   "id": "forge",
   "name": "Forge",
   "kind": "building",
-  "model": "mausoleum",
-  "modelScale": 2.2,
+  "model": "forge",
   "footprint": {
     "x": 10,
     "y": 10
@@ -12,7 +11,7 @@
   "armor": 3,
   "material": "stone",
   "placement": [
-    "plot"
+    "free"
   ],
   "buildTime": 25,
   "cost": {

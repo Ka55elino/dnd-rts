@@ -1,0 +1,16 @@
+{
+  "id": "place_mine",
+  "name": "Place Mine",
+  "kind": "active",
+  "target": "point",
+  "range": 18,
+  "cooldown": 15,
+  "effects": [
+    {
+      "type": "summon",
+      "horde": "mines",
+      "count": 1,
+      "maxAlive": 5
+    }
+  ]
+}

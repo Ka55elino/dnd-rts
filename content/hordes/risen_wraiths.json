@@ -1,0 +1,12 @@
+{
+  "id": "risen_wraiths",
+  "name": "Risen Wraiths",
+  "unit": "wraith",
+  "size": 3,
+  "formation": {
+    "columns": 3,
+    "spacing": 1.2
+  },
+  "cost": {},
+  "buildTime": 1
+}

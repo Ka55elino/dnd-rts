@@ -38,7 +38,7 @@ func closeGates(w *World, p PlayerID) {
 }
 
 func TestGateToggle(t *testing.T) {
-	w := newTestWorld(t)
+	w := newWalledWorld(t)
 	r := wallOf(t, w, 0)
 	gate := gateOf(r)
 	if gate == nil || !gate.GateOpen() {
@@ -81,7 +81,7 @@ func TestGateToggle(t *testing.T) {
 }
 
 func TestEnemyCantWalkIntoTheBase(t *testing.T) {
-	w := newTestWorld(t)
+	w := newWalledWorld(t)
 	closeGates(w, 0)
 	keep := fortressOf(w, 0)
 	raiders, _ := w.SpawnHorde(1, "raiders", keep.Pos.Add(fixed.V2i(110, 0)), 0)
@@ -96,7 +96,7 @@ func TestEnemyCantWalkIntoTheBase(t *testing.T) {
 }
 
 func TestWalkwayStopsAtGatehouses(t *testing.T) {
-	w := newTestWorld(t)
+	w := newWalledWorld(t)
 	r := wallOf(t, w, 0)
 	gi := -1
 	for i, b := range r.Segs {
@@ -115,7 +115,7 @@ func TestWalkwayStopsAtGatehouses(t *testing.T) {
 }
 
 func TestInfantryClimbsWalksAndLeavesTheWall(t *testing.T) {
-	w := newTestWorld(t)
+	w := newWalledWorld(t)
 	r := wallOf(t, w, 0)
 	keep := fortressOf(w, 0)
 	h, _ := w.SpawnHorde(0, "archers", keep.Pos.Add(fixed.V2i(30, 0)), 0)
@@ -145,7 +145,7 @@ func TestInfantryClimbsWalksAndLeavesTheWall(t *testing.T) {
 }
 
 func TestCavalryCantClimb(t *testing.T) {
-	w := newTestWorld(t)
+	w := newWalledWorld(t)
 	r := wallOf(t, w, 0)
 	keep := fortressOf(w, 0)
 	k, _ := w.SpawnHorde(0, "knights", keep.Pos.Add(fixed.V2i(30, 0)), 0)
@@ -159,7 +159,7 @@ func TestCavalryCantClimb(t *testing.T) {
 }
 
 func TestWallLayersInCombat(t *testing.T) {
-	w := newTestWorld(t)
+	w := newWalledWorld(t)
 	r := wallOf(t, w, 0)
 	swords, _ := w.SpawnHorde(0, "swordsmen", r.Nodes[10], 0)
 	swords.wall, swords.wallS, swords.wallTo = r, fixed.FromInt(10), fixed.FromInt(10)
@@ -174,7 +174,7 @@ func TestWallLayersInCombat(t *testing.T) {
 }
 
 func TestBrokenSegmentDropsUnitsAndOpensAGap(t *testing.T) {
-	w := newTestWorld(t)
+	w := newWalledWorld(t)
 	r := wallOf(t, w, 0)
 	i := len(r.Segs) / 4
 	seg := r.Segs[i]
@@ -192,25 +192,10 @@ func TestBrokenSegmentDropsUnitsAndOpensAGap(t *testing.T) {
 }
 
 func TestTowerOnTheWallShoots(t *testing.T) {
-	w := newTestWorld(t)
+	w := newWalledWorld(t)
 	keep := fortressOf(w, 0)
 	w.Step([]Command{{Player: 0, Kind: CmdDevGive, Name: "gold", Count: 5000}, {Player: 0, Kind: CmdDevGive, Name: "wood", Count: 5000}})
-	sock := -1
-	for i, p := range keep.Def.Plots {
-		if p.Class == data.PlotTower {
-			sock = i
-			break
-		}
-	}
-	w.Step([]Command{{Player: 0, Kind: CmdBuildOnPlot, TargetBuilding: keep.ID, Count: sock, Name: "archer_tower"}})
-	tower := w.Buildings[len(w.Buildings)-1]
-	if tower.Def.ID != "archer_tower" {
-		t.Fatalf("no tower on the socket (last building %s)", tower.Def.ID)
-	}
-	w.Step([]Command{{Player: 0, Kind: CmdBuildOnPlot, TargetBuilding: keep.ID, Count: 0, Name: "archer_tower"}})
-	if w.Buildings[len(w.Buildings)-1] != tower {
-		t.Error("a tower was built on a ground plot")
-	}
+	tower := towerOnWall(t, w, "archer_tower", 10)
 	for i := 0; i < 20*31 && tower.UnderConstruction(); i++ {
 		w.Step(nil)
 	}

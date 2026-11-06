@@ -1,0 +1,17 @@
+{
+  "id": "dark_bolt",
+  "name": "Dark Bolt",
+  "kind": "active",
+  "target": "unit",
+  "range": 20,
+  "cooldown": 20,
+  "autocast": true,
+  "effects": [
+    {
+      "type": "damage",
+      "damageType": "necrotic",
+      "amount": 70,
+      "radius": 0
+    }
+  ]
+}

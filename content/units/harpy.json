@@ -1,7 +1,7 @@
 {
   "id": "harpy",
   "name": "Harpy",
-  "model": "",
+  "model": "harpy_simple",
   "health": 90,
   "armor": 0,
   "speed": 6.5,

@@ -15,10 +15,10 @@ func (w *World) nearestEnemyHorde(h *Horde, maxDist fixed.Fixed) *Horde {
 	var best *Horde
 	bestSq := maxDist.Mul(maxDist)
 	for _, e := range w.Hordes {
-		if e.Owner == h.Owner || !e.Alive() || !h.canTarget(e) {
+		if e.Owner == h.Owner || !e.Alive() || !h.canTarget(e) || !w.VisibleTo(e, h.Owner) {
 			continue
 		}
-		if m := h.Unit.Ranged; m != nil && m.MinRange > 0 && h.Unit.Melee == nil && h.Pos.DistSq(e.Pos) < (m.MinRange+engageBase).Mul(m.MinRange+engageBase) {
+		if m := h.rangedAttack(); m != nil && m.MinRange > 0 && h.Unit.Melee == nil && h.Pos.DistSq(e.Pos) < (m.MinRange+engageBase).Mul(m.MinRange+engageBase) {
 			continue // inside the dead zone: look for something farther
 		}
 		if d := h.Pos.DistSq(e.Pos); d <= bestSq {
@@ -45,7 +45,7 @@ func (w *World) nearestEnemySoldier(s *Soldier, radius fixed.Fixed) *Soldier {
 		for c := max(0, c0-span); c <= min(sh.cols-1, c0+span); c++ {
 			for j := sh.head[r*sh.cols+c]; j >= 0; j = sh.next[j] {
 				e := w.Soldiers[j]
-				if e.Horde.Owner == s.Horde.Owner || !e.Alive() || !meleeReaches(s.Horde, e.Horde) {
+				if e.Horde.Owner == s.Horde.Owner || !e.Alive() || !meleeReaches(s.Horde, e.Horde) || !w.VisibleTo(e.Horde, s.Horde.Owner) {
 					continue
 				}
 				d := s.Pos.DistSq(e.Pos)
@@ -64,6 +64,7 @@ func (w *World) nearestEnemySoldier(s *Soldier, radius fixed.Fixed) *Soldier {
 // removeDead drops killed soldiers and empty hordes, keeping ID order, and
 // re-packs formation slots.
 func (w *World) removeDead() {
+	w.raiseDead()
 	w.awardKills()
 	alive := w.Soldiers[:0]
 	died := false
@@ -165,6 +166,49 @@ func (w *World) updateSpearWalls() {
 					e.Horde.moving = false
 				}
 			})
+		}
+	}
+}
+
+// raiseDead: enemies dying inside a raising zone (Curse the Ground, Soul Harvest) count towards
+// a new horde of the zone's Raise type for its owner, temporary like every summon.
+func (w *World) raiseDead() {
+	var zs []*Zone
+	for _, z := range w.Zones {
+		if z.raise != "" {
+			zs = append(zs, z)
+		}
+	}
+	if len(zs) == 0 {
+		return
+	}
+	for _, s := range w.Soldiers {
+		if s.Alive() || s.Horde.dismissed || s.Horde.summoned || !isLiving(s.Horde.Unit) {
+			continue
+		}
+		for _, z := range zs {
+			if s.Horde.Owner != z.Owner && s.Pos.DistSq(z.Pos) <= z.Radius.Mul(z.Radius) {
+				z.deaths++
+				break
+			}
+		}
+	}
+	for _, z := range zs {
+		for z.deaths >= z.raiseEvery {
+			z.deaths -= z.raiseEvery
+			p, ok := w.walkableTarget(z.Pos)
+			if !ok {
+				continue
+			}
+			h, err := w.SpawnHorde(z.Owner, z.raise, p, 0)
+			if err != nil {
+				continue
+			}
+			h.summoned = true
+			if z.raiseDur > 0 {
+				h.expires = w.Tick + uint32(cooldownTicks(z.raiseDur))
+			}
+			w.event(z.Ability, CastEvent{Owner: z.Owner, Pos: p, Radius: fixed.FromInt(4)})
 		}
 	}
 }

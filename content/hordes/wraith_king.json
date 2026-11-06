@@ -1,0 +1,15 @@
+{
+  "id": "wraith_king",
+  "name": "Wraith King",
+  "unit": "wraith_king",
+  "size": 1,
+  "formation": {
+    "columns": 1,
+    "spacing": 1
+  },
+  "cost": {
+    "gold": 1300
+  },
+  "buildTime": 70,
+  "unique": true
+}

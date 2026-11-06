@@ -1,0 +1,15 @@
+{
+  "id": "dark_lord",
+  "name": "Dark Lord",
+  "unit": "dark_lord",
+  "size": 1,
+  "formation": {
+    "columns": 1,
+    "spacing": 1
+  },
+  "cost": {
+    "gold": 1200
+  },
+  "buildTime": 70,
+  "unique": true
+}

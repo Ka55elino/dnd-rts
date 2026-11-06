@@ -1,0 +1,13 @@
+{
+  "id": "dominion_over_the_dead",
+  "name": "Dominion over the Dead",
+  "kind": "aura",
+  "radius": 15,
+  "modifiers": {
+    "damage": 0.2,
+    "moveSpeed": 0.2
+  },
+  "tags": [
+    "undead"
+  ]
+}

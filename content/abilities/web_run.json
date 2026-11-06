@@ -1,0 +1,9 @@
+{
+  "id": "web_run",
+  "name": "Web Run",
+  "kind": "aura",
+  "radius": 12,
+  "modifiers": {
+    "moveSpeed": 0.3
+  }
+}

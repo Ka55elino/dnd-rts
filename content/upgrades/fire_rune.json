@@ -1,0 +1,9 @@
+{
+  "id": "fire_rune",
+  "name": "Fire Rune",
+  "cost": {
+    "gold": 200,
+    "metal": 50
+  },
+  "researchTime": 30
+}

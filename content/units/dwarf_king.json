@@ -1,0 +1,44 @@
+{
+  "id": "dwarf_king",
+  "name": "Dwarf King",
+  "model": "dwarf_king_simple",
+  "health": 1150,
+  "armor": 5,
+  "speed": 4,
+  "radius": 0.55,
+  "mass": 4,
+  "melee": {
+    "damage": 46,
+    "range": 1.5,
+    "cooldown": 1.2,
+    "damageType": "crush"
+  },
+  "tags": [
+    "hero",
+    "infantry",
+    "living"
+  ],
+  "armorClass": "heavy",
+  "magicDefense": 3,
+  "hero": {
+    "xp": [
+      0,
+      150,
+      400,
+      800,
+      1400
+    ],
+    "perLevel": {
+      "damage": 0.1,
+      "armor": 0.5
+    },
+    "healthPerLevel": 0.1
+  },
+  "abilities": [
+    "wrath_of_the_ancestors",
+    "ancestral_shield_wall",
+    "stoneskin",
+    "steadfast",
+    "earthquake"
+  ]
+}

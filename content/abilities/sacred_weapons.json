@@ -1,0 +1,19 @@
+{
+  "id": "sacred_weapons",
+  "name": "Sacred Weapons",
+  "kind": "active",
+  "target": "self",
+  "cooldown": 150,
+  "effects": [
+    {
+      "type": "buff",
+      "duration": 15,
+      "modifiers": {
+        "extraType": "radiant",
+        "extraDamage": 0.25
+      },
+      "radius": 15
+    }
+  ],
+  "ultimate": true
+}

@@ -1,0 +1,35 @@
+{
+  "id": "tiger_rider",
+  "name": "Tiger Rider",
+  "model": "tiger_rider_simple",
+  "health": 200,
+  "armor": 2,
+  "speed": 7.5,
+  "radius": 0.8,
+  "mass": 3.5,
+  "melee": {
+    "damage": 18,
+    "range": 1.6,
+    "cooldown": 1.0,
+    "damageType": "slash"
+  },
+  "ranged": {
+    "damage": 8,
+    "range": 18,
+    "cooldown": 1.8,
+    "damageType": "pierce",
+    "projectile": {
+      "speed": 32,
+      "spread": 2
+    },
+    "targets": [
+      "ground",
+      "air"
+    ]
+  },
+  "tags": [
+    "cavalry",
+    "living"
+  ],
+  "armorClass": "medium"
+}

@@ -1,0 +1,10 @@
+{
+  "id": "child_of_the_forest",
+  "name": "Child of the Forest",
+  "kind": "passive",
+  "modifiers": {
+    "immune": "poison",
+    "resistType": "necrotic",
+    "resist": 1
+  }
+}

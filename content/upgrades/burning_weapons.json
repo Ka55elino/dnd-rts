@@ -1,0 +1,17 @@
+{
+  "id": "burning_weapons",
+  "name": "Burning Weapons",
+  "cost": {
+    "gold": 200,
+    "metal": 50
+  },
+  "researchTime": 30,
+  "units": [
+    "orc",
+    "berserker"
+  ],
+  "modifiers": {
+    "extraType": "fire",
+    "extraDamage": 0.15
+  }
+}

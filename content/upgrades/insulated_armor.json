@@ -1,0 +1,18 @@
+{
+  "id": "insulated_armor",
+  "name": "Insulated Armor",
+  "cost": {
+    "gold": 200,
+    "metal": 100
+  },
+  "researchTime": 35,
+  "units": [
+    "axe_dwarf",
+    "gunner",
+    "bear_rider"
+  ],
+  "modifiers": {
+    "resistType": "ice",
+    "resist": 0.3
+  }
+}

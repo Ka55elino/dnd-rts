@@ -1,0 +1,24 @@
+{
+  "id": "thicket",
+  "name": "Thicket",
+  "kind": "active",
+  "target": "point",
+  "range": 30,
+  "cooldown": 45,
+  "effects": [
+    {
+      "type": "zone",
+      "radius": 8,
+      "duration": 15,
+      "interval": 1,
+      "effects": [
+        {
+          "type": "status",
+          "status": "slow",
+          "duration": 1.2,
+          "radius": 0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "id": "earthquake",
+  "name": "Earthquake",
+  "kind": "active",
+  "target": "point",
+  "range": 20,
+  "cooldown": 150,
+  "effects": [
+    {
+      "type": "damage",
+      "damageType": "crush",
+      "amount": 60,
+      "radius": 12
+    },
+    {
+      "type": "status",
+      "status": "stun",
+      "duration": 2,
+      "radius": 12
+    }
+  ],
+  "ultimate": true
+}

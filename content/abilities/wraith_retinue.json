@@ -1,0 +1,15 @@
+{
+  "id": "wraith_retinue",
+  "name": "Wraith Retinue",
+  "kind": "active",
+  "target": "self",
+  "cooldown": 60,
+  "effects": [
+    {
+      "type": "summon",
+      "horde": "wraiths",
+      "count": 1,
+      "duration": 45
+    }
+  ]
+}

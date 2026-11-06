@@ -1,0 +1,30 @@
+{
+  "id": "plague",
+  "name": "Plague",
+  "kind": "active",
+  "target": "point",
+  "range": 25,
+  "cooldown": 45,
+  "effects": [
+    {
+      "type": "zone",
+      "radius": 10,
+      "duration": 10,
+      "interval": 1,
+      "effects": [
+        {
+          "type": "damage",
+          "damageType": "poison",
+          "amount": 6,
+          "radius": 0
+        },
+        {
+          "type": "status",
+          "status": "acid",
+          "duration": 1.5,
+          "radius": 0
+        }
+      ]
+    }
+  ]
+}

@@ -74,14 +74,20 @@ interface Cell {
     alt?: () => void; // right click (autocast)
 }
 
-const COLS = 4;
+const COLS = 6;
+/** Hotkeys of the workers' building cells, in order. */
+const BUILD_KEYS = [..."1234567890", "Minus", "Equal", "BracketLeft", "BracketRight", "Semicolon", "Quote"].map((k) =>
+    k.length === 1
+        ? { label: k, code: `Digit${k}` }
+        : { label: { Minus: "-", Equal: "=", BracketLeft: "[", BracketRight: "]", Semicolon: ";", Quote: "'" }[k]!, code: k },
+);
 const ROWS = 3;
 
 /**
- * Command card (bottom right, WC3 style 4×3 grid) for the selected hordes:
- * - row 1: Move, Stop, Hold, Attack; row 2: Patrol (more orders later);
- *   row 3: abilities (heroes now, more abilities later);
- * - workers only: Move and Stop, then the free buildings they can put up.
+ * Command card (bottom right, a 6×3 grid) for the selected hordes:
+ * - row 1: Move, Stop, Hold, Attack, Patrol, Attack ground;
+ *   row 3, then the rest of row 2: abilities;
+ * - workers only: Move and Stop, then every building they can put up (hotkeys 1–0, -, =, [, ], ;, ').
  * Hotkeys are shown on each cell (G, X, H, F, P, 1–9). WASD / Q / E stay
  * with the camera.
  */
@@ -148,25 +154,32 @@ export class CommandCard {
 
         if (fighters.length > 0) {
             // Abilities of the selection: the bottom row, then free cells of row 2.
-            const slots = [2 * COLS, 2 * COLS + 1, 2 * COLS + 2, 2 * COLS + 3, COLS + 1, COLS + 2, COLS + 3].filter((s) => !cells[s]);
+            const slots = [...Array(COLS).keys()].map((c) => 2 * COLS + c).concat([...Array(COLS).keys()].map((c) => COLS + c)).filter((s) => !cells[s]);
             this.abilityCells(fighters, hordes).forEach((cell, i) => {
                 if (i < slots.length) cells[slots[i]] = cell;
             });
         } else if (workers.length > 0) {
-            // Free buildings, filling the cells after Move / Stop.
+            // The faction's buildings, in the cells after Move / Stop (16 of them).
             const buildable = this.d.buildable();
-            let slot = COLS; // second row
+            let slot = 2;
             this.d.buildings.forEach((type, kind) => {
-                if (type.kind !== "building" || !type.placement.includes("free") || !buildable.includes(type.id)) return;
-                if (slot >= cells.length) return;
-                const n = slot - COLS + 1;
+                if (!buildable.includes(type.id) || !["building", "wall", "gate"].includes(type.kind) || slot >= cells.length) return;
+                const n = slot - 1;
+                const key = BUILD_KEYS[n - 1] ?? "";
+                const where = type.placement.includes("tower")
+                    ? " · on the own wall"
+                    : type.kind === "wall"
+                      ? " per segment · click the start, then the end"
+                      : type.kind === "gate"
+                        ? " · over an own wall"
+                        : "";
                 cells[slot++] = {
                     id: `build:${kind}`,
                     glyph: iconFor(type.id, type.name),
                     title: `Build ${type.name}`,
-                    key: `${n}`,
-                    code: `Digit${n}`,
-                    detail: `${this.d.economy.costHtml(type.cost)}<br>${type.width}×${type.depth} · ${type.buildTime.toFixed(0)}s${this.req(type.requires)}`,
+                    key: key.label,
+                    code: key.code,
+                    detail: `${this.d.economy.costHtml(type.cost)}<br>${type.width}×${type.depth} · ${type.buildTime.toFixed(0)}s${where}${this.req(type.requires)}`,
                     enabled: this.d.economy.canAfford(type.cost) && this.d.tech.missing(type.requires).length === 0,
                     run: () => this.d.onPlace(kind, workers),
                 };
@@ -258,13 +271,16 @@ export class CommandCard {
             const code = key ? `Digit${key}` : "";
             const secs = Math.ceil((g.cd * this.d.tickMs) / 1000);
             const base: Omit<Cell, "run"> = { id: `ability:${kind}`, glyph: icon("crown"), title: a.name, key, code, ultimate: a.ultimate };
+            // What it does (generated from the content numbers on the server).
+            const desc = a.description ? `<span class="hud-card__tip-desc">${a.description.split("\n").join("<br>")}</span>` : "";
+            const kindName = a.kind === "toggle" ? "Toggle" : a.kind === "aura" ? "Aura" : a.kind === "passive" ? "Passive" : a.kind === "mode" ? "Element" : "Ability";
             if (g.hordes.length === 0) {
-                cells.push({ ...base, detail: `${a.kind === "toggle" ? "Toggle" : a.kind === "aura" ? "Aura" : a.kind === "passive" ? "Passive" : "Ability"}<br><span class="hud-card__tip-req">Unlocks at hero level ${g.unlockAt}</span>`, enabled: false, run: () => {} });
+                cells.push({ ...base, detail: `${kindName}${desc ? `<br>${desc}` : ""}<br><span class="hud-card__tip-req">Unlocks at hero level ${g.unlockAt}</span>`, enabled: false, run: () => {} });
                 continue;
             }
             const locked = this.d.tech.missing(a.requires).length > 0;
             if (locked) {
-                cells.push({ ...base, detail: `${a.kind === "toggle" ? "Toggle" : "Ability"}${this.req(a.requires)}`, enabled: false, run: () => {} });
+                cells.push({ ...base, detail: `${kindName}${desc ? `<br>${desc}` : ""}${this.req(a.requires)}`, enabled: false, run: () => {} });
                 continue;
             }
             switch (a.kind) {
@@ -273,7 +289,7 @@ export class CommandCard {
                     const target = a.target === "self" ? "on itself" : a.target === "point" ? "at a point" : "on a unit";
                     cells.push({
                         ...base,
-                        detail: `Cast ${target}${a.range ? ` · range ${a.range >= 1000 ? "any" : a.range}` : ""}${a.radius && !a.cone ? ` · radius ${a.radius}` : ""} · cooldown ${a.cooldown}s${a.description ? `<br>${a.description}` : ""}${ready ? "" : `<br>ready in ${secs}s`}${g.pending ? "<br>moving into range…" : ""}${a.autocast ? "<br>right click: autocast" : ""}`,
+                        detail: `Cast ${target}${a.range ? ` · range ${a.range >= 1000 ? "any" : a.range}` : ""}${a.radius && !a.cone ? ` · radius ${a.radius}` : ""} · cooldown ${a.cooldown}s${desc ? `<br>${desc}` : ""}${ready ? "" : `<br>ready in ${secs}s`}${g.pending ? "<br>moving into range…" : ""}${a.autocast ? "<br>right click: autocast" : ""}`,
                         enabled: ready,
                         cd: ready ? 0 : Math.min(1, (g.cd * this.d.tickMs) / 1000 / Math.max(a.cooldown, 0.01)),
                         autocast: a.autocast ? g.auto : undefined,
@@ -293,7 +309,7 @@ export class CommandCard {
                     cells.push({
                         ...base,
                         title: `${a.name}: ${cur?.name ?? "?"}`,
-                        detail: `${list}<br>click: ${modes[next]?.name ?? ""} · right click: ${modes[prev]?.name ?? ""}${a.cooldown ? ` · switch ${a.cooldown}s` : ""}${ready ? "" : `<br>ready in ${secs}s`}`,
+                        detail: `${list}${desc ? `<br>${desc}` : ""}<br>click: ${modes[next]?.name ?? ""} · right click: ${modes[prev]?.name ?? ""}${a.cooldown ? ` · switch ${a.cooldown}s` : ""}${ready ? "" : `<br>ready in ${secs}s`}`,
                         enabled: ready,
                         cd: ready ? 0 : Math.min(1, (g.cd * this.d.tickMs) / 1000 / Math.max(a.cooldown, 0.01)),
                         toggled: true,
@@ -303,12 +319,12 @@ export class CommandCard {
                     break;
                 }
                 case "toggle":
-                    cells.push({ ...base, detail: g.toggled ? "On — click to turn off" : "Off — click to turn on", toggled: g.toggled, run: () => this.d.onToggle(kind, g.hordes) });
+                    cells.push({ ...base, detail: `${desc ? `${desc}<br>` : ""}${g.toggled ? "On — click to turn off" : "Off — click to turn on"}`, toggled: g.toggled, run: () => this.d.onToggle(kind, g.hordes) });
                     break;
                 default:
                     cells.push({
                         ...base,
-                        detail: a.kind === "aura" ? `Aura · radius ${a.radius}<br>click: show the radius` : "Passive",
+                        detail: a.kind === "aura" ? `Aura · radius ${a.radius}${desc ? `<br>${desc}` : ""}<br>click: show the radius` : `Passive${desc ? `<br>${desc}` : ""}`,
                         passive: true,
                         run: () => this.d.onInspect(kind, g.hordes),
                     });

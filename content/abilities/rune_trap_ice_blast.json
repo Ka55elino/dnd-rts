@@ -1,0 +1,21 @@
+{
+  "id": "rune_trap_ice_blast",
+  "name": "Frost Rune Trap",
+  "kind": "active",
+  "target": "self",
+  "cooldown": 1,
+  "effects": [
+    {
+      "type": "damage",
+      "damageType": "ice",
+      "amount": 40,
+      "radius": 4
+    },
+    {
+      "type": "status",
+      "status": "slow",
+      "duration": 3,
+      "radius": 4
+    }
+  ]
+}

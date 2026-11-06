@@ -1,0 +1,15 @@
+{
+  "id": "spider_form",
+  "name": "Spider Form",
+  "kind": "active",
+  "target": "self",
+  "cooldown": 180,
+  "effects": [
+    {
+      "type": "transform",
+      "unit": "spider_queen_form",
+      "duration": 30
+    }
+  ],
+  "ultimate": true
+}

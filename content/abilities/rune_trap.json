@@ -1,0 +1,31 @@
+{
+  "id": "rune_trap",
+  "name": "Rune Trap",
+  "kind": "active",
+  "target": "point",
+  "range": 24,
+  "cooldown": 20,
+  "effects": [
+    {
+      "type": "summon",
+      "horde": "rune_trap_fires",
+      "count": 1,
+      "maxAlive": 3,
+      "mode": "fire"
+    },
+    {
+      "type": "summon",
+      "horde": "rune_trap_ices",
+      "count": 1,
+      "maxAlive": 3,
+      "mode": "ice"
+    },
+    {
+      "type": "summon",
+      "horde": "rune_trap_lightnings",
+      "count": 1,
+      "maxAlive": 3,
+      "mode": "lightning"
+    }
+  ]
+}

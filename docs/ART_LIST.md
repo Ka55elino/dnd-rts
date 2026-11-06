@@ -27,13 +27,13 @@ Each unit: one model per skin (same skeleton and clips), one albedo texture per 
 
 | id | Unit | Category · LOD0 tris / verts | Clips / nodes | Now |
 |---|---|---|---|---|
-| `worker` | Builder | Infantry · 3,000 / 2,000 | idle, walk, run, work, die | placeholder (swordsman) |
-| `swordsman` | Swordsman | Infantry · 3,000 / 2,000 | idle, walk, run, attack, brace, die | placeholder (grab3d swordsman) |
+| `worker` | Builder | Infantry · 3,000 / 2,000 | idle, walk, run, work, die | stand-in (`worker_simple`) |
+| `swordsman` | Swordsman | Infantry · 3,000 / 2,000 | idle, walk, run, attack, brace, die | stand-in (`swordsman_simple`) |
 | `spearman` | Spearman | Infantry · 3,000 / 2,000 | idle, walk, run, attack, brace, die | — |
-| `archer` | Archer | Infantry · 3,000 / 2,000 | idle, walk, run, attack (shot), die | placeholder (grab3d ranger) |
+| `archer` | Archer | Infantry · 3,000 / 2,000 | idle, walk, run, attack (shot), die | stand-in (`archer_simple`) |
 | `knight` | Knight | Cavalry · 5,000 / 3,500 | idle, walk, run (gallop), attack, die | — |
-| `ballista` | Ballista | Machine (static) · ≤ 15,000 tris (static model) | nodes `_wheel_…`, `_crossbow`; + `ballista_wreck` | placeholder (with nodes) |
-| `trebuchet` | Trebuchet | Machine (static) · ≤ 15,000 tris (static model) | nodes `_wheel_…`, `_arm`, `_counterweight`, `_sling`; + `trebuchet_wreck` | placeholder (with nodes) |
+| `ballista` | Ballista | Machine (static) · ≤ 15,000 tris (static model) | nodes `_wheel_…`, `_crossbow`; + `ballista_wreck` | stand-in, code (`tools/propc`) |
+| `trebuchet` | Trebuchet | Machine (static) · ≤ 15,000 tris (static model) | nodes `_wheel_…`, `_arm`, `_counterweight`, `_sling`; + `trebuchet_wreck` | stand-in, code (`tools/propc`) |
 | `fire_mage` | Fire Mage | Infantry · 3,000 / 2,000 | idle, walk, run, attack (projectile), cast, die | — |
 | `water_mage` | Water Mage | Infantry · 3,000 / 2,000 | idle, walk, run, attack (projectile), cast, die | — |
 | `lightning_mage` | Lightning Mage | Infantry · 3,000 / 2,000 | idle, walk, run, attack (projectile), cast, die | — |
@@ -376,9 +376,9 @@ Also in the faction's style: construction scaffolding S / M / L, ruins S / M / L
 
 | id | Model | Budget | Now |
 |---|---|---|---|
-| `gold_mine` | Gold mine | ≤ 20,000 · 8×8 m | placeholder (castle) |
-| `sawmill` | Sawmill | ≤ 20,000 · 8×8 m | placeholder (castle) |
-| `ore_mine` | Ore mine | ≤ 20,000 · 8×8 m | placeholder (castle) |
+| `gold_mine` | Gold mine | ≤ 20,000 · 8×8 m | stand-in, code (`tools/propc`) |
+| `sawmill` | Sawmill | ≤ 20,000 · 8×8 m | stand-in, code (`tools/propc`) |
+| `ore_mine` | Ore mine | ≤ 20,000 · 8×8 m | stand-in, code (`tools/propc`) |
 
 ### Environment
 
@@ -401,7 +401,7 @@ Also in the faction's style: construction scaffolding S / M / L, ruins S / M / L
 | Elements | fire (flipbook), smoke, embers; ice shards, frost decal; lightning arcs (flipbook), sparks; acid splash, acid puddle decal; poison cloud; necrotic wisps; light rays, holy glow |
 | Combat | hit sparks, dust puff, debris (stone, wood), explosion (flipbook), muzzle flash, scorch decal, crater decal |
 | Abilities | aura ring, area circle, web decal, smoke screen, roots / thicket, rune circle (fire, frost, lightning), summon portal |
-| In the world | selection circle, move marker, plot outline, construction grid |
+| In the world | selection circle, move marker, placement outline, construction grid |
 
 ### Icons and HUD (all factions)
 

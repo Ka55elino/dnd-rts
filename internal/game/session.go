@@ -27,8 +27,10 @@ type Session struct {
 	steps  int // ticks to run while paused
 	speed  float64
 	ticker *time.Ticker
-	local  sim.PlayerID  // the player this client controls; every other player is AI
-	held   []sim.Command // console commands waiting for the next tick
+	local  sim.PlayerID // the player this client controls; every other player is AI
+	// lastSeen: hordes in the previous snapshot (to tell "out of sight" from "dead").
+	lastSeen map[sim.HordeID]bool
+	held     []sim.Command // console commands waiting for the next tick
 
 	hashTick uint32 // tick of the latest state hash
 	hash     uint64
@@ -182,8 +184,15 @@ func (s *Session) Run(done <-chan struct{}) {
 
 func (s *Session) publish(simMicros uint32) bool {
 	w := s.world
-	hordes := make([]protocol.HordeState, len(w.Hordes))
-	for i, h := range w.Hordes {
+	// What the local player can't see (invisible enemies, enemies under the fog) isn't sent.
+	seen := make(map[sim.HordeID]bool, len(w.Hordes))
+	var vanished []uint32
+	hordes := make([]protocol.HordeState, 0, len(w.Hordes))
+	for _, h := range w.Hordes {
+		if !w.Sees(s.local, h) {
+			continue
+		}
+		seen[h.ID] = true
 		var hp, maxHP fixed.Fixed
 		for _, so := range h.Soldiers {
 			hp += max(so.HP, 0)
@@ -193,7 +202,7 @@ func (s *Session) publish(simMicros uint32) bool {
 		if h.IsHero() {
 			level = uint8(h.Level())
 		}
-		hordes[i] = protocol.HordeState{
+		hordes = append(hordes, protocol.HordeState{
 			HP:    uint32(hp.Int()),
 			MaxHP: uint32(maxHP.MulInt(h.Def.Size).Int()),
 			Level: level,
@@ -206,10 +215,20 @@ func (s *Session) publish(simMicros uint32) bool {
 			Alive: uint16(len(h.Soldiers)),
 			X:     h.Pos.X.Float32(),
 			Z:     h.Pos.Y.Float32(),
+		})
+	}
+	for id := range s.lastSeen {
+		if !seen[id] && w.Horde(id) != nil {
+			vanished = append(vanished, uint32(id)) // alive but out of sight: the client drops it without corpses
 		}
 	}
-	soldiers := make([]protocol.SoldierState, len(w.Soldiers))
-	for i, so := range w.Soldiers {
+	slices.Sort(vanished)
+	s.lastSeen = seen
+	soldiers := make([]protocol.SoldierState, 0, len(w.Soldiers))
+	for _, so := range w.Soldiers {
+		if !seen[so.Horde.ID] {
+			continue
+		}
 		state := protocol.SoldierIdle
 		switch {
 		case so.Knocked():
@@ -219,7 +238,7 @@ func (s *Session) publish(simMicros uint32) bool {
 		case so.Horde.IsMoving():
 			state = protocol.SoldierMoving
 		}
-		soldiers[i] = protocol.SoldierState{
+		soldiers = append(soldiers, protocol.SoldierState{
 			ID:     uint32(so.ID),
 			Horde:  uint32(so.Horde.ID),
 			X:      so.Pos.X.Float32(),
@@ -228,7 +247,7 @@ func (s *Session) publish(simMicros uint32) bool {
 			HP:     uint8(so.HP.Clamp(0, so.MaxHP()).MulInt(255).Div(so.MaxHP()).Int()),
 			State:  state,
 			Status: so.StatusFlags(),
-		}
+		})
 	}
 	projectiles := make([]protocol.ProjectileState, len(w.Projectiles))
 	for i, p := range w.Projectiles {
@@ -245,6 +264,7 @@ func (s *Session) publish(simMicros uint32) bool {
 			Impact: p.ImpactTick,
 		}
 	}
+	fogCols, fogRows := w.FogSize()
 	buildings := make([]protocol.BuildingState, len(w.Buildings))
 	for i, b := range w.Buildings {
 		buildings[i] = protocol.BuildingState{
@@ -260,11 +280,10 @@ func (s *Session) publish(simMicros uint32) bool {
 		by, capture := b.Capturing()
 		buildings[i].Capturer = uint8(by)
 		if by != sim.Neutral {
-			buildings[i].Flags = protocol.BuildingFlags(false, true, capture.Float(), uint16(plotMask(b)))
+			buildings[i].Flags = protocol.BuildingFlags(false, true, capture.Float())
 		} else {
-			buildings[i].Flags = protocol.BuildingFlags(b.UnderConstruction(), false, b.Progress().Float(), uint16(plotMask(b)))
+			buildings[i].Flags = protocol.BuildingFlags(b.UnderConstruction(), false, b.Progress().Float())
 		}
-		buildings[i].PlotsHi = uint32(plotMask(b) >> 16)
 		if b.GateOpen() {
 			buildings[i].Flags |= protocol.BuildingOpen
 		}
@@ -287,7 +306,8 @@ func (s *Session) publish(simMicros uint32) bool {
 		Hordes: hordes, Soldiers: soldiers, Projectiles: projectiles, Buildings: buildings,
 		Players: s.players(), Resources: s.resources(), Queues: s.queues(),
 		Events: s.events(), Abilities: s.abilities(), Upgrades: s.upgrades(),
-		Heroes: s.heroes(),
+		Heroes: s.heroes(), Vanished: vanished,
+		Trees: s.trees(), Fog: w.FogState(s.local), FogCols: fogCols, FogRows: fogRows,
 	}))
 }
 
@@ -423,17 +443,6 @@ func (s *Session) queues() []protocol.QueueState {
 	return out
 }
 
-// plotMask has bit i set when plot i of b is occupied.
-func plotMask(b *sim.Building) uint64 {
-	var m uint64
-	for i := range min(len(b.Def.Plots), 48) {
-		if b.PlotOccupied(i) {
-			m |= 1 << i
-		}
-	}
-	return m
-}
-
 // renderRotation converts a sim heading (angle of (cos a, sin a) on the X/Z
 // plane) to a three.js Y rotation for a model facing +Z: θ = π/2 - a.
 func renderRotation(a fixed.Fixed) float32 {
@@ -468,5 +477,19 @@ func hordeFlags(h *sim.Horde) uint8 {
 	if h.InStance() {
 		f |= protocol.HordeStance
 	}
+	if h.Hidden() {
+		f |= protocol.HordeHidden
+	}
+	if h.IsTrap() {
+		f |= protocol.HordeTrap
+	}
 	return f
+}
+
+func (s *Session) trees() []protocol.TreeState {
+	out := make([]protocol.TreeState, len(s.world.Trees))
+	for i, t := range s.world.Trees {
+		out[i] = protocol.TreeState{X: t.Pos.X.Float32(), Z: t.Pos.Y.Float32(), Grown: t.Grown}
+	}
+	return out
 }

@@ -2,7 +2,8 @@ import "./ui/ui.css";
 import "./ui/hud.css";
 import { ScreenManager } from "./app/screen";
 import { createMainMenu } from "./app/screens/mainMenu";
-import { createGameScreen } from "./app/screens/gameScreen";
+import { createComingSoonScreen } from "./app/screens/comingSoonScreen";
+import { createPlaygroundScreen } from "./app/screens/playgroundScreen";
 import { createEditorScreen } from "./app/screens/editorScreen";
 import { createOptionsScreen } from "./app/screens/optionsScreen";
 import { createBenchmarkScreen } from "./app/screens/benchmarkScreen";
@@ -29,7 +30,8 @@ const screens = new ScreenManager(document.getElementById("app")!);
 const showMenu = (): void =>
     screens.show(() =>
         createMainMenu({
-            onGame: () => screens.show(() => createGameScreen(showMenu)),
+            onGame: () => screens.show(() => createComingSoonScreen("Game", showMenu)),
+            onPlayground: () => screens.show(() => createPlaygroundScreen(showMenu)),
             onEditor: () => screens.show(() => createEditorScreen(showMenu)),
             onOptions: () => screens.show(() => createOptionsScreen(showMenu)),
             onBenchmark: () => screens.show(() => createBenchmarkScreen(showMenu)),

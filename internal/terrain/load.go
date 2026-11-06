@@ -31,7 +31,7 @@ func ForMap(fsys fs.FS, m *data.Map) (*Heightfield, error) {
 
 	opts := DefaultGenerateOptions(t.Seed)
 	for _, p := range m.Players {
-		// The fortress first: its base (plots, wall) needs level ground; the army start next to it.
+		// The fortress first: its base (inside the wall, the wall) needs level ground; the army start next to it.
 		opts.FlatSpots = append(opts.FlatSpots, p.Fortress.Pos)
 		opts.FlatSpots = append(opts.FlatSpots, p.Start)
 	}

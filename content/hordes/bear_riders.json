@@ -1,0 +1,18 @@
+{
+  "id": "bear_riders",
+  "name": "Bear Riders",
+  "unit": "bear_rider",
+  "size": 8,
+  "formation": {
+    "columns": 4,
+    "spacing": 2.4
+  },
+  "cost": {
+    "gold": 340,
+    "metal": 40
+  },
+  "buildTime": 42,
+  "uses": {
+    "food": 15
+  }
+}

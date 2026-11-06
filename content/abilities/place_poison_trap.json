@@ -1,0 +1,16 @@
+{
+  "id": "place_poison_trap",
+  "name": "Place Poison Trap",
+  "kind": "active",
+  "target": "point",
+  "range": 18,
+  "cooldown": 15,
+  "effects": [
+    {
+      "type": "summon",
+      "horde": "poison_traps",
+      "count": 1,
+      "maxAlive": 5
+    }
+  ]
+}

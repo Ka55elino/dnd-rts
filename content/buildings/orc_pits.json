@@ -1,0 +1,27 @@
+{
+  "id": "orc_pits",
+  "name": "Orc Pits",
+  "kind": "building",
+  "model": "orc_pits",
+  "footprint": {
+    "x": 10,
+    "y": 10
+  },
+  "health": 1400,
+  "armor": 3,
+  "placement": [
+    "free"
+  ],
+  "buildTime": 22,
+  "cost": {
+    "gold": 180,
+    "wood": 100
+  },
+  "material": "wood",
+  "trains": [
+    "orcs",
+    "berserkers",
+    "orc_hunters",
+    "orc_spearmen"
+  ]
+}

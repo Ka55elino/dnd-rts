@@ -31,7 +31,7 @@ A building isn't "a farm" as such. It has a list of **economic effects**, and an
 ```json
 {
   "id": "farm",
-  "placement": ["free", "plot"],
+  "placement": ["free"],
   "cost":  { "gold": 100, "wood": 50 },
   "buildTime": 20,
   "economy": [
@@ -81,7 +81,7 @@ An outpost is an ordinary building with an `income` effect. Only one thing is sp
 {
   "id": "gold_mine",
   "placement": ["outpost"],
-  "outpost": { "captureTime": 10, "captureRadius": 12, "plots": 3 },
+  "outpost": { "captureTime": 10, "captureRadius": 12 },
   "economy": [
     { "type": "income", "resource": "gold", "amount": 15, "every": 5 }
   ]

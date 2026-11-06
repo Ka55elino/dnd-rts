@@ -2,8 +2,7 @@
   "id": "archer_tower",
   "name": "Archer Tower",
   "kind": "building",
-  "model": "castle_tower",
-  "modelScale": 0.85,
+  "model": "archer_tower",
   "footprint": {
     "x": 6,
     "y": 6

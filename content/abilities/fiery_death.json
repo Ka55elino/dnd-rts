@@ -1,0 +1,9 @@
+{
+  "id": "fiery_death",
+  "name": "Fiery Death",
+  "kind": "passive",
+  "modifiers": {
+    "extraType": "fire",
+    "extraDamage": 0.1
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "id": "hail_of_arrows",
+  "name": "Hail of Arrows",
+  "kind": "active",
+  "target": "point",
+  "range": 34,
+  "cooldown": 30,
+  "effects": [
+    {
+      "type": "zone",
+      "radius": 6,
+      "duration": 3,
+      "interval": 0.5,
+      "effects": [
+        {
+          "type": "damage",
+          "damageType": "pierce",
+          "amount": 12,
+          "radius": 0
+        }
+      ]
+    }
+  ]
+}

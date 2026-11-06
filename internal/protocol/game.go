@@ -17,7 +17,7 @@ const (
 	MsgCmdAbility  uint8 = 113 // client → server: cast the hordes' ability
 	MsgCmdConsole  uint8 = 114 // client → server: dev console line
 	MsgCmdSiege    uint8 = 115 // client → server: attack an enemy building
-	MsgCmdPlot     uint8 = 116 // client → server: build on a plot
+	_              uint8 = 116 // (was: build on a plot; no longer used)
 	MsgCmdCancel   uint8 = 117 // client → server: cancel a construction
 	MsgCmdBuild    uint8 = 118 // client → server: workers put up a free building
 	MsgCmdHelp     uint8 = 119 // client → server: workers help build a foundation
@@ -35,6 +35,7 @@ const (
 	MsgCmdGate     uint8 = 131 // client → server: open / close a gate
 	MsgCmdBToggle  uint8 = 132 // client → server: switch a tower's toggle (fire arrows)
 	MsgCmdFireAt   uint8 = 133 // client → server: ranged hordes shoot at a ground point (move layout)
+	MsgCmdWall     uint8 = 134 // client → server: workers build a wall line
 )
 
 // Game snapshot layout (little endian):
@@ -105,8 +106,8 @@ const (
 //	  u32  maxHp
 //	  u32  flags     bit 0: under construction; bit 1: being captured; bit 2: burning; bit 3: gate open; bit 4: tower toggle on;
 //	                 bits 8–15: construction or capture progress 0..255;
-//	                 bits 16–31: occupied plots 0–15 of a fortress / outpost (bit i = plot i)
-//	  u32  plotsHi   occupied plots 16–47 (bit i = plot 16 + i; tower sockets of a base wall come last)
+//	                 bits 16–31: reserved (0; were occupied build plots)
+//	  u32  reserved  0 (was: occupied build plots 16–47)
 //	players (playerCount * 4 bytes)
 //	  u8   id
 //	  u8   faction   index into the sorted faction list
@@ -180,6 +181,8 @@ const (
 	HordeTransformed = 1 << 0
 	HordeSummoned    = 1 << 1
 	HordeStance      = 1 << 2 // a stance toggle is on: soldiers play their "brace" clip
+	HordeHidden      = 1 << 3 // invisible to enemies (own hordes are drawn see-through)
+	HordeTrap        = 1 << 4 // a ground trap (drawn flat, no plate)
 )
 
 // Event kinds.
@@ -252,7 +255,7 @@ type BuildingState struct {
 	X, Z, Rot float32
 	HP, MaxHP uint32
 	Flags     uint32
-	PlotsHi   uint32 // occupied plots 16–47
+	PlotsHi   uint32 // reserved: always 0 (build plots are gone)
 }
 
 // Projectile flags.
@@ -299,6 +302,35 @@ type GameState struct {
 	Abilities   []HordeAbilities
 	Upgrades    []uint16 // researched upgrade kinds
 	Heroes      []HeroState
+
+	// Tail (optional; written only when one of these is non-empty): hordes the player stopped
+	// seeing this tick while they are alive (no corpses for them), the map's trees, and the fog of
+	// war grid (FogCols × FogRows cells, row-major from the map's min corner).
+	Vanished         []uint32
+	Trees            []TreeState
+	FogCols, FogRows int
+	Fog              []byte // per cell: FogUnexplored / FogExplored / FogVisible
+}
+
+// TreeState is one tree in the snapshot tail.
+type TreeState struct {
+	X, Z  float32
+	Grown bool
+}
+
+// Fog cell states.
+const (
+	FogUnexplored = 0
+	FogExplored   = 1
+	FogVisible    = 2
+)
+
+// tailSize is the byte size of the optional snapshot tail.
+func (st *GameState) tailSize() int {
+	if len(st.Vanished) == 0 && len(st.Trees) == 0 && len(st.Fog) == 0 {
+		return 0
+	}
+	return 8 + len(st.Vanished)*4 + len(st.Trees)*12 + (len(st.Fog)+3)/4*4
 }
 
 // QueueResearch marks a queue entry as research: kind = QueueResearch | upgrade kind.
@@ -327,7 +359,7 @@ func EncodeGameSnapshot(hdr SnapshotHeader, st *GameState) []byte {
 	}
 	buf := make([]byte, GameHeaderSize+len(hordes)*GameHordeSize+len(soldiers)*GameSoldierSize+len(projectiles)*GameProjectileSize+
 		len(buildings)*GameBuildingSize+len(st.Players)*GamePlayerSize+len(st.Resources)*GameResourceSize+queueBytes+
-		len(st.Events)*GameEventSize+abilityBytes+(len(st.Upgrades)*2+3)/4*4+len(st.Heroes)*GameHeroSize)
+		len(st.Events)*GameEventSize+abilityBytes+(len(st.Upgrades)*2+3)/4*4+len(st.Heroes)*GameHeroSize+st.tailSize())
 	le := binary.LittleEndian
 
 	buf[0] = MsgGameSnapshot
@@ -461,21 +493,81 @@ func EncodeGameSnapshot(hdr SnapshotHeader, st *GameState) []byte {
 		le.PutUint32(buf[off+4:], h.XP)
 		off += GameHeroSize
 	}
+	if st.tailSize() > 0 {
+		le.PutUint16(buf[off:], uint16(len(st.Vanished)))
+		le.PutUint16(buf[off+2:], uint16(len(st.Trees)))
+		le.PutUint16(buf[off+4:], uint16(st.FogCols))
+		le.PutUint16(buf[off+6:], uint16(st.FogRows))
+		off += 8
+		for _, id := range st.Vanished {
+			le.PutUint32(buf[off:], id)
+			off += 4
+		}
+		for _, t := range st.Trees {
+			le.PutUint32(buf[off:], math.Float32bits(t.X))
+			le.PutUint32(buf[off+4:], math.Float32bits(t.Z))
+			if t.Grown {
+				buf[off+8] = 1
+			}
+			off += 12
+		}
+		copy(buf[off:], st.Fog)
+	}
 	return buf
 }
 
 var ErrBadFrame = errors.New("protocol: malformed frame")
 
-// Hello: u8 type, u8 version, u16 len, then the map id (UTF-8).
-func DecodeHello(frame []byte) (mapID string, err error) {
+// Match modes in Hello.
+const (
+	ModeSkirmish   uint8 = 0 // a normal match
+	ModePlayground uint8 = 1 // a test field: every building and horde type of each faction, ready
+)
+
+// Hello starts a match.
+type Hello struct {
+	MapID    string
+	Mode     uint8
+	Factions []string // per player, in player order; empty = the defaults
+}
+
+// Hello: u8 type, u8 version, u16 len, the map id (UTF-8); then, optionally, u8 mode, u8 count and
+// count × (u16 len, faction id). A frame that ends after the map id is a skirmish with the default
+// factions.
+func DecodeHello(frame []byte) (Hello, error) {
+	var h Hello
 	if len(frame) < 4 || frame[0] != MsgHello || frame[1] != Version {
-		return "", ErrBadFrame
+		return h, ErrBadFrame
 	}
-	n := int(binary.LittleEndian.Uint16(frame[2:]))
+	le := binary.LittleEndian
+	n := int(le.Uint16(frame[2:]))
 	if len(frame) < 4+n {
-		return "", ErrBadFrame
+		return h, ErrBadFrame
 	}
-	return string(frame[4 : 4+n]), nil
+	h.MapID = string(frame[4 : 4+n])
+	off := 4 + n
+	if len(frame) == off {
+		return h, nil
+	}
+	if len(frame) < off+2 {
+		return h, ErrBadFrame
+	}
+	h.Mode = frame[off]
+	count := int(frame[off+1])
+	off += 2
+	for i := 0; i < count; i++ {
+		if len(frame) < off+2 {
+			return h, ErrBadFrame
+		}
+		n := int(le.Uint16(frame[off:]))
+		off += 2
+		if len(frame) < off+n {
+			return h, ErrBadFrame
+		}
+		h.Factions = append(h.Factions, string(frame[off:off+n]))
+		off += n
+	}
+	return h, nil
 }
 
 // Move command: u8 type, u8 version, u16 count, i32 x, i32 y (Q16.16 fixed raw),
@@ -549,10 +641,10 @@ const (
 	BuildingToggled      = 1 << 4 // a tower's toggle (fire arrows) is on
 )
 
-// BuildingFlags packs construction / capture state and plot occupancy.
+// BuildingFlags packs construction / capture state.
 // progress is the construction progress, or the capture progress while capturing.
-func BuildingFlags(constructing, capturing bool, progress float64, occupied uint16) uint32 {
-	f := uint32(occupied) << 16
+func BuildingFlags(constructing, capturing bool, progress float64) uint32 {
+	f := uint32(0)
 	if constructing {
 		f |= BuildingConstructing
 	}
@@ -563,22 +655,6 @@ func BuildingFlags(constructing, capturing bool, progress float64, occupied uint
 		f |= uint32(min(max(progress, 0), 1)*255) << 8
 	}
 	return f
-}
-
-// PlotCommand: u8 type, u8 version, u16 plot index, u32 host building id,
-// u16 building kind (index into the sorted building type list), u16 reserved.
-type PlotCommand struct {
-	Plot uint16
-	Host uint32
-	Kind uint16
-}
-
-func DecodePlot(frame []byte) (PlotCommand, error) {
-	le := binary.LittleEndian
-	if len(frame) < 12 || frame[0] != MsgCmdPlot || frame[1] != Version {
-		return PlotCommand{}, ErrBadFrame
-	}
-	return PlotCommand{Plot: le.Uint16(frame[2:]), Host: le.Uint32(frame[4:]), Kind: le.Uint16(frame[8:])}, nil
 }
 
 // DecodeCancel: u8 type, u8 version, u16 reserved, u32 building id.
@@ -616,6 +692,35 @@ func DecodeBuild(frame []byte) (BuildCommand, error) {
 	}
 	for i := range c.Hordes {
 		c.Hordes[i] = le.Uint32(frame[20+i*4:])
+	}
+	return c, nil
+}
+
+// WallCommand: u8 type, u8 version, u16 count, u16 building kind, u16 reserved, i32 x0, z0, x1, z1
+// (Q16.16, the two ends of the line), then count * u32 worker horde ids.
+type WallCommand struct {
+	Kind           uint16
+	X0, Z0, X1, Z1 int32
+	Hordes         []uint32
+}
+
+func DecodeWall(frame []byte) (WallCommand, error) {
+	le := binary.LittleEndian
+	if len(frame) < 24 || frame[0] != MsgCmdWall || frame[1] != Version {
+		return WallCommand{}, ErrBadFrame
+	}
+	n := int(le.Uint16(frame[2:]))
+	if n > maxHordesPerCommand || len(frame) < 24+n*4 {
+		return WallCommand{}, ErrBadFrame
+	}
+	c := WallCommand{
+		Kind: le.Uint16(frame[4:]),
+		X0:   int32(le.Uint32(frame[8:])), Z0: int32(le.Uint32(frame[12:])),
+		X1: int32(le.Uint32(frame[16:])), Z1: int32(le.Uint32(frame[20:])),
+		Hordes: make([]uint32, n),
+	}
+	for i := range c.Hordes {
+		c.Hordes[i] = le.Uint32(frame[24+i*4:])
 	}
 	return c, nil
 }

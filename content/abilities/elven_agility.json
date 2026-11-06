@@ -1,0 +1,17 @@
+{
+  "id": "elven_agility",
+  "name": "Elven Agility",
+  "kind": "active",
+  "target": "self",
+  "cooldown": 40,
+  "effects": [
+    {
+      "type": "buff",
+      "duration": 6,
+      "modifiers": {
+        "moveSpeed": 1.0
+      },
+      "radius": 0
+    }
+  ]
+}

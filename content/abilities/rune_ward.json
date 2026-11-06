@@ -1,0 +1,23 @@
+{
+  "id": "rune_ward",
+  "name": "Rune Ward",
+  "kind": "passive",
+  "modifiers": {
+    "resistType": "ice",
+    "resist": 0.4
+  },
+  "byMode": {
+    "fire": {
+      "resistType": "ice",
+      "resist": 0.4
+    },
+    "ice": {
+      "resistType": "lightning",
+      "resist": 0.4
+    },
+    "lightning": {
+      "resistType": "fire",
+      "resist": 0.4
+    }
+  }
+}

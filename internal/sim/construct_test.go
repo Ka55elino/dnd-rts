@@ -92,18 +92,18 @@ func TestFreePlacementRules(t *testing.T) {
 	w := newTestWorld(t)
 	keep := w.Buildings[0]
 	farm := w.Catalog.Buildings["farm"]
-	barracks := w.Catalog.Buildings["forge"] // plot only
+	tower := w.Catalog.Buildings["archer_tower"] // on walls only
 	if w.CanPlaceFree(0, farm, keep.Pos, 0) {
 		t.Error("placed on top of the keep")
 	}
-	if w.CanPlaceFree(0, farm, keep.PlotPos(0), 0) {
-		t.Error("placed on a plot")
-	}
-	if w.CanPlaceFree(0, farm, keep.Local(fixed.V2i(0, 25)), 0) {
+	if w.CanPlaceFree(0, farm, keep.Local(fixed.V2i(0, 10)), 0) {
 		t.Error("placed inside the keep's no-build circle")
 	}
-	if w.CanPlaceFree(0, barracks, freeSpot(t, w), 0) {
-		t.Error("plot-only building placed freely")
+	if !w.CanPlaceFree(0, farm, baseSpot(t, w, "farm", 0), 0) {
+		t.Error("no farm inside the base wall")
+	}
+	if w.CanPlaceFree(0, tower, freeSpot(t, w), 0) {
+		t.Error("a wall tower placed on open ground")
 	}
 	// Farms keep their distance from each other.
 	spot := freeSpot(t, w)

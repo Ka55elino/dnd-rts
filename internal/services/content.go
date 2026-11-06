@@ -70,6 +70,8 @@ type HordeType struct {
 	// AntiAir: an attack can hit flying units. Climbs: foot soldiers that go up walls and watchtowers.
 	AntiAir bool `json:"antiAir"`
 	Climbs  bool `json:"climbs"`
+	// Trap: a ground trap (stands still, invisible to enemies, goes off when stepped on).
+	Trap bool `json:"trap"`
 
 	// Heroes: one per player (unique); revived in the castle at their level.
 	Unique     bool           `json:"unique"`
@@ -116,47 +118,50 @@ func (s *ContentService) Upgrades() []UpgradeInfo {
 
 // describeUpgrade: "+15% damage · swordsman, knight".
 func describeUpgrade(c *data.Catalog, g *data.Upgrade) string {
-	m := g.Modifiers
-	var parts []string
-	pct := func(name string, v float64) {
-		if v != 0 {
-			parts = append(parts, fmt.Sprintf("%+.0f%% %s", v*100, name))
-		}
-	}
-	flat := func(name string, v float64) {
-		if v != 0 {
-			parts = append(parts, fmt.Sprintf("%+g %s", v, name))
-		}
-	}
-	pct("damage", m.Damage.Float())
-	pct("attack speed", m.AttackSpeed.Float())
-	pct("speed", m.MoveSpeed.Float())
-	pct("range", m.Range.Float())
-	flat("armor", m.Armor.Float())
-	flat("magic defense", m.MagicDefense.Float())
-	pct("damage taken", m.DamageTaken.Float())
-	if m.ExtraType != "" {
-		parts = append(parts, fmt.Sprintf("+%.0f%% %s damage", m.ExtraDamage.Float()*100, m.ExtraType))
-	}
+	parts := modsText(g.Modifiers)
 	// Abilities unlocked by this upgrade.
 	for _, aid := range c.AbilityIDs {
 		if a := c.Abilities[aid]; a.Requires != nil && slices.Contains(a.Requires.Upgrades, g.ID) {
 			parts = append(parts, "unlocks "+a.Name)
 		}
 	}
-	who := "all units"
-	if len(g.Units) > 0 || len(g.Tags) > 0 {
-		var names []string
-		for _, u := range g.Units {
-			names = append(names, c.Units[u].Name)
+	// Unit attacks and ability modes unlocked by this upgrade.
+	for _, uid := range c.UnitIDs {
+		if r := c.Units[uid].Ranged; r != nil && r.Requires != nil && slices.Contains(r.Requires.Upgrades, g.ID) {
+			parts = append(parts, "unlocks the ranged attack of "+c.Units[uid].Name)
 		}
-		names = append(names, g.Tags...)
+	}
+	for _, aid := range c.AbilityIDs {
+		for _, m := range c.Abilities[aid].Modes {
+			if m.Requires != nil && slices.Contains(m.Requires.Upgrades, g.ID) {
+				parts = append(parts, "unlocks "+m.Name)
+			}
+		}
+	}
+	if g.Group != "" {
+		parts = append(parts, "one element at a time: switching to another is free")
+	}
+	var names []string
+	for _, u := range g.Units {
+		names = append(names, c.Units[u].Name)
+	}
+	names = append(names, g.Tags...)
+	for _, b := range g.Buildings {
+		names = append(names, c.Buildings[b].Name)
+	}
+	who := "all units"
+	if len(names) > 0 {
 		who = strings.Join(names, ", ")
+	} else if g.Modifiers.IsZero() {
+		who = "" // only unlocks something
 	}
 	if len(parts) == 0 {
 		return who
 	}
-	return strings.Join(parts, " · ") + " — " + who
+	if who == "" {
+		return upper(strings.Join(parts, " · "))
+	}
+	return upper(strings.Join(parts, " · ")) + " — " + who
 }
 
 // AbilityInfo describes an ability for the HUD. The slice index is the
@@ -175,7 +180,7 @@ type AbilityInfo struct {
 	Requires   RequiresInfo `json:"requires"`
 	// Cone: width in degrees of a cone-shaped effect (aiming preview), 0 = circles only.
 	Cone float64 `json:"cone"`
-	// Description: what the special effects do (chain, summon, teleport, transform), for the tooltip.
+	// Description: what the ability does, generated from its numbers (lines separated by "\n").
 	Description string `json:"description"`
 	// Modes: the choices of a mode ability (an element), in order.
 	Modes []ModeInfo `json:"modes"`
@@ -211,12 +216,6 @@ func (s *ContentService) Abilities() []AbilityInfo {
 				if e.Shape == data.ShapeCone {
 					info.Cone = max(info.Cone, e.Angle.Float())
 				}
-				if d := s.describeEffect(&e); d != "" {
-					if info.Description != "" {
-						info.Description += ". "
-					}
-					info.Description += d
-				}
 				if e.Type != data.EffChain {
 					walk(e.Effects)
 				}
@@ -229,12 +228,7 @@ func (s *ContentService) Abilities() []AbilityInfo {
 			info.Modes = append(info.Modes, ModeInfo{ID: m.ID, Name: m.Name, AttackType: m.Modifiers.AttackType})
 		}
 		info.ByMode = len(a.ByMode) > 0 || hasModeEffects(a.Effects)
-		if info.ByMode {
-			if info.Description != "" {
-				info.Description += ". "
-			}
-			info.Description += "Follows the chosen element"
-		}
+		info.Description = strings.Join(s.abilityText(a), "\n")
 		out = append(out, info)
 	}
 	return out
@@ -253,7 +247,7 @@ func hasModeEffects(effects []data.AbilityEffect) bool {
 func (s *ContentService) describeEffect(e *data.AbilityEffect) string {
 	switch e.Type {
 	case data.EffChain:
-		return fmt.Sprintf("Chain: up to %d targets, jumps %g m, −%g%% per jump", e.Jumps+1, e.JumpRange.Float(), e.Falloff.Float()*100)
+		return fmt.Sprintf("Chain: up to %d targets, jumps %s m, −%.0f%% per jump", e.Jumps+1, num(e.JumpRange), e.Falloff.Float()*100)
 	case data.EffSummon:
 		name := e.Horde
 		if h, ok := s.catalog.Hordes[e.Horde]; ok {
@@ -261,7 +255,7 @@ func (s *ContentService) describeEffect(e *data.AbilityEffect) string {
 		}
 		d := fmt.Sprintf("Summons %d× %s", max(e.Count, 1), name)
 		if e.Duration > 0 {
-			d += fmt.Sprintf(" for %gs", e.Duration.Float())
+			d += fmt.Sprintf(" for %s s", num(e.Duration))
 		}
 		if e.Limit {
 			d += "; one at a time, cooldown starts when they die"
@@ -281,7 +275,7 @@ func (s *ContentService) describeEffect(e *data.AbilityEffect) string {
 		if u, ok := s.catalog.Units[e.Unit]; ok {
 			name = u.Name
 		}
-		return fmt.Sprintf("Turns into %s for %gs", name, e.Duration.Float())
+		return fmt.Sprintf("Turns into %s for %s s", name, num(e.Duration))
 	}
 	if e.Shape == data.ShapeCone && e.Type == data.EffDamage {
 		return fmt.Sprintf("Cone %g°, %g m", e.Angle.Float(), e.Radius.Float())
@@ -303,6 +297,7 @@ func (s *ContentService) HordeTypes() []HordeType {
 		t.Ranged = u.Ranged != nil
 		t.AntiAir = u.Melee.CanHit(true) || u.Ranged.CanHit(true)
 		t.Climbs = u.HasTag("infantry") && !u.HasTag("cavalry") && !u.Flying && !u.HasTag("mechanical")
+		t.Trap = u.Trap != nil
 		t.Unique = h.Unique
 		t.ReviveCost, t.ReviveTime = h.Cost, h.BuildTime.Float()*2
 		if len(h.ReviveCost) > 0 {
@@ -320,27 +315,17 @@ func (s *ContentService) HordeTypes() []HordeType {
 	return out
 }
 
-// BuildingPlot is a build site relative to its building: x along the
-// building's right, y along its front.
-type BuildingPlot struct {
-	X     float64 `json:"x"`
-	Y     float64 `json:"y"`
-	Size  float64 `json:"size"`
-	Class string  `json:"class"` // s / m / l ("" = custom size)
-}
-
 // Point2 is a local offset (x along the building's right, y along its front).
 type Point2 struct {
 	X float64 `json:"x"`
 	Y float64 `json:"y"`
 }
 
-// BaseInfo is a fortress's base for drawing: wall contour, gates, tower sockets.
+// BaseInfo is a fortress's base for drawing: wall contour and gates.
 type BaseInfo struct {
 	Radius  float64  `json:"radius"`
 	Outline []Point2 `json:"outline"` // closed loop
 	Gates   []Point2 `json:"gates"`
-	Towers  []Point2 `json:"towers"`
 }
 
 // BuildingType describes a building type for the client. The slice index is
@@ -356,8 +341,7 @@ type BuildingType struct {
 	Placement  []string `json:"placement"`
 	BuildTime  float64  `json:"buildTime"` // seconds (constructible buildings)
 	// NoBuildRadius: free buildings may not reach into this circle (0 = none).
-	NoBuildRadius float64        `json:"noBuildRadius"`
-	Plots         []BuildingPlot `json:"plots"`
+	NoBuildRadius float64 `json:"noBuildRadius"`
 	// Cost: resource id → amount; Trains: horde ids it can train; Research: upgrade ids.
 	Cost     map[string]int `json:"cost"`
 	Trains   []string       `json:"trains"`
@@ -372,6 +356,10 @@ type BuildingType struct {
 	Attacks bool `json:"attacks"`
 	// Garrison: foot soldiers stand on top (watchtower), at WalkHeight.
 	Garrison bool `json:"garrison"`
+	// Tunnel: an entrance of the owner's tunnel network (right click sends hordes through).
+	Tunnel bool `json:"tunnel"`
+	// FactionModels: faction id → model id for owners of that faction (the keep); others use Model.
+	FactionModels map[string]string `json:"factionModels"`
 }
 
 func points(vs []fixed.Vec2) []Point2 {
@@ -390,18 +378,17 @@ func (s *ContentService) BuildingTypes() []BuildingType {
 		t := BuildingType{
 			ID: b.ID, Name: b.Name, Kind: b.Kind, Model: b.Model, ModelScale: b.Scale().Float(),
 			Width: b.Footprint.X.Float(), Depth: b.Footprint.Y.Float(),
-			Placement: b.Placement, BuildTime: b.BuildTime.Float(), NoBuildRadius: b.NoBuildRadius.Float(), Plots: make([]BuildingPlot, len(b.Plots)),
+			Placement: b.Placement, BuildTime: b.BuildTime.Float(), NoBuildRadius: b.NoBuildRadius.Float(),
 		}
 		t.Cost, t.Trains, t.Research, t.Requires = b.Cost, b.Trains, b.Research, requiresInfo(b.Requires)
 		t.WalkHeight = b.WalkHeight.Float()
 		t.Toggles = append([]string{}, b.Toggles...)
 		t.Attacks = b.Attack != nil
 		t.Garrison = b.Garrison
-		for i, p := range b.Plots {
-			t.Plots[i] = BuildingPlot{X: p.Offset.X.Float(), Y: p.Offset.Y.Float(), Size: p.Size.Float(), Class: p.Class}
-		}
+		t.Tunnel = b.Tunnel
+		t.FactionModels = b.FactionModels
 		if l := b.Base; l != nil {
-			t.Base = &BaseInfo{Radius: l.Radius.Float(), Outline: points(l.Outline), Gates: points(l.GatePos), Towers: points(l.TowerSockets)}
+			t.Base = &BaseInfo{Radius: l.Radius.Float(), Outline: points(l.Outline), Gates: points(l.GatePos)}
 		}
 		out = append(out, t)
 	}
@@ -416,6 +403,8 @@ type FactionInfo struct {
 	Fortress  string   `json:"fortress"`
 	Buildings []string `json:"buildings"` // building ids the faction can construct
 	Hordes    []string `json:"hordes"`
+	// FortressTunnel: the fortress is a tunnel entrance too (dwarves).
+	FortressTunnel bool `json:"fortressTunnel"`
 }
 
 // Factions returns all factions sorted by ID.
@@ -423,7 +412,7 @@ func (s *ContentService) Factions() []FactionInfo {
 	out := make([]FactionInfo, 0, len(s.catalog.FactionIDs))
 	for _, id := range s.catalog.FactionIDs {
 		f := s.catalog.Factions[id]
-		out = append(out, FactionInfo{ID: f.ID, Name: f.Name, Color: f.Color, Fortress: f.Fortress, Buildings: f.Buildings, Hordes: f.Hordes})
+		out = append(out, FactionInfo{ID: f.ID, Name: f.Name, Color: f.Color, Fortress: f.Fortress, Buildings: f.Buildings, Hordes: f.Hordes, FortressTunnel: f.FortressTunnel})
 	}
 	return out
 }

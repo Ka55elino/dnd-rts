@@ -44,7 +44,7 @@ export interface AbilityInfo {
     "cone": number;
 
     /**
-     * Description: what the special effects do (chain, summon, teleport, transform), for the tooltip.
+     * Description: what the ability does, generated from its numbers (lines separated by "\n").
      */
     "description": string;
 
@@ -61,7 +61,7 @@ export interface AbilityInfo {
 }
 
 /**
- * BaseInfo is a fortress's base for drawing: wall contour, gates, tower sockets.
+ * BaseInfo is a fortress's base for drawing: wall contour and gates.
  */
 export interface BaseInfo {
     "radius": number;
@@ -71,22 +71,6 @@ export interface BaseInfo {
      */
     "outline": Point2[] | null;
     "gates": Point2[] | null;
-    "towers": Point2[] | null;
-}
-
-/**
- * BuildingPlot is a build site relative to its building: x along the
- * building's right, y along its front.
- */
-export interface BuildingPlot {
-    "x": number;
-    "y": number;
-    "size": number;
-
-    /**
-     * s / m / l ("" = custom size)
-     */
-    "class": string;
 }
 
 /**
@@ -128,7 +112,6 @@ export interface BuildingType {
      * NoBuildRadius: free buildings may not reach into this circle (0 = none).
      */
     "noBuildRadius": number;
-    "plots": BuildingPlot[] | null;
 
     /**
      * Cost: resource id → amount; Trains: horde ids it can train; Research: upgrade ids.
@@ -162,6 +145,16 @@ export interface BuildingType {
      * Garrison: foot soldiers stand on top (watchtower), at WalkHeight.
      */
     "garrison": boolean;
+
+    /**
+     * Tunnel: an entrance of the owner's tunnel network (right click sends hordes through).
+     */
+    "tunnel": boolean;
+
+    /**
+     * FactionModels: faction id → model id for owners of that faction (the keep); others use Model.
+     */
+    "factionModels": { [_ in string]?: string } | null;
 }
 
 export enum DisplayMode {
@@ -188,6 +181,11 @@ export interface FactionInfo {
      */
     "buildings": string[] | null;
     "hordes": string[] | null;
+
+    /**
+     * FortressTunnel: the fortress is a tunnel entrance too (dwarves).
+     */
+    "fortressTunnel": boolean;
 }
 
 /**
@@ -249,6 +247,11 @@ export interface HordeType {
      */
     "antiAir": boolean;
     "climbs": boolean;
+
+    /**
+     * Trap: a ground trap (stands still, invisible to enemies, goes off when stepped on).
+     */
+    "trap": boolean;
 
     /**
      * Heroes: one per player (unique); revived in the castle at their level.

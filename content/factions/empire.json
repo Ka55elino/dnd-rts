@@ -37,6 +37,8 @@
     "workshop",
     "ballista_tower",
     "trebuchet_tower",
-    "watchtower"
+    "watchtower",
+    "castle_wall",
+    "castle_gate"
   ]
 }

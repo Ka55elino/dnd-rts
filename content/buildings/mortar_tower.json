@@ -1,0 +1,37 @@
+{
+  "id": "mortar_tower",
+  "name": "Mortar Tower",
+  "kind": "building",
+  "model": "mortar_tower",
+  "footprint": {
+    "x": 6,
+    "y": 6
+  },
+  "health": 1800,
+  "armor": 4,
+  "material": "stone",
+  "placement": [
+    "tower"
+  ],
+  "buildTime": 30,
+  "cost": {
+    "gold": 250,
+    "wood": 100
+  },
+  "attack": {
+    "damage": 60,
+    "range": 50,
+    "cooldown": 6,
+    "damageType": "fire",
+    "projectile": {
+      "speed": 24,
+      "spread": 3
+    },
+    "targets": [
+      "ground"
+    ],
+    "minRange": 14,
+    "splash": 4
+  },
+  "volley": 1
+}

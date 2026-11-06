@@ -1,0 +1,20 @@
+{
+  "id": "rune_fusion",
+  "name": "Rune Fusion",
+  "kind": "active",
+  "target": "self",
+  "cooldown": 150,
+  "effects": [
+    {
+      "type": "buff",
+      "duration": 20,
+      "modifiers": {
+        "damage": 0.3,
+        "attackSpeed": 0.2,
+        "magicDefense": 3
+      },
+      "radius": 0
+    }
+  ],
+  "ultimate": true
+}

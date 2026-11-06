@@ -38,7 +38,6 @@ type Catalog struct {
 	ResourceIDs []string // sorted; the index is the resource's slot in player stocks
 	AbilityIDs  []string
 	UpgradeIDs  []string
-	PlotSizes   PlotSizes
 }
 
 // Load reads and validates all content from fsys (e.g. os.DirFS("content")).
@@ -69,7 +68,6 @@ func Load(fsys fs.FS) (*Catalog, error) {
 	c.FactionIDs = sortedKeys(c.Factions)
 	errs = append(errs, loadResources(fsys, c.Resources)...)
 	errs = append(errs, loadCombat(fsys, &c.Combat)...)
-	errs = append(errs, loadPlotSizes(fsys, &c.PlotSizes)...)
 	c.BuildingIDs = sortedKeys(c.Buildings)
 	c.expandBases()
 	c.AbilityIDs = sortedKeys(c.Abilities)
@@ -174,8 +172,11 @@ func (c *Catalog) Validate() []error {
 		if u.Health <= 0 {
 			fail("unit", id, "health must be > 0")
 		}
-		if u.Speed <= 0 {
-			fail("unit", id, "speed must be > 0")
+		if u.Speed <= 0 && u.Trap == nil {
+			fail("unit", id, "speed must be > 0 (only traps stand still)")
+		}
+		if u.Sight < 0 {
+			fail("unit", id, "sight must be >= 0")
 		}
 		if u.Radius <= 0 {
 			fail("unit", id, "radius must be > 0")
@@ -196,6 +197,7 @@ func (c *Catalog) Validate() []error {
 			if at.a == nil {
 				continue
 			}
+			c.validateRequires("unit", id, at.a.Requires, fail)
 			if at.a.Cooldown <= 0 || at.a.Range <= 0 {
 				fail("unit", id, "%s.cooldown and %s.range must be > 0", at.name, at.name)
 			}
@@ -265,8 +267,8 @@ func (c *Catalog) Validate() []error {
 			fail("faction", id, "fortress %q must be a building of kind %q", f.Fortress, BuildingFortress)
 		}
 		for _, bid := range f.Buildings {
-			if b, ok := c.Buildings[bid]; !ok || b.Kind != BuildingRegular {
-				fail("faction", id, "building %q must be a building of kind %q", bid, BuildingRegular)
+			if b, ok := c.Buildings[bid]; !ok || (b.Kind != BuildingRegular && b.Kind != BuildingWall && b.Kind != BuildingGate) {
+				fail("faction", id, "building %q must be a building of kind %q, %q or %q", bid, BuildingRegular, BuildingWall, BuildingGate)
 			}
 		}
 	}
@@ -276,13 +278,31 @@ func (c *Catalog) Validate() []error {
 		if !validID.MatchString(id) {
 			fail("building", id, "id must be lowercase snake_case")
 		}
+		if g := b.GrowTrees; g != nil && (g.Radius <= 0 || g.Every <= 0 || g.Max <= 0) {
+			fail("building", id, "growTrees needs radius, every and max > 0")
+		}
+		if b.Sight < 0 {
+			fail("building", id, "sight must be >= 0")
+		}
+		for f, m := range b.FactionModels {
+			if _, ok := c.Factions[f]; !ok || m == "" {
+				fail("building", id, "factionModels: unknown faction %q or empty model", f)
+			}
+		}
 		switch b.Kind {
 		case BuildingWall, BuildingGate:
 			if b.WalkHeight <= 0 {
 				fail("building", id, "walls and gates need walkHeight > 0")
 			}
-			if len(b.Placement) > 0 || len(b.Plots) > 0 || b.Base != nil {
-				fail("building", id, "walls and gates are placed with their base")
+			want := PlacementWall
+			if b.Kind == BuildingGate {
+				want = PlacementGate
+			}
+			if len(b.Placement) != 1 || b.Placement[0] != want || b.Base != nil {
+				fail("building", id, "a %s is placed as %q (workers build it)", b.Kind, want)
+			}
+			if b.BuildTime <= 0 {
+				fail("building", id, "buildTime must be > 0")
 			}
 		case BuildingFortress, BuildingOutpost:
 			if len(b.Placement) > 0 {
@@ -290,15 +310,12 @@ func (c *Catalog) Validate() []error {
 			}
 		case BuildingRegular:
 			if len(b.Placement) == 0 {
-				fail("building", id, "placement must list %q and/or %q", PlacementPlot, PlacementFree)
+				fail("building", id, "placement must list %q or %q", PlacementFree, PlacementTower)
 			}
 			for _, p := range b.Placement {
-				if p != PlacementPlot && p != PlacementFree && p != PlacementTower {
-					fail("building", id, "unknown placement %q", p)
+				if p != PlacementFree && p != PlacementTower {
+					fail("building", id, "unknown placement %q (free or tower)", p)
 				}
-			}
-			if len(b.Plots) > 0 {
-				fail("building", id, "only fortresses and outposts have plots")
 			}
 			if b.BuildTime <= 0 {
 				fail("building", id, "buildTime must be > 0")
@@ -359,11 +376,6 @@ func (c *Catalog) Validate() []error {
 		}
 		if b.NoBuildRadius < 0 {
 			fail("building", id, "noBuildRadius must be >= 0")
-		}
-		for i, p := range b.Plots {
-			if p.Size <= 0 {
-				fail("building", id, "plot %d: needs a size > 0 or a size class", i)
-			}
 		}
 	}
 

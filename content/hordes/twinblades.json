@@ -1,0 +1,17 @@
+{
+  "id": "twinblades",
+  "name": "Twinblades",
+  "unit": "twinblade",
+  "size": 18,
+  "formation": {
+    "columns": 6,
+    "spacing": 1.2
+  },
+  "cost": {
+    "gold": 160
+  },
+  "buildTime": 22,
+  "uses": {
+    "food": 10
+  }
+}

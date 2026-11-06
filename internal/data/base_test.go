@@ -13,22 +13,11 @@ func TestKeepBaseLayout(t *testing.T) {
 		t.Fatal(err)
 	}
 	k := c.Buildings["keep"]
-	if len(k.Plots) != 24 {
-		t.Fatalf("keep plots = %d, want 24 (4 m + 6 s/l + 6 m + 8 tower sockets)", len(k.Plots))
-	}
-	count := map[string]int{}
-	for _, p := range k.Plots {
-		count[p.Class]++
-		if p.Size != c.PlotSizes[p.Class] {
-			t.Errorf("plot %v: size %v for class %q", p.Offset, p.Size, p.Class)
-		}
-	}
-	if count["m"] != 10 || count["s"] != 4 || count["l"] != 2 || count["tower"] != 8 {
-		t.Errorf("classes %v", count)
-	}
+	k.Base = TestBaseLayout()
+	c.ExpandBase("keep")
 	l := k.Base
-	if len(l.Outline) != 32 || len(l.GatePos) != 2 || len(l.TowerSockets) != 8 {
-		t.Errorf("outline %d gates %d towers %d", len(l.Outline), len(l.GatePos), len(l.TowerSockets))
+	if len(l.Outline) != 32 || len(l.GatePos) != 2 {
+		t.Errorf("outline %d gates %d", len(l.Outline), len(l.GatePos))
 	}
 	if d := l.GatePos[0].Sub(fixed.Vec2{Y: l.Radius}).Len(); d > fixed.FromFraction(1, 10) {
 		t.Errorf("front gate at %v, want (0, %v)", l.GatePos[0], l.Radius)
@@ -64,14 +53,12 @@ func TestKeepBaseLayout(t *testing.T) {
 			t.Errorf("stair %+v: on a gate or outside", st)
 		}
 	}
-	if k.NoBuildRadius < l.Radius {
-		t.Errorf("free buildings may reach inside the wall: noBuildRadius %v", k.NoBuildRadius)
-	}
+
 }
 
 func TestSquareBaseWallPoints(t *testing.T) {
 	l := &BaseLayout{Shape: "square", Radius: fixed.FromInt(40), Gates: []fixed.Fixed{0, fixed.FromInt(45)}}
-	c := &Catalog{Buildings: map[string]*Building{"x": {Base: l}}, BuildingIDs: []string{"x"}, PlotSizes: PlotSizes{}}
+	c := &Catalog{Buildings: map[string]*Building{"x": {Base: l}}, BuildingIDs: []string{"x"}}
 	c.expandBases()
 	if len(l.Outline) != 4 {
 		t.Fatalf("square outline %d", len(l.Outline))

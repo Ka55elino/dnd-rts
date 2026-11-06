@@ -1,0 +1,17 @@
+{
+  "id": "cursed_weapons",
+  "name": "Cursed Weapons",
+  "cost": {
+    "gold": 250,
+    "metal": 50
+  },
+  "researchTime": 35,
+  "units": [
+    "alkar_swordsman",
+    "alkar_archer"
+  ],
+  "modifiers": {
+    "extraType": "necrotic",
+    "extraDamage": 0.15
+  }
+}

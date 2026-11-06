@@ -47,7 +47,8 @@ var (
 // fireVolley launches a volley from horde h at a ground point (the enemy
 // horde's current position, or the center of a target building).
 func (w *World) fireVolley(h *Horde, to fixed.Vec2, building *Building) {
-	pr := h.Unit.Ranged.Projectile
+	h.reveal(w)
+	pr := h.rangedAttack().Projectile
 	dist := h.Pos.Dist(to)
 	flight := max(minFlightTicks, dist.Div(pr.Speed).MulInt(TickRate).Ceil().Int())
 
@@ -59,19 +60,19 @@ func (w *World) fireVolley(h *Horde, to fixed.Vec2, building *Building) {
 		LaunchTick: w.Tick,
 		ImpactTick: w.Tick + uint32(flight),
 		Arrows:     len(h.Soldiers),
-		Damage:     h.Unit.Ranged.Damage.Mul(mul(h.Soldiers[0].mods.damage)),
+		Damage:     h.rangedAttack().Damage.Mul(mul(h.Soldiers[0].mods.damage)),
 		ExtraType:  h.Soldiers[0].mods.extraType,
 		Extra:      h.Soldiers[0].mods.extraDamage,
 		NoPierce:   h.Soldiers[0].mods.noPierce,
 		Spread:     pr.Spread + dist.Mul(spreadPerUnit),
 		Building:   building,
-		DamageType: h.Soldiers[0].attackType(h.Unit.Ranged),
+		DamageType: h.Soldiers[0].attackType(h.rangedAttack()),
 		FromAir:    h.Airborne(),
 		FromWall:   h.wall != nil,
 		ToAir:      building == nil && h.attack != nil && h.attack.Airborne(),
 		horde:      h,
-		attack:     h.Unit.Ranged,
-		Splash:     h.Unit.Ranged.Splash,
+		attack:     h.rangedAttack(),
+		Splash:     h.rangedAttack().Splash,
 	}
 	w.nextProjectile++
 	w.Projectiles = append(w.Projectiles, p)
@@ -164,15 +165,14 @@ func (w *World) updateTowers() {
 			continue
 		}
 		reach := a.Range
-		onWall := b.host != nil && b.host.Def.Plots[b.plot].Class == data.PlotTower
-		if onWall {
+		if b.onWall {
 			reach = reach.Mul(mul(wallRangeBonus))
 		}
 		var target *Horde
 		bestSq := reach.Mul(reach)
 		minSq := a.MinRange.Mul(a.MinRange)
 		for _, e := range w.Hordes {
-			if e.Owner == b.Owner || !e.Alive() || !a.CanHit(e.Airborne()) {
+			if e.Owner == b.Owner || !e.Alive() || !a.CanHit(e.Airborne()) || !w.VisibleTo(e, b.Owner) {
 				continue
 			}
 			if d := b.Pos.DistSq(e.Pos); d <= bestSq && d >= minSq {

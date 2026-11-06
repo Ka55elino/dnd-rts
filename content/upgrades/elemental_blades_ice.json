@@ -1,0 +1,17 @@
+{
+  "id": "elemental_blades_ice",
+  "name": "Elemental Blades: Frost",
+  "cost": {
+    "gold": 250,
+    "wood": 100
+  },
+  "researchTime": 35,
+  "group": "elemental_blades",
+  "units": [
+    "twinblade"
+  ],
+  "modifiers": {
+    "extraType": "ice",
+    "extraDamage": 0.2
+  }
+}

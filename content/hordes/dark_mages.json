@@ -1,0 +1,18 @@
+{
+  "id": "dark_mages",
+  "name": "Dark Mages",
+  "unit": "dark_mage",
+  "size": 6,
+  "formation": {
+    "columns": 3,
+    "spacing": 1.4
+  },
+  "cost": {
+    "gold": 260,
+    "metal": 30
+  },
+  "buildTime": 32,
+  "uses": {
+    "food": 10
+  }
+}

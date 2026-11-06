@@ -1,0 +1,45 @@
+{
+  "id": "engineer",
+  "name": "Dwarf Engineer",
+  "model": "engineer_simple",
+  "health": 800,
+  "armor": 3,
+  "speed": 4,
+  "radius": 0.5,
+  "mass": 3,
+  "melee": {
+    "damage": 30,
+    "range": 1.4,
+    "cooldown": 1.1,
+    "damageType": "crush"
+  },
+  "tags": [
+    "hero",
+    "infantry",
+    "living",
+    "worker"
+  ],
+  "armorClass": "medium",
+  "magicDefense": 2,
+  "hero": {
+    "xp": [
+      0,
+      150,
+      400,
+      800,
+      1400
+    ],
+    "perLevel": {
+      "damage": 0.1,
+      "armor": 0.5
+    },
+    "healthPerLevel": 0.1
+  },
+  "abilities": [
+    "blinding_charges",
+    "field_repair",
+    "recon_shell",
+    "mechanism_tuning",
+    "undermine"
+  ]
+}

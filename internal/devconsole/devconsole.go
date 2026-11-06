@@ -63,6 +63,8 @@ func init() {
 		{"heal", "heal [all]", "restore the selected hordes and the building under the cursor; 'all' heals everything", cmdHeal},
 		{"hit", "hit <damageType> <amount>", "hit the selected hordes and the building under the cursor (fire, ice, lightning, acid, poison, necrotic, radiant, pierce, slash, crush)", cmdHit},
 		{"xp", "xp <amount>", "give experience to the selected heroes (levels: 150, 400, 800, 1400 total)", cmdXP},
+		{"fog", "fog on|off", "turn the fog of war on or off", cmdFog},
+		{"tree", "tree [count]", "plant grown trees at the cursor (default 1)", cmdTree},
 		{"list", "list hordes|buildings|types", "list live hordes, buildings, or the content types you can spawn", cmdList},
 		{"pause", "pause", "pause the simulation", func(e *env, _ []string) (string, error) { e.ctl.SetPaused(true); return "paused", nil }},
 		{"resume", "resume", "resume the simulation", func(e *env, _ []string) (string, error) { e.ctl.SetPaused(false); return "resumed", nil }},
@@ -206,6 +208,31 @@ func cmdHit(e *env, args []string) (string, error) {
 	}
 	e.out = append(e.out, c)
 	return fmt.Sprintf("%d %s → %d hordes, %d buildings", n, args[0], len(c.Hordes), len(c.Buildings)), nil
+}
+
+func cmdFog(e *env, args []string) (string, error) {
+	if len(args) < 1 || (args[0] != "on" && args[0] != "off") {
+		return "", fmt.Errorf("usage: fog on|off")
+	}
+	c := sim.Command{Player: e.ctx.Player, Kind: sim.CmdDevFog}
+	if args[0] == "on" {
+		c.Count = 1
+	}
+	e.out = append(e.out, c)
+	return "fog of war " + args[0], nil
+}
+
+func cmdTree(e *env, args []string) (string, error) {
+	n := 1
+	if len(args) > 0 {
+		v, err := strconv.Atoi(args[0])
+		if err != nil || v < 1 || v > 200 {
+			return "", fmt.Errorf("count must be 1–200")
+		}
+		n = v
+	}
+	e.out = append(e.out, sim.Command{Player: e.ctx.Player, Kind: sim.CmdDevTree, Target: e.ctx.Cursor, Count: n})
+	return fmt.Sprintf("%d trees", n), nil
 }
 
 func cmdXP(e *env, args []string) (string, error) {

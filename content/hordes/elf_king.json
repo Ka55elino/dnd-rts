@@ -1,0 +1,15 @@
+{
+  "id": "elf_king",
+  "name": "Elf King",
+  "unit": "elf_king",
+  "size": 1,
+  "formation": {
+    "columns": 1,
+    "spacing": 1
+  },
+  "cost": {
+    "gold": 1600
+  },
+  "buildTime": 80,
+  "unique": true
+}

@@ -1,0 +1,19 @@
+{
+  "id": "deny_death",
+  "name": "Deny Death",
+  "kind": "active",
+  "target": "unit",
+  "range": 18,
+  "cooldown": 30,
+  "affects": "allies",
+  "effects": [
+    {
+      "type": "buff",
+      "duration": 3,
+      "modifiers": {
+        "invulnerable": true
+      },
+      "radius": 3
+    }
+  ]
+}

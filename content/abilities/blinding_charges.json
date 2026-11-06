@@ -1,0 +1,16 @@
+{
+  "id": "blinding_charges",
+  "name": "Blinding Charges",
+  "kind": "active",
+  "target": "point",
+  "range": 24,
+  "cooldown": 35,
+  "effects": [
+    {
+      "type": "status",
+      "status": "blind",
+      "duration": 5,
+      "radius": 6
+    }
+  ]
+}

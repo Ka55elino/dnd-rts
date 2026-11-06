@@ -1,0 +1,15 @@
+{
+  "id": "poison_trap_blast",
+  "name": "Poison Trap",
+  "kind": "active",
+  "target": "self",
+  "cooldown": 1,
+  "effects": [
+    {
+      "type": "damage",
+      "damageType": "poison",
+      "amount": 40,
+      "radius": 4
+    }
+  ]
+}

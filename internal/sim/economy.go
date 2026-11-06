@@ -20,6 +20,7 @@ type queued struct {
 	paid    data.Amounts  // what was paid (refund on cancel)
 	ticks   int           // total training time
 	done    int           // progress
+	swap    bool          // a free group swap (nothing to refund)
 }
 
 // economy is a player's resource state.
@@ -229,7 +230,7 @@ func (w *World) cancelTraining(player PlayerID, b *Building, i int) {
 	}
 	if q := b.queue[i]; q.def != nil {
 		w.refund(player, q.paid)
-	} else {
+	} else if !q.swap {
 		w.refund(player, q.upgrade.Cost)
 	}
 	b.queue = slices.Delete(b.queue, i, i+1)
@@ -364,10 +365,33 @@ func (w *World) research(player PlayerID, b *Building, id string) {
 	if !slices.Contains(b.Def.Research, id) || w.HasUpgrade(player, id) || w.researching(player, id) {
 		return
 	}
-	if !w.Meets(player, g.Requires) || !w.pay(player, g.Cost) {
+	ticks := max(1, cooldownTicks(g.ResearchTime))
+	if w.hasGroup(player, g.Group) {
+		// Swapping the element of a bought group upgrade: free and quick.
+		if !w.Meets(player, g.Requires) {
+			return
+		}
+		ticks = groupSwapTicks
+	} else if !w.Meets(player, g.Requires) || !w.pay(player, g.Cost) {
 		return
 	}
-	b.queue = append(b.queue, queued{upgrade: g, ticks: max(1, cooldownTicks(g.ResearchTime))})
+	b.queue = append(b.queue, queued{upgrade: g, ticks: ticks, swap: ticks == groupSwapTicks})
+}
+
+// groupSwapTicks: switching a group upgrade (the element of Elemental Blades) to another member.
+const groupSwapTicks = 5 * TickRate
+
+// hasGroup: the player owns an upgrade of the group (or is swapping to one).
+func (w *World) hasGroup(p PlayerID, group string) bool {
+	if group == "" {
+		return false
+	}
+	for _, id := range w.Upgrades(p) {
+		if w.Catalog.Upgrades[id].Group == group {
+			return true
+		}
+	}
+	return false
 }
 
 // completeUpgrade marks an upgrade researched; others of its group are replaced.

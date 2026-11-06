@@ -4,14 +4,13 @@ import (
 	"slices"
 	"testing"
 
-	"dnd-rts/internal/data"
 	"dnd-rts/internal/fixed"
 )
 
 func stillEnemy(h *Horde) { h.ordered, h.attack = true, nil }
 
 func TestTrebuchetDeadZoneAndSplash(t *testing.T) {
-	w := newTestWorld(t)
+	w := newWalledWorld(t)
 	p := openSpot(w, 0, 60)
 	tr, _ := w.SpawnHorde(0, "trebuchets", p, 0)
 	near, _ := w.SpawnHorde(1, "raiders", p.Add(fixed.V2i(8, 0)), 0)
@@ -43,7 +42,7 @@ func TestTrebuchetDeadZoneAndSplash(t *testing.T) {
 }
 
 func TestBallistaShootsFlyers(t *testing.T) {
-	w := newTestWorld(t)
+	w := newWalledWorld(t)
 	p := openSpot(w, 0, 60)
 	w.SpawnHorde(0, "ballistas", p, 0)
 	harpies, _ := w.SpawnHorde(1, "harpies", p.Add(fixed.V2i(25, 0)), 0)
@@ -57,30 +56,9 @@ func TestBallistaShootsFlyers(t *testing.T) {
 	}
 }
 
-// towerOnSocket builds a tower of type id on the first free socket of player 0's keep and finishes it.
-func towerOnSocket(t *testing.T, w *World, id string) *Building {
-	t.Helper()
-	keep := fortressOf(w, 0)
-	w.Step([]Command{{Player: 0, Kind: CmdDevGive, Name: "gold", Count: 9000}, {Player: 0, Kind: CmdDevGive, Name: "wood", Count: 9000},
-		{Player: 0, Kind: CmdDevGive, Name: "metal", Count: 9000}})
-	for i, p := range keep.Def.Plots {
-		if p.Class == data.PlotTower && !keep.PlotOccupied(i) {
-			w.Step([]Command{{Player: 0, Kind: CmdBuildOnPlot, TargetBuilding: keep.ID, Count: i, Name: id}})
-			b := w.Buildings[len(w.Buildings)-1]
-			if b.Def.ID != id {
-				t.Fatalf("no %s on socket %d", id, i)
-			}
-			b.buildTicks, b.HP = 0, b.Def.Health
-			return b
-		}
-	}
-	t.Fatal("no free socket")
-	return nil
-}
-
 func TestTowerFireToggleNeedsTheUpgrade(t *testing.T) {
-	w := newTestWorld(t)
-	tower := towerOnSocket(t, w, "archer_tower")
+	w := newWalledWorld(t)
+	tower := towerOnWall(t, w, "archer_tower", 5)
 	w.Step([]Command{{Player: 0, Kind: CmdToggle, TargetBuilding: tower.ID, Name: "fire_mode"}})
 	if tower.ToggleOn() {
 		t.Fatal("fire arrows on without the upgrade")
@@ -107,11 +85,8 @@ func TestTowerFireToggleNeedsTheUpgrade(t *testing.T) {
 }
 
 func TestImprovedMechanismSpeedsTrebuchetTowers(t *testing.T) {
-	w := newTestWorld(t)
-	if _, err := w.SpawnBuilding(0, "forge", fortressOf(w, 0).PlotPos(0), 0); err != nil { // the tower needs a forge
-		t.Fatal(err)
-	}
-	tower := towerOnSocket(t, w, "trebuchet_tower")
+	w := newWalledWorld(t)
+	tower := towerOnWall(t, w, "trebuchet_tower", 5)
 	keep := fortressOf(w, 0)
 	w.SpawnHorde(1, "swordsmen", tower.Pos.Add(tower.Pos.Sub(keep.Pos).Normalize().Scale(fixed.FromInt(35))), 0)
 	cdFor := func() int {
@@ -130,7 +105,7 @@ func TestImprovedMechanismSpeedsTrebuchetTowers(t *testing.T) {
 }
 
 func TestWorkersRepairBuildingsAndMachines(t *testing.T) {
-	w := newTestWorld(t)
+	w := newWalledWorld(t)
 	keep := fortressOf(w, 0)
 	keep.HP = keep.Def.Health.DivInt(2)
 	b := builder(t, w, 0)

@@ -1,5 +1,5 @@
 import * as THREE from "three";
-import { plotGeometry, type BuildingTypeInfo, type BuildingsView } from "../view/BuildingsView";
+import { outlineGeometry, type BuildingTypeInfo, type BuildingsView, type WallEnd } from "../view/BuildingsView";
 
 /** Rotation step for R / Shift+R. */
 const ROTATE_STEP = Math.PI / 4;
@@ -22,16 +22,22 @@ export interface PlacementDeps {
     localPlayer: () => number;
     /** Place: world x/z and the facing in simulation convention (front = (cos a, sin a)). */
     onPlace: (kind: number, x: number, z: number, angle: number, workers: number[]) => void;
+    /** A wall line from (x0, z0) to (x1, z1). */
+    onWall: (kind: number, x0: number, z0: number, x1: number, z1: number, workers: number[]) => void;
 }
 
 /**
- * Free-building placement (workers): a ghost of the building follows the
- * cursor, green where it can stand and red where it can't. No-build circles
- * of existing buildings (and of the ghost itself) are drawn while placing.
+ * Building placement (workers): a ghost of the building follows the cursor,
+ * green where it can stand and red where it can't. No-build circles of
+ * existing buildings (and of the ghost itself) are drawn while placing.
+ * Defensive towers snap onto the nearest own wall segment instead (facing
+ * out), a gatehouse onto a stretch of own finished wall. A wall is a line:
+ * the first click sets its start, the ghost segments follow the cursor (red
+ * from the first one that can't stand), the second click lays it.
  * Left click places (Shift keeps placing), right click / Esc cancels,
  * R / Shift+R rotates.
  *
- * The check mirrors sim.CanPlaceFree; the server has the final word.
+ * The checks mirror sim.CanPlaceFree / sim.TowerSpot; the server has the final word.
  */
 export class Placement {
     private active: { kind: number; workers: number[]; type: BuildingTypeInfo } | null = null;
@@ -43,12 +49,16 @@ export class Placement {
     private readonly badMat = translucent(0xff5040, 0.45);
     private readonly zoneMat = translucent(0xff8a5a, 0.55);
     private readonly ownZone: THREE.Mesh;
-    private readonly outlineGeo = plotGeometry();
+    private readonly outlineGeo = outlineGeometry();
     private readonly zoneGeo = new THREE.RingGeometry(0.985, 1, 96).rotateX(-Math.PI / 2);
     private rotation = 0; // manual offset added to the default (face the map center)
     private x = 0;
     private z = 0;
     private valid = false;
+    private placeAngle = 0; // facing sent with the order (simulation convention)
+    private wallStart: { x: number; z: number; join: WallEnd | null } | null = null;
+    private readonly wallGhosts: THREE.Mesh[] = [];
+    private readonly wallGeo = new THREE.BoxGeometry(1, 1, 1).translate(0, 0.5, 0);
 
     constructor(private readonly d: PlacementDeps) {
         this.outline = new THREE.Mesh(this.outlineGeo, this.okMat);
@@ -70,6 +80,7 @@ export class Placement {
         this.ghost = this.d.buildings.ghost(kind, this.okMat);
         this.group.add(this.ghost);
         this.outline.scale.set(type.width, 1, type.depth);
+        this.outline.visible = true;
         this.ownZone.visible = type.noBuildRadius > 0;
         this.ownZone.scale.setScalar(Math.max(type.noBuildRadius, 0.01));
         this.rebuildZones();
@@ -77,6 +88,8 @@ export class Placement {
     }
 
     cancel(): void {
+        this.wallStart = null;
+        for (const g of this.wallGhosts) g.visible = false;
         if (this.ghost) this.group.remove(this.ghost);
         this.ghost = null;
         this.active = null;
@@ -92,12 +105,46 @@ export class Placement {
     update(x: number, z: number): void {
         const a = this.active;
         if (!a || !this.ghost) return;
+        let angle: number;
+        let rot: number;
+        let y: number;
+        if (a.type.kind === "wall") {
+            this.updateWall(a.type, x, z);
+            return;
+        }
+        if (a.type.kind === "gate") {
+            // Over an own wall: snapped onto the segment under the cursor.
+            const spot = this.d.buildings.gateSpot(x, z, this.d.localPlayer());
+            this.valid = spot !== null;
+            if (spot) {
+                x = spot.x;
+                z = spot.z;
+            }
+            rot = spot ? spot.rot : Math.PI / 2 - this.angle();
+            angle = Math.PI / 2 - rot;
+            y = this.d.heightAt(x, z);
+        } else if (a.type.placement.includes("tower")) {
+            // On the own wall: snapped onto its centre line, on top of the walkway.
+            const spot = this.d.buildings.wallSpot(a.type, x, z, this.d.localPlayer());
+            this.valid = spot !== null;
+            if (spot) {
+                x = spot.x;
+                z = spot.z;
+            }
+            rot = spot ? spot.rot : Math.PI / 2 - this.angle();
+            angle = Math.PI / 2 - rot;
+            y = this.d.heightAt(x, z);
+        } else {
+            this.x = x;
+            this.z = z;
+            angle = this.angle();
+            this.valid = this.check(a.type, x, z, angle);
+            rot = Math.PI / 2 - angle; // three.js Y rotation (model faces +Z)
+            y = this.groundFor(a.type, x, z, rot);
+        }
         this.x = x;
         this.z = z;
-        const angle = this.angle();
-        this.valid = this.check(a.type, x, z, angle);
-        const rot = Math.PI / 2 - angle; // three.js Y rotation (model faces +Z)
-        const y = this.groundFor(a.type, x, z, rot);
+        this.placeAngle = angle;
         this.ghost.position.set(x, y, z);
         this.ghost.rotation.y = rot;
         this.outline.position.set(x, y + 0.08, z);
@@ -115,8 +162,23 @@ export class Placement {
     place(keep: boolean): boolean {
         const a = this.active;
         if (!a) return true;
+        if (a.type.kind === "wall") {
+            if (!this.wallStart) {
+                if (!this.valid) return false;
+                // The first click: the start of the line (on an end of an own wall: continue that wall).
+                const len = a.type.width;
+                this.wallStart = { x: this.x, z: this.z, join: this.d.buildings.wallEnd(this.x, this.z, this.d.localPlayer(), len * 0.75) };
+                this.update(this.x, this.z);
+                return false;
+            }
+            if (!this.valid) return false;
+            this.d.onWall(a.kind, this.wallStart.x, this.wallStart.z, this.x, this.z, a.workers);
+            this.wallStart = null;
+            if (!keep) this.cancel();
+            return !keep;
+        }
         if (!this.valid) return false;
-        this.d.onPlace(a.kind, this.x, this.z, this.angle(), a.workers);
+        this.d.onPlace(a.kind, this.x, this.z, this.placeAngle, a.workers);
         if (!keep) this.cancel();
         return !keep;
     }
@@ -126,7 +188,80 @@ export class Placement {
         this.d.scene.remove(this.group);
         for (const m of [this.okMat, this.badMat, this.zoneMat]) m.dispose();
         this.outlineGeo.dispose();
+        this.wallGeo.dispose();
         this.zoneGeo.dispose();
+    }
+
+    /**
+     * Wall ghost: before the first click one segment under the cursor (R turns it); then the line
+     * from the start to the cursor, cut into segments like sim.WallLine (green while they fit, red
+     * from the first that doesn't).
+     */
+    private updateWall(type: BuildingTypeInfo, x: number, z: number): void {
+        this.x = x;
+        this.z = z;
+        if (this.ghost) this.ghost.visible = false;
+        this.outline.visible = false;
+        const len = type.width;
+        let ax: number, az: number, dx: number, dz: number, n: number;
+        const first = 0.5; // the first centre: half a segment from the start (or the joined tip)
+        let ignore: number[] = [];
+        const join = this.wallStart?.join ?? (this.wallStart ? null : this.d.buildings.wallEnd(x, z, this.d.localPlayer(), len * 0.75));
+        if (this.wallStart) {
+            // Continuing a wall: the new run pivots on the tip of the end segment (sim.PlanWall).
+            const tip = join ? wallTip(join, x, z) : null;
+            ax = tip ? tip.x : this.wallStart.x;
+            az = tip ? tip.z : this.wallStart.z;
+            const l = Math.hypot(x - ax, z - az);
+            n = Math.min(Math.max(Math.floor((l + len / 2) / len), join ? 0 : 1), 40);
+            dx = l > 1e-6 ? (x - ax) / l : 1;
+            dz = l > 1e-6 ? (z - az) / l : 0;
+            if (join) ignore = join.touch;
+        } else if (join) {
+            // Hovering an end of an own wall: the start snaps there (shown as the next segment).
+            const tip = wallTip(join, x, z);
+            ax = tip.x;
+            az = tip.z;
+            const sign = join.lone && join.ax * (x - join.x) + join.az * (z - join.z) < 0 ? -1 : 1;
+            dx = join.ax * sign;
+            dz = join.az * sign;
+            n = 1;
+            ignore = join.touch;
+        } else {
+            const a = this.rotation;
+            dx = Math.cos(a);
+            dz = Math.sin(a);
+            ax = x - (dx * len) / 2;
+            az = z - (dz * len) / 2;
+            n = 1;
+        }
+        const angle = Math.atan2(dx, -dz); // the front: across the line (simulation convention)
+        const rot = Math.PI / 2 - angle;
+        const probe = { ...type, width: type.width - 0.1, depth: type.depth - 0.1 };
+        let ok = true;
+        this.valid = !!join && !this.wallStart; // hovering a wall end: a valid start
+        for (let k = 0; k < Math.max(n, this.wallGhosts.length); k++) {
+            let g = this.wallGhosts[k];
+            if (k >= n) {
+                if (g) g.visible = false;
+                continue;
+            }
+            if (!g) {
+                g = new THREE.Mesh(this.wallGeo, this.okMat);
+                this.wallGhosts.push(g);
+                this.group.add(g);
+            }
+            const cx = ax + dx * len * (k + first);
+            const cz = az + dz * len * (k + first);
+            ok = ok && this.check(probe, cx, cz, angle, k === 0 ? ignore : []);
+            if (k === 0) this.valid = ok;
+            g.visible = true;
+            g.material = ok ? this.okMat : this.badMat;
+            g.position.set(cx, this.groundFor(type, cx, cz, rot), cz);
+            g.rotation.y = rot;
+            g.scale.set(len, type.walkHeight, type.depth);
+        }
+        this.ownZone.visible = false;
     }
 
     private angle(): number {
@@ -159,7 +294,7 @@ export class Placement {
     }
 
     /** Mirror of sim.CanPlaceFree (floats). `angle` in simulation convention. */
-    private check(type: BuildingTypeInfo, x: number, z: number, angle: number): boolean {
+    private check(type: BuildingTypeInfo, x: number, z: number, angle: number, ignore: number[] = []): boolean {
         const ghost = rect(x, z, angle, type.width / 2, type.depth / 2);
 
         const nav = this.d.nav;
@@ -185,19 +320,12 @@ export class Placement {
         }
 
         for (const { snap, type: t } of this.d.buildings.all()) {
-            if (!t) continue;
+            if (!t || ignore.includes(snap.id)) continue;
             const a = Math.PI / 2 - snap.rot; // back to simulation convention
             const other = rect(snap.x, snap.z, a, t.width / 2, t.depth / 2);
             if (t.noBuildRadius > 0 && distTo(ghost, snap.x, snap.z) < t.noBuildRadius) return false;
             if (type.noBuildRadius > 0 && distTo(other, x, z) < type.noBuildRadius) return false;
             if (overlaps(ghost, other)) return false;
-            const right = { x: Math.sin(a), z: -Math.cos(a) };
-            const fwd = { x: Math.cos(a), z: Math.sin(a) };
-            for (const p of t.plots) {
-                const px = snap.x + right.x * p.x + fwd.x * p.y;
-                const pz = snap.z + right.z * p.x + fwd.z * p.y;
-                if (overlaps(ghost, rect(px, pz, a, p.size / 2, p.size / 2))) return false;
-            }
         }
         return true;
     }
@@ -264,4 +392,10 @@ function translucent(color: number, opacity: number): THREE.MeshBasicMaterial {
         polygonOffset: true,
         polygonOffsetFactor: -2,
     });
+}
+
+/** The tip of a wall's end segment the new run pivots on (towards the cursor for a lone segment). */
+function wallTip(e: WallEnd, x: number, z: number): { x: number; z: number } {
+    const sign = e.lone && e.ax * (x - e.x) + e.az * (z - e.z) < 0 ? -1 : 1;
+    return { x: e.x + (sign * e.ax * e.len) / 2, z: e.z + (sign * e.az * e.len) / 2 };
 }

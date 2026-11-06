@@ -1,0 +1,30 @@
+{
+  "id": "alkar_archer",
+  "name": "Alkar Archer",
+  "model": "alkar_archer_simple",
+  "health": 80,
+  "armor": 1,
+  "speed": 3.6,
+  "radius": 0.4,
+  "mass": 1,
+  "ranged": {
+    "damage": 11,
+    "range": 32,
+    "cooldown": 1.5,
+    "damageType": "pierce",
+    "projectile": {
+      "speed": 32,
+      "spread": 2
+    },
+    "targets": [
+      "ground",
+      "air"
+    ]
+  },
+  "tags": [
+    "infantry",
+    "ranged",
+    "living"
+  ],
+  "armorClass": "medium"
+}

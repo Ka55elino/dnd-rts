@@ -1,0 +1,10 @@
+{
+  "id": "cursed_presence",
+  "name": "Cursed Presence",
+  "kind": "aura",
+  "radius": 15,
+  "modifiers": {
+    "noHeal": true
+  },
+  "affects": "enemies"
+}

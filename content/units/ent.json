@@ -1,0 +1,21 @@
+{
+  "id": "ent",
+  "name": "Ent",
+  "model": "ent_simple",
+  "health": 1200,
+  "armor": 4,
+  "speed": 3.2,
+  "radius": 1.0,
+  "mass": 10,
+  "melee": {
+    "damage": 45,
+    "range": 2.4,
+    "cooldown": 1.6,
+    "damageType": "crush"
+  },
+  "tags": [
+    "monster"
+  ],
+  "armorClass": "heavy",
+  "magicDefense": 2
+}

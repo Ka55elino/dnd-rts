@@ -43,13 +43,10 @@ Everything is tested on the current `plains` map with data in JSON. Full maps an
 
 **Concept: a BFME1 + BFME2 hybrid.**
 
-Three kinds of buildings:
+Two kinds of buildings:
 
-1. **Keep (main tower).** Placed by the map into the player slot (position, rotation). For now it is just a target to destroy, with no functions: keep destroyed — the player loses. Placeholder: `keep-light.glb`.
-2. **Buildings on plots (as in BFME1).** Around the keep there are several predefined plots. The player chooses what to build on a plot; the building builds itself, no workers needed. Placeholder: `mausoleum-light.glb`.
-3. **Free buildings (as in BFME2).** Placed anywhere within the build zone, if slope and neighboring buildings allow. Built by workers. Buildings have different footprints. Placeholder: `witch-cottage-light.glb`.
-
-Kinds 2 and 3 are one building catalog: each building has a list of allowed placement modes `placement: ["plot"] | ["free"] | ["plot", "free"]`. The full building list and balance are added gradually; factions have different building sets (`Faction.buildings`).
+1. **Keep (main tower).** Placed by the map into the player slot (position, rotation). Keep destroyed — the player loses.
+2. **Buildings (as in BFME2).** Placed by workers anywhere on open ground if slope, trees and neighboring buildings allow; walls are lines dragged by workers, gatehouses go over a finished stretch, defensive towers anywhere along the own wall (`placement`: `free`, `wall`, `gate`, `tower`; [`BASES.md`](BASES.md)). Buildings have different footprints. Factions have different building sets (`Faction.buildings`).
 
 **Resources:** gold, wood, metal, food. All numbers are initial placeholders in JSON, balance comes later. Mechanics and data format — [`RESOURCES.md`](RESOURCES.md).
 
@@ -60,11 +57,10 @@ Kinds 2 and 3 are one building catalog: each building has a list of allowed plac
 
 **Outposts:** neutral mini-bases on the map. Capture — squads stand within the radius for a few seconds with no enemies nearby. An outpost can be retaken or destroyed (ruins can be occupied again).
 
-- **Regular outpost:** a central building (placeholder — a scaled-down `keep`) and 1–3 build plots.
-- **Resource outpost:** the central building — gold mine, lumber mill or ore mine — brings income to the owner; build plots around it. Mines, lumber mills and ore mines cannot be built: they exist only as outpost centers, so gold, wood and metal are obtained only by holding points on the map.
+- **Resource outpost:** the central building — gold mine, lumber mill or ore mine — brings income to the owner. Mines, lumber mills and ore mines cannot be built: they exist only as outpost centers, so gold, wood and metal are obtained only by holding points on the map.
 - Later: control-point outposts with bonus gold, special recruitment.
 
-**Placeholder models:** the same open source as the unit models (grab3d), for development only, to be replaced later. While there are few models, each building's name is shown above it.
+**Placeholder models:** stand-ins built from plain shapes as code (`tools/propc`, one per building of every faction), to be replaced with final art. Each building's name is shown above it.
 
 **Open questions (not blocking the start):**
 
@@ -74,38 +70,36 @@ Kinds 2 and 3 are one building catalog: each building has a list of allowed plac
 
 **Tasks:**
 
-- [x] Assets: placeholders in `art/source/buildings/` (grab3d, development only); `tools/meshbake` (gltf-transform + meshoptimizer) → 3 LODs with shared materials, `engine/models/StaticModel`
-- [x] `Building` schema: kind, `placement`, footprint, HP, armor, model, plots, `buildTime`, `cost`, `economy`, `trains`, `noBuildRadius`, `capture`
-- [x] Map slots: keep (position, rotation), outposts, plots on the keep / outpost type
+- [x] Static models with 3 LODs and shared materials (`engine/models/StaticModel`); stand-ins as code (`tools/propc`), `tools/meshbake` for artist models
+- [x] `Building` schema: kind, `placement`, footprint, HP, armor, model, `buildTime`, `cost`, `economy`, `trains`, `noBuildRadius`, `capture`
+- [x] Map slots: keep (position, rotation), outposts
 - [x] Buildings in the simulation: an entity with HP and an owner, navigation blocking, hash; building attack order (RMB), damage in melee and from volleys over the footprint, destruction with a collapse animation; ruins — together with outposts
 - [x] Navigation: a building blocks passability grid cells, flow fields are recomputed on construction and destruction (deterministically)
-- [x] Plots: click on a free plot → menu of the faction's buildings that fit by size; timed construction without workers (the building "grows", HP rises with progress), building panel with cancel; resource refund — in step 4
 - [x] Workers: builder unit (`builders`, tag `worker`, one at start), "build here" order, progress advances only while workers are nearby (each additional one +50% speed), RMB on your own foundation — help; workers don't engage in combat on their own; worker recruitment — in step 4
-- [x] Free placement: anywhere on the map except buildings' no-build circles (`noBuildRadius`: keep 30, outposts 20, farm 12 — farms can't be placed right next to each other), terrain check, map bounds, overlaps with buildings and plots (exact rotated-rectangle check); green / red ghost, no-build circles visible during placement, R to rotate; Go re-checks
+- [x] Placement: anywhere on open ground, except buildings' no-build circles (`noBuildRadius`: keep 12, gatehouse 8, outposts 20, farm 12), trees, the feet of wall stairs, terrain check, map bounds, overlaps with buildings (exact rotated-rectangle check); towers snap onto the own wall; green / red ghost (the building rises as it is built, HP with progress), no-build circles visible during placement, R to rotate, cancel with a full refund; Go re-checks
 - [x] Resources per [`RESOURCES.md`](RESOURCES.md): catalog `content/resources.json` (gold, wood, metal, food), `income` / `provide` effects, starting stock, outpost income, building and squad costs (refunded on cancel), food is the army cap (the queue reserves it); `storage` / `upkeep` / crowding — later
-- [x] Outposts: resource ones (gold mine / lumber mill / ore mine + plots) on `plains`; capture 10 s, paused when contested, progress decays with no troops; a captured one can be attacked, a destroyed one becomes neutral again; income to the owner
+- [x] Outposts: resource ones (gold mine / lumber mill / ore mine) on `plains`; capture 10 s, paused when contested, progress decays with no troops; a captured one can be attacked, a destroyed one becomes neutral again; income to the owner
 - [x] Recruitment: queue of up to 5 in a building (barracks — army, keep — workers), cancel with refund, rally point (RMB on the ground while the building panel is open), the squad exits in front of the building
-- [x] Protocol: buildings, plots, capture, players (faction, human / AI, defeat), local player's resources and queues; commands plot / build / help / cancel / train / untrain / rally
+- [x] Protocol: buildings, capture, players (faction, human / AI, defeat), local player's resources and queues; commands build / help / cancel / train / untrain / rally
 - [x] Player slots: each has a faction and a controller — client or AI (AI badge; the AI itself — in phase 4); `control <player>` in the dev console switches which player the client plays
 - [x] Dev console (F2 or the key left of 1), all commands — [`DEV_CONSOLE.md`](DEV_CONSOLE.md): commands go through the simulation (end up in the replay), parsing in `internal/devconsole`; autocomplete and history
 - [x] Labels with the name and an HP bar above buildings (while there are few placeholder models)
-- [x] HUD ("stone and bronze" theme, Cinzel + Alegreya Sans fonts): player banners with You / AI badges; round minimap (terrain, buildings, squads, camera frame; LMB — camera, RMB — order); resource plaque with "+N"; portraits of selected squads with an HP ring and soldier count; hero column; ring menu for plots and buildings (recruitment, queue, cancel, parchment tooltip)
-- [x] Command card (bottom right, 4×3 grid): Move (G), Stop (X), Hold (H), Attack (F: on an enemy — attack, on the ground — attack-move), Patrol (P); abilities in the bottom row (1–4); for workers — available free buildings (1–…); target selection mode (LMB — target, RMB / Esc — cancel, Shift — repeat)
+- [x] HUD ("stone and bronze" theme, Cinzel + Alegreya Sans fonts): player banners with You / AI badges; round minimap (terrain, buildings, squads, camera frame; LMB — camera, RMB — order); resource plaque with "+N"; portraits of selected squads with an HP ring and soldier count; hero column; ring menu for buildings (recruitment, queue, cancel, parchment tooltip)
+- [x] Command card (bottom right, 6×3 grid): Move (G), Stop (X), Hold (H), Attack (F: on an enemy — attack, on the ground — attack-move), Patrol (P), Attack ground (T); abilities in the bottom row, then row 2; for workers — every building of the faction after Move / Stop (1–0, -, =, [, ], ;, '); target selection mode (LMB — target, RMB / Esc — cancel, Shift — repeat)
 - [x] Orders in the simulation: stop, hold (attacks within radius, doesn't pursue), attack-move (fights along the way and keeps moving), patrol (attack-move back and forth)
 - [x] Victory condition: the enemy keep is destroyed (Victory / Defeat banner); the enemy has a static base for now (AI — in phase 4)
 - [ ] Determinism: "build → recruit → destroy" golden test; hash and replay include buildings and resources
 
 **Proposed path:**
 
-1. ✅ Placeholder assets and rendering of static models with LOD; keeps and outposts on `plains`, plots.
+1. ✅ Rendering of static models with LOD; keeps and outposts on `plains`.
 2. ✅ Buildings in the simulation and navigation: the keep can be attacked and destroyed, victory condition.
-3. ✅ Plots around the keep: choosing and constructing a building without workers.
-4. ✅ Resources, food as the army cap, recruiting squads from buildings, player slots (human / AI, `control` in the console).
-5. ✅ Workers and free construction with different footprints (done before step 4).
-6. ✅ Outposts: capture, retaking, plots (income — with resources in step 4).
-7. HUD ✅, command card and orders ✅; next — "build → recruit → destroy" golden test, performance measurement with bases, assets from the list below.
+3. ✅ Resources, food as the army cap, recruiting squads from buildings, player slots (human / AI, `control` in the console).
+4. ✅ Workers and construction with different footprints, inside the base and in the field; towers on the wall.
+5. ✅ Outposts: capture, retaking, income.
+6. HUD ✅, command card and orders ✅; next — "build → recruit → destroy" golden test, performance measurement with bases, assets from the list below.
 
-**Done when:** on the standard map you can build up the plots, place free buildings with workers, recruit an army within the food cap and destroy the enemy keep.
+**Done when:** on the standard map you can build up the base with workers, recruit an army within the food cap and destroy the enemy keep.
 
 ### Design of factions, units, heroes and abilities
 
@@ -115,7 +109,7 @@ First on paper (`docs/FACTIONS.md`): the faction rosters determine which mechani
 
 - [ ] Think through all factions: concept, play style, strengths and weaknesses, visual style; two in detail, the rest as sketches. Described in `FACTIONS.md`: human Empire, High Elves, Dark Elves, Alkars, Dwarves; **Celestials — TODO**
 - [ ] Units of each faction: role, what it counters and what it loses to, squad size, cost and food, where it is recruited
-- [ ] Buildings of each faction: plots or free placement, what they recruit and unlock, levels
+- [ ] Buildings of each faction: what they recruit and unlock, levels
 - [x] Heroes: 3 per faction, 5 levels (skill / aura / skill / aura / ultimate), recruitment and revival — for five factions
 - [ ] Abilities and skills: active (target, area, cooldown), passive, auras, buffs and debuffs
 - [ ] Upgrades: weapons, armor, special squad and building upgrades
@@ -137,13 +131,18 @@ First on paper (`docs/FACTIONS.md`): the faction rosters determine which mechani
   - [x] Flying units: `"flying": true` on a unit — they fly in a straight line over terrain, water and buildings (no navigation), don't push against ground units, are hit only by attacks with `targets: ["air"]`; the `ground` status (landing) temporarily makes them ground units; rendering — flight height, bobbing, shadow and selection ring on the ground, arrows at air targets; content — harpies for the horde (barracks), griffin riders (only via `spawn` for now)
 - [x] One faction fully playable on `plains` — the Empire (`empire`), step by step:
   - [x] 1. Roster and buildings: barracks (swordsmen, spearmen), archery range (archers), stables (knights, require barracks), mages' guild (fire, water, lightning mages, healers), forge, farm; heroes — Paladin, Archmage, Emperor (keep); `immune`, `workSpeed` modifiers (auras on buildings: construction and recruitment speed), self buffs; armor classes per `FACTIONS.md`
-  - [x] Keep base ([`BASES.md`](BASES.md)): `base` generator (circle / square / polygon outline, plot rings, gates, tower slots), S / M / L plots (`content/plots.json`), "plot and / or field" buildings, terrain leveling under the base; the wall outline is drawn on the ground for now; fix for icon flickering in the building ring and command card
-  - [x] 2. Siege and towers: workshop (ballistas, trebuchet), minimum range (`minRange`), area damage (`splash`, half at the edge, hits buildings); archer / ballista / trebuchet towers on tower slots; fire mode for towers (`toggles`, button in the ring) after an upgrade; upgrades on towers (`buildings` on the upgrade): fire arrows for ballistas, improved mechanism (−25% reload for trebuchets and their towers); repair by builders (RMB on a damaged building, machines nearby repair themselves); machines rendered as static models (wheels, trebuchet arm with counterweight and sling, ballista recoil), heavy projectiles with a dust cloud
+  - [x] Keep base ([`BASES.md`](BASES.md)): `base` generator (circle / square / polygon outline, gates, wall, stairs), buildings put up by workers inside the base or in the field, towers anywhere along the wall, terrain leveling under the base; the wall outline is drawn on the ground for now; fix for icon flickering in the building ring and command card
+  - [x] 2. Siege and towers: workshop (ballistas, trebuchet), minimum range (`minRange`), area damage (`splash`, half at the edge, hits buildings); archer / ballista / trebuchet towers on the wall; fire mode for towers (`toggles`, button in the ring) after an upgrade; upgrades on towers (`buildings` on the upgrade): fire arrows for ballistas, improved mechanism (−25% reload for trebuchets and their towers); repair by builders (RMB on a damaged building, machines nearby repair themselves); machines rendered as static models (wheels, trebuchet arm with counterweight and sling, ballista recoil), heavy projectiles with a dust cloud
   - [x] 3. Stances and formations: spear wall (`rooted`, `speedDamage`: damage from enemy speed, the charge is absorbed, cannot be trampled), knights' wedge (`formation: wedge`, `charge`: +speed, +charge, deeper through the formation, +flank damage)
-  - [x] 4a. Base wall ([`BASES.md`](BASES.md)): base radius 70 m, wall along the outline (`castle_wall` segments with HP, breaches), gates only for your own units (per-player navigation), infantry climbs stairs and walks on the wall (+25% range for ranged units, melee by levels), archer tower on tower slots, attacking buildings (`attack`, `volley`); `castle-wall.glb` model with LOD (rough simplification for far levels), wall instancing; soldiers path around walls via the navigation field
+  - [x] 4a. Walls ([`BASES.md`](BASES.md)): workers lay wall lines by dragging (segments 6.2 m, paid and built one by one, stairs on the keep's side at the ends and every 8 segments), gatehouses over a finished stretch (open / close toggle), breaches; prepared ring bases (`base` generator) for campaign maps; infantry climbs stairs and walks on the wall (+25% range for ranged units, melee by levels), archer towers on the wall, attacking buildings (`attack`, `volley`); `castle_wall` model with LOD (rough simplification for far levels), wall instancing; soldiers path around walls via the navigation field
   - [x] Gatehouse: `gatehouse` model with LOD (leaves and portcullis separate), one building per 3 segments with a 5 m passage, BFME-style toggle gate (open for everyone / closed; closing waits for an empty passage), animation, button in the ring; the wall walkway is interrupted at the gates
   - [x] "Attack ground" order (`T`) for all squads with a ranged attack: approach to range (accounting for the dead zone), volleys at the point until a new order
   - [x] 4b. Instead of walls in the field — a watchtower (`watchtower`, `garrison: true`): built by workers in the field, one infantry squad climbs onto the platform, as on a wall (+25% range for ranged units, melee from the ground can't reach; tower destroyed — the squad falls down); RMB on your own tower — climb up
+
+- [x] Playground (main menu): the game on a test field — two faction selects (you / enemy); each player gets its base with one finished building of every type (around the keep; a finished wall line with a gatehouse in front of it, the towers on that wall) and one horde of every type of its faction, in rows in front of the base; changing a faction or Reset rebuilds the field (`Hello` carries the mode and the factions; `sim.SetupPlayground`). **Game** in the main menu shows "coming soon" until matches have a setup screen.
+- [x] Mechanics for the factions ([`ABILITIES.md`](ABILITIES.md)): invisibility and camouflage with detection, damage reflection, heal prevention, raising the dead in zones, channelled zones (Curse the Ground, Sabotage), smoke that hides squads, traps, trees (map forests that block movement and give cover, felling and regrowth, planting, ents from trees, Sacred Tree on a tree), dwarf tunnels (network of entrances, the keep, Undermine), attacks and modes unlocked by upgrades
+- [x] Content for the High Elves, Dark Elves, Alkars and Dwarves from the lore and `ART_LIST.md` (`content/factions/{high_elves,dark_elves,alkars,dwarves}.json`): units, hordes, heroes (trained at the keep), buildings and towers with first-pass stats; abilities of every hero and special unit from `FACTIONS.md` (70 new ability files, on the existing effects — approximations listed in [`ABILITIES.md`](ABILITIES.md), "Faction abilities"); summoned units with hordes and stand-in models: ent, spiders, wraiths, skeleton swordsmen and archers, demon, the Spider Queen's spider form; faction upgrades in the enchantment tower, alchemy workshop, Alkar workshop, Dark Order enchantments, dwarf forge and rune hall (swappable element groups); traps (mines, poison and paralysis traps of the webweavers, the Runemaster's rune traps) with stand-in models. Celestials: no roster in the lore yet. Ids that collide across factions got a prefix: `elf_archer`, `elf_archer_tower`, `alkar_dark_mage`, `alkar_workshop`, `dwarf_worker`, `dwarf_barracks`, `dwarf_workshop`, `dwarf_forge`, `dwarf_farm`; `crossbow_tower` is shared by the Dark Elves and the Alkars; the keep, walls and gates are shared by everyone
+- [x] Stand-in models of plain shapes for every unit (`tools/modelc`, `art/models/simple/`, [`MODEL_PIPELINE.md`](MODEL_PIPELINE.md)): infantry, archers, mages, heroes, cavalry (horse, wolf, griffon), harpy, war beast, elementals — readable silhouettes, team-colored parts, weapon-specific clips
 
 ### Render performance
 
@@ -172,10 +171,11 @@ Right now everything is drawn in code (CSS frames, SVG icons). Replace as assets
 - [ ] Resource icons: gold, wood, metal, food (currently colored stones)
 - [ ] Painted frames: minimap ring, resource plaque, command card frame, medallion, tooltip panel (PNG with transparency / 9-slice)
 - [ ] Faction crests for player banners and the selection screen
-- [x] Cursors — placeholders and logic ([`UX.md`](UX.md)): 28 states (select, inspect, scroll, move, attack, not allowed, climb, build, repair, capture, rally point, target modes, cast, plot, construction) — SVG → PNG
+- [x] Cursors — placeholders and logic ([`UX.md`](UX.md)): 27 states (select, inspect, scroll, move, attack, not allowed, climb, build, repair, capture, rally point, target modes, cast, construction) — SVG → PNG
 - [ ] Cursors — custom images instead of SVG placeholders
 - [ ] Heading font with Cyrillic (Cinzel lacks it): e.g. Cormorant SC or Philosopher — if the UI will be in Russian
-- [ ] Models: final units and buildings instead of grab3d placeholders; ruins, foundation / scaffolding for construction
+- [x] Stand-in models as code for every unit (`tools/modelc`), building, outpost, wall, gate and siege machine of every faction (`tools/propc`); the downloaded placeholders are gone
+- [ ] Models: final units and buildings instead of the stand-ins; ruins, foundation / scaffolding for construction
 - [ ] UI sounds: click, refusal, "unit ready", "building complete", base under attack
 
 
@@ -183,7 +183,7 @@ Right now everything is drawn in code (CSS frames, SVG icons). Replace as assets
 
 The editor works with the same base and building schemas already proven in phase 1.5.
 
-- [ ] Campaign bases ([`BASES.md`](BASES.md)): a `base` block on the player slot — the generator with different numbers or a hand-made outline, gates, tower slots and plots
+- [ ] Campaign bases ([`BASES.md`](BASES.md)): a `base` block on the player slot — the generator with different numbers or a hand-made outline and gates
 - [ ] New map, saving and loading
   - [ ] Map parameters: id, name, author, description, size (multiple of the grid step), height step, max height, seed or flat terrain, number of players (2–8)
   - [ ] Format: `content/maps/<id>/map.json` + `height.r16` (+ later `splat.png`, `objects.json`); format version and migrations
@@ -192,11 +192,10 @@ The editor works with the same base and building schemas already proven in phase
   - [ ] Map thumbnail (top-down render → `preview.png`), also needed for map selection in the game
 - [ ] "Base and buildings" layer
   - [ ] Player slots: keep (position, rotation), build zone, team (for 2v2), default color
-  - [ ] Plots: placement, rotation, size, allowed categories, owner or neutral
   - [ ] Outposts and neutral buildings (watchtowers; later monster camps)
   - [ ] Default starting conditions: resources, command point cap, starting squads (can be overridden in the lobby)
   - [ ] Gizmo: dragging and rotation, zone display, error highlighting (impassable ground, overlaps)
-- [ ] Terrain brushes: raise, lower, smooth, flatten; re-check bases and plots after changes
+- [ ] Terrain brushes: raise, lower, smooth, flatten; re-check bases after changes
 - [ ] Terrain painting (splat map, 4–8 layers)
 - [ ] Object placement: trees, rocks, decor (instancing)
 - [ ] Impassable zones (manual marking on top of slope)
@@ -224,7 +223,7 @@ The editor works with the same base and building schemas already proven in phase
 - [ ] Squad experience and veterancy (done for heroes)
 - [ ] Volley visuals: a cloud of arrows instead of a dot; siege engines
 - [ ] Walls and sieges
-- [ ] Fog of war
+- [x] Fog of war: per-player 8 m grid (sight of squads and buildings, reveals), explored / unseen / never seen on the terrain and trees, enemy squads hidden and untargetable in unseen cells; on in skirmish, toggle in the Playground and the dev console
 - [ ] Faction powers (analog of the spell book)
 
 ## Phase 5 — Multiplayer

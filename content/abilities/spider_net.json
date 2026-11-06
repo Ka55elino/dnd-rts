@@ -1,0 +1,16 @@
+{
+  "id": "spider_net",
+  "name": "Spider Net",
+  "kind": "active",
+  "target": "point",
+  "range": 24,
+  "cooldown": 40,
+  "effects": [
+    {
+      "type": "status",
+      "status": "ground",
+      "duration": 6,
+      "radius": 6
+    }
+  ]
+}

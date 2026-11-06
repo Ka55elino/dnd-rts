@@ -112,3 +112,24 @@ function disposeMaterial(m: THREE.Material): void {
     for (const value of Object.values(m)) if (value instanceof THREE.Texture) value.dispose();
     m.dispose();
 }
+
+/**
+ * Gives a model instance's team-coloured parts (material named "team": banners, flags, plates) the
+ * owner's colour. Materials are cloned once per source material and colour (`cache`).
+ */
+export function tintTeam(obj: THREE.Object3D, color: number, cache: Map<string, THREE.Material>): void {
+    obj.traverse((o) => {
+        if (!(o instanceof THREE.Mesh) || Array.isArray(o.material)) return;
+        const src: THREE.Material | undefined = (o.userData.teamSource as THREE.Material | undefined) ?? (o.material.name === "team" ? o.material : undefined);
+        if (!src) return;
+        o.userData.teamSource = src;
+        const key = `${src.uuid}:${color}`;
+        let m = cache.get(key);
+        if (!m) {
+            m = src.clone();
+            (m as THREE.MeshStandardMaterial).color?.setHex(color);
+            cache.set(key, m);
+        }
+        o.material = m;
+    });
+}

@@ -1,0 +1,25 @@
+{
+  "id": "cursed_ground",
+  "name": "Cursed Ground",
+  "kind": "active",
+  "target": "point",
+  "range": 25,
+  "cooldown": 150,
+  "effects": [
+    {
+      "type": "zone",
+      "radius": 10,
+      "duration": 12,
+      "interval": 1,
+      "effects": [
+        {
+          "type": "damage",
+          "damageType": "necrotic",
+          "amount": 12,
+          "radius": 0
+        }
+      ]
+    }
+  ],
+  "ultimate": true
+}

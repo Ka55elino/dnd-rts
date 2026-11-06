@@ -2,8 +2,7 @@
   "id": "barracks",
   "name": "Barracks",
   "kind": "building",
-  "model": "mausoleum",
-  "modelScale": 2.5,
+  "model": "barracks",
   "footprint": {
     "x": 10,
     "y": 10
@@ -11,7 +10,7 @@
   "health": 1500,
   "armor": 3,
   "placement": [
-    "plot"
+    "free"
   ],
   "buildTime": 20,
   "cost": {

@@ -1,0 +1,26 @@
+{
+  "id": "soul_harvest",
+  "name": "Soul Harvest",
+  "kind": "active",
+  "target": "point",
+  "range": 24,
+  "cooldown": 45,
+  "effects": [
+    {
+      "type": "zone",
+      "radius": 8,
+      "duration": 2,
+      "interval": 1,
+      "raise": "risen_wraiths",
+      "raiseEvery": 3,
+      "raiseDuration": 30,
+      "effects": []
+    },
+    {
+      "type": "damage",
+      "damageType": "necrotic",
+      "amount": 60,
+      "radius": 8
+    }
+  ]
+}

@@ -1,0 +1,34 @@
+{
+  "id": "mortar",
+  "name": "Mortar",
+  "model": "mortar_simple",
+  "health": 380,
+  "armor": 2,
+  "speed": 1.8,
+  "radius": 1.2,
+  "mass": 8,
+  "ranged": {
+    "damage": 70,
+    "range": 50,
+    "cooldown": 6,
+    "damageType": "fire",
+    "projectile": {
+      "speed": 24,
+      "spread": 3
+    },
+    "targets": [
+      "ground"
+    ],
+    "minRange": 14,
+    "splash": 4
+  },
+  "tags": [
+    "mechanical",
+    "siege"
+  ],
+  "armorClass": "heavy",
+  "abilities": [
+    "smoke_screen",
+    "phosphorus_shells"
+  ]
+}

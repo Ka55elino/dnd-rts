@@ -1,0 +1,9 @@
+{
+  "id": "smoke_grenades",
+  "name": "Smoke Grenades",
+  "cost": {
+    "gold": 150,
+    "metal": 50
+  },
+  "researchTime": 30
+}

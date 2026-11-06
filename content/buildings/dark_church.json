@@ -1,0 +1,25 @@
+{
+  "id": "dark_church",
+  "name": "Dark Church",
+  "kind": "building",
+  "model": "dark_church",
+  "footprint": {
+    "x": 13,
+    "y": 13
+  },
+  "health": 1600,
+  "armor": 3,
+  "placement": [
+    "free"
+  ],
+  "buildTime": 30,
+  "cost": {
+    "gold": 280,
+    "wood": 180
+  },
+  "material": "stone",
+  "trains": [
+    "dark_priests",
+    "dark_mages"
+  ]
+}

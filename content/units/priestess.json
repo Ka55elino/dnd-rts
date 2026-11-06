@@ -1,0 +1,54 @@
+{
+  "id": "priestess",
+  "name": "Priestess",
+  "model": "priestess_simple",
+  "health": 650,
+  "armor": 1,
+  "speed": 4,
+  "radius": 0.5,
+  "mass": 2.5,
+  "ranged": {
+    "damage": 26,
+    "range": 24,
+    "cooldown": 1.6,
+    "damageType": "radiant",
+    "projectile": {
+      "speed": 36,
+      "spread": 1
+    },
+    "targets": [
+      "ground",
+      "air"
+    ]
+  },
+  "tags": [
+    "hero",
+    "infantry",
+    "mage",
+    "ranged",
+    "living"
+  ],
+  "armorClass": "light",
+  "magicDefense": 6,
+  "hero": {
+    "xp": [
+      0,
+      150,
+      400,
+      800,
+      1400
+    ],
+    "perLevel": {
+      "damage": 0.1,
+      "armor": 0.5
+    },
+    "healthPerLevel": 0.1
+  },
+  "abilities": [
+    "moonbeam",
+    "blessing_of_the_moon",
+    "cleansing",
+    "aura_of_the_moon_shield",
+    "sacred_weapons"
+  ]
+}

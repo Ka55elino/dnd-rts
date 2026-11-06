@@ -26,11 +26,10 @@ type Building struct {
 	HP     fixed.Fixed
 
 	// Construction: buildTicks > 0 while unfinished; work counts up to it
-	// (one per tick for plot buildings; for free buildings it depends on
+	// (it depends on
 	// how many workers are building).
 	buildTicks int
 	work       fixed.Fixed
-	selfBuild  bool        // plot buildings construct themselves
 	builders   int         // workers building it this tick (scratch, recomputed every tick)
 	workSpeed  fixed.Fixed // + fraction from auras (scratch, recomputed every tick)
 	workAcc    fixed.Fixed // training progress carried between ticks
@@ -38,6 +37,8 @@ type Building struct {
 	gateOpen   bool        // gates: units pass through the passage
 	gateWant   bool        // gates: what the owner asked for (closing waits for a clear passage)
 	toggled    []bool      // towers: Def.Toggles switched on
+	growCd     int         // GrowTrees: ticks until the next tree
+	tunnelFree uint32      // tunnels: tick from which the next horde may come out
 
 	// Economy: income accumulators per effect, training queue, rally point.
 	acc        []fixed.Fixed
@@ -55,11 +56,8 @@ type Building struct {
 	captureBy    PlayerID
 	captureTicks int
 
-	// Fortresses / outposts: the building standing on each plot (nil = free).
-	plotUsers []*Building
-	// Plot buildings: the fortress / outpost and plot they stand on.
-	host *Building
-	plot int
+	// onWall: a defensive tower standing on its owner's base wall (range bonus, no ground under it).
+	onWall bool
 }
 
 // constructionStartHP: a new foundation has this fraction of full health.
@@ -82,8 +80,8 @@ func (b *Building) Progress() fixed.Fixed {
 	return b.work.DivInt(b.buildTicks).Min(fixed.One)
 }
 
-// PlotOccupied reports whether plot i of this fortress / outpost has a building.
-func (b *Building) PlotOccupied(i int) bool { return i < len(b.plotUsers) && b.plotUsers[i] != nil }
+// OnWall reports whether the building is a tower standing on a base wall.
+func (b *Building) OnWall() bool { return b.onWall }
 
 // axes returns the building's right and forward unit vectors.
 func (b *Building) axes() (right, forward fixed.Vec2) {
@@ -130,9 +128,6 @@ func (b *Building) approach(from fixed.Vec2, dist fixed.Fixed) fixed.Vec2 {
 	return c.Add(dir.Scale(dist))
 }
 
-// PlotPos returns the world position of plot i.
-func (b *Building) PlotPos(i int) fixed.Vec2 { return b.Local(b.Def.Plots[i].Offset) }
-
 // Covers reports whether p lies inside the footprint (a rotated rectangle),
 // grown by margin on every side.
 func (b *Building) Covers(p fixed.Vec2, margin fixed.Fixed) bool {
@@ -164,9 +159,6 @@ func (w *World) SpawnBuilding(owner PlayerID, buildingType string, pos fixed.Vec
 		HP:     def.Health,
 
 		captureBy: Neutral,
-	}
-	if len(def.Plots) > 0 {
-		b.plotUsers = make([]*Building, len(def.Plots))
 	}
 	b.toggled = make([]bool, len(def.Toggles))
 	w.nextBuilding++
@@ -218,37 +210,6 @@ func (w *World) removeDestroyedBuildings() {
 	}
 }
 
-// buildOnPlot lays a foundation of buildingType on plot i of host.
-func (w *World) buildOnPlot(player PlayerID, host *Building, i int, buildingType string) {
-	def, ok := w.Catalog.Buildings[buildingType]
-	if !ok || host.Owner != player || !host.Alive() || i < 0 || i >= len(host.Def.Plots) || host.PlotOccupied(i) {
-		return
-	}
-	placement := data.PlacementPlot
-	if host.Def.Plots[i].Class == data.PlotTower {
-		placement = data.PlacementTower // a tower socket on the base wall
-	}
-	if !def.Allows(placement) || !def.FitsPlot(host.Def.Plots[i].Size) || !w.canBuild(player, buildingType) || !w.Meets(player, def.Requires) {
-		return
-	}
-	if !w.pay(player, def.Cost) {
-		return
-	}
-	var b *Building
-	if placement == data.PlacementTower {
-		b = w.placeBuilding(player, buildingType, host.PlotPos(i), host.Facing) // on the wall: no open ground under it
-	} else {
-		var err error
-		if b, err = w.SpawnBuilding(player, buildingType, host.PlotPos(i), host.Facing); err != nil {
-			return
-		}
-	}
-	b.startConstruction()
-	b.selfBuild = true
-	b.host, b.plot = host, i
-	host.plotUsers[i] = b
-}
-
 // startConstruction turns a freshly spawned building into a foundation.
 func (b *Building) startConstruction() {
 	b.buildTicks = max(1, cooldownTicks(b.Def.BuildTime))
@@ -287,9 +248,6 @@ func (w *World) updateConstruction() {
 			continue
 		}
 		rate := workRate(b.builders)
-		if b.selfBuild {
-			rate = fixed.One
-		}
 		if rate == 0 {
 			continue
 		}
@@ -327,11 +285,8 @@ func (w *World) RemoveBuilding(id BuildingID) {
 	w.rebuildBlocked()
 }
 
-// forgetBuilding stops every horde attacking b and frees its plot.
+// forgetBuilding stops every horde attacking or building b.
 func (w *World) forgetBuilding(b *Building) {
-	if h := b.host; h != nil && h.plotUsers[b.plot] == b {
-		h.plotUsers[b.plot] = nil
-	}
 	for _, h := range w.Hordes {
 		if h.siege == b {
 			h.siege = nil
@@ -353,6 +308,8 @@ func (w *World) rebuildBlocked() {
 	for _, b := range w.Buildings {
 		w.blockFootprint(b)
 	}
+	w.stampTrees()
+	w.stampWallJoints()
 	w.Nav.Invalidate()
 }
 

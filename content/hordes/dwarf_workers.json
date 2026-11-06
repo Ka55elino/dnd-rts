@@ -1,0 +1,17 @@
+{
+  "id": "dwarf_workers",
+  "name": "Worker",
+  "unit": "dwarf_worker",
+  "size": 1,
+  "formation": {
+    "columns": 1,
+    "spacing": 1
+  },
+  "cost": {
+    "gold": 55
+  },
+  "buildTime": 10,
+  "uses": {
+    "food": 2
+  }
+}

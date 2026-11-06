@@ -1,0 +1,17 @@
+{
+  "id": "moonbeam",
+  "name": "Moonbeam",
+  "kind": "active",
+  "target": "point",
+  "range": 26,
+  "cooldown": 30,
+  "autocast": true,
+  "effects": [
+    {
+      "type": "damage",
+      "damageType": "radiant",
+      "amount": 55,
+      "radius": 5
+    }
+  ]
+}

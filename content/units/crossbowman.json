@@ -1,0 +1,30 @@
+{
+  "id": "crossbowman",
+  "name": "Crossbowman",
+  "model": "crossbowman_simple",
+  "health": 75,
+  "armor": 1,
+  "speed": 3.6,
+  "radius": 0.4,
+  "mass": 1,
+  "ranged": {
+    "damage": 12,
+    "range": 26,
+    "cooldown": 1.5,
+    "damageType": "pierce",
+    "projectile": {
+      "speed": 36,
+      "spread": 2
+    },
+    "targets": [
+      "ground",
+      "air"
+    ]
+  },
+  "tags": [
+    "infantry",
+    "ranged",
+    "living"
+  ],
+  "armorClass": "medium"
+}

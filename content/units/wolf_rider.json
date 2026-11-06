@@ -1,7 +1,7 @@
 {
   "id": "wolf_rider",
   "name": "Wolf Rider",
-  "model": "",
+  "model": "wolf_rider_simple",
   "health": 180,
   "armor": 1.5,
   "speed": 7.5,

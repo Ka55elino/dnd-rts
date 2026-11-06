@@ -1,0 +1,35 @@
+{
+  "id": "dark_acolyte",
+  "name": "Dark Acolyte",
+  "model": "dark_acolyte_simple",
+  "health": 80,
+  "armor": 0,
+  "speed": 3.4,
+  "radius": 0.4,
+  "mass": 1,
+  "ranged": {
+    "damage": 14,
+    "range": 22,
+    "cooldown": 2.0,
+    "damageType": "necrotic",
+    "projectile": {
+      "speed": 36,
+      "spread": 1.5
+    },
+    "targets": [
+      "ground",
+      "air"
+    ]
+  },
+  "tags": [
+    "infantry",
+    "ranged",
+    "mage",
+    "living"
+  ],
+  "armorClass": "light",
+  "magicDefense": 5,
+  "abilities": [
+    "curse_the_ground"
+  ]
+}

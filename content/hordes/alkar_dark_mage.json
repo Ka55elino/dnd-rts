@@ -1,0 +1,15 @@
+{
+  "id": "alkar_dark_mage",
+  "name": "Dark Mage",
+  "unit": "alkar_dark_mage",
+  "size": 1,
+  "formation": {
+    "columns": 1,
+    "spacing": 1
+  },
+  "cost": {
+    "gold": 1100
+  },
+  "buildTime": 60,
+  "unique": true
+}

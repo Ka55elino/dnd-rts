@@ -1,0 +1,16 @@
+{
+  "id": "paralyzing_arrow",
+  "name": "Paralyzing Arrow",
+  "kind": "active",
+  "target": "unit",
+  "range": 34,
+  "cooldown": 35,
+  "effects": [
+    {
+      "type": "status",
+      "status": "stun",
+      "duration": 4,
+      "radius": 3
+    }
+  ]
+}

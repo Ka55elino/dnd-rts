@@ -1,0 +1,20 @@
+{
+  "id": "awakening_of_the_ents",
+  "name": "Awakening of the Ents",
+  "kind": "active",
+  "target": "point",
+  "range": 25,
+  "cooldown": 180,
+  "onTree": true,
+  "ultimate": true,
+  "effects": [
+    {
+      "type": "summon",
+      "horde": "ents",
+      "count": 3,
+      "duration": 60,
+      "perTree": true,
+      "radius": 15
+    }
+  ]
+}

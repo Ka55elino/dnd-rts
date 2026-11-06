@@ -54,6 +54,7 @@ export interface HordeTypeInfo {
     ranged?: boolean; // has a ranged attack (attack-ground order)
     antiAir?: boolean; // an attack hits flyers
     climbs?: boolean; // goes up walls and watchtowers
+    trap?: boolean; // a ground trap: no plate, drawn see-through to its owner
 }
 
 /** Placeholder soldier: body, head and a shield on the +Z (facing) side. */
@@ -269,7 +270,10 @@ export class SoldiersView {
         return this.curr.status;
     }
 
+    private vanished: ReadonlySet<number> = new Set();
+
     pushSnapshot(s: GameSnapshot, now: number): void {
+        this.vanished = s.vanished;
         this.hordes.clear();
         for (const h of s.hordes) this.hordes.set(h.id, h);
 
@@ -425,7 +429,7 @@ export class SoldiersView {
             if (this.machines?.has(f.kind[i])) {
                 const y = heightAt(x, z);
                 renderPos[o + 1] = y;
-                this.machines.place(f.ids[i], f.kind[i], x, y, z, r, s / ((this.types[f.kind[i]]?.radius ?? BASE_RADIUS) / BASE_RADIUS), f.state[i] === SoldierAttacking ? f.swingStart[i] : -1, now);
+                this.machines.place(f.ids[i], f.kind[i], f.owner[i], x, y, z, r, s / ((this.types[f.kind[i]]?.radius ?? BASE_RADIUS) / BASE_RADIUS), f.state[i] === SoldierAttacking ? f.swingStart[i] : -1, now);
                 if (selected.has(f.hordeOf[i])) rings = this.writeRing(rm, rings, x, y, z, s);
                 continue;
             }
@@ -565,6 +569,7 @@ export class SoldiersView {
     }
 
     private addCorpse(frame: Frame, i: number, nowSec: number): void {
+        if (this.vanished.has(frame.hordeOf[i])) return; // went out of sight (invisible / fog), not dead
         if (this.machines?.has(frame.kind[i])) return; // machines just vanish (wreck models later)
         const d = this.corpseData;
         const k = this.corpseHead * 7;

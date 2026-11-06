@@ -1,0 +1,16 @@
+{
+  "id": "summon_demon",
+  "name": "Summon Demon",
+  "kind": "active",
+  "target": "self",
+  "cooldown": 180,
+  "effects": [
+    {
+      "type": "summon",
+      "horde": "demons",
+      "count": 1,
+      "duration": 60
+    }
+  ],
+  "ultimate": true
+}

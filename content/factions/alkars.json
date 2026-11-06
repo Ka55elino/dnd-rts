@@ -1,0 +1,44 @@
+{
+  "id": "alkars",
+  "name": "Alkars",
+  "color": "#6b1f1f",
+  "hordes": [
+    "goblins",
+    "orcs",
+    "berserkers",
+    "orc_hunters",
+    "orc_spearmen",
+    "alkar_swordsmen",
+    "alkar_archers",
+    "harpies",
+    "goblin_wolf_riders",
+    "dark_acolytes",
+    "siege_trolls",
+    "dark_lord",
+    "alkar_dark_mage",
+    "wraith_king"
+  ],
+  "start": [
+    "orcs",
+    "orc_hunters",
+    "goblin_wolf_riders",
+    "dark_lord",
+    "goblins"
+  ],
+  "fortress": "keep",
+  "buildings": [
+    "orc_pits",
+    "dark_order",
+    "harpy_nest",
+    "wolf_den",
+    "dark_cult",
+    "troll_arena",
+    "alkar_workshop",
+    "dark_order_enchantments",
+    "goblin_farm",
+    "crossbow_tower",
+    "wraith_tower",
+    "castle_wall",
+    "castle_gate"
+  ]
+}

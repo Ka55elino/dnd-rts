@@ -1,0 +1,18 @@
+{
+  "id": "elf_water_elementals",
+  "name": "Water Elemental",
+  "unit": "water_elemental",
+  "size": 1,
+  "formation": {
+    "columns": 1,
+    "spacing": 1
+  },
+  "cost": {
+    "gold": 350,
+    "metal": 50
+  },
+  "buildTime": 40,
+  "uses": {
+    "food": 8
+  }
+}

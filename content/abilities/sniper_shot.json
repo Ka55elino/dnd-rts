@@ -1,0 +1,17 @@
+{
+  "id": "sniper_shot",
+  "name": "Sniper Shot",
+  "kind": "active",
+  "target": "unit",
+  "range": 120,
+  "cooldown": 150,
+  "effects": [
+    {
+      "type": "damage",
+      "damageType": "pierce",
+      "amount": 250,
+      "radius": 0
+    }
+  ],
+  "ultimate": true
+}

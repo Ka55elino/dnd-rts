@@ -1,0 +1,18 @@
+{
+  "id": "mortars",
+  "name": "Mortars",
+  "unit": "mortar",
+  "size": 2,
+  "formation": {
+    "columns": 2,
+    "spacing": 4
+  },
+  "cost": {
+    "gold": 380,
+    "metal": 120
+  },
+  "buildTime": 45,
+  "uses": {
+    "food": 10
+  }
+}

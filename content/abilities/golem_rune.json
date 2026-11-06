@@ -1,0 +1,36 @@
+{
+  "id": "golem_rune",
+  "name": "Golem Rune",
+  "kind": "mode",
+  "cooldown": 5,
+  "modes": [
+    {
+      "id": "none",
+      "name": "No Rune"
+    },
+    {
+      "id": "fire",
+      "name": "Fire Rune",
+      "modifiers": {
+        "attackType": "fire"
+      },
+      "requires": {
+        "upgrades": [
+          "fire_rune"
+        ]
+      }
+    },
+    {
+      "id": "ice",
+      "name": "Frost Rune",
+      "modifiers": {
+        "attackType": "ice"
+      },
+      "requires": {
+        "upgrades": [
+          "frost_rune"
+        ]
+      }
+    }
+  ]
+}

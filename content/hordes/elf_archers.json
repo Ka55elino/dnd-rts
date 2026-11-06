@@ -1,0 +1,18 @@
+{
+  "id": "elf_archers",
+  "name": "Elf Archers",
+  "unit": "elf_archer",
+  "size": 18,
+  "formation": {
+    "columns": 6,
+    "spacing": 1.2
+  },
+  "cost": {
+    "gold": 170,
+    "wood": 50
+  },
+  "buildTime": 25,
+  "uses": {
+    "food": 10
+  }
+}

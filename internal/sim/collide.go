@@ -107,6 +107,9 @@ func resolve(a, b *Soldier) {
 	if a.Horde.Unit.Flying != b.Horde.Unit.Flying || (a.Horde.wall != nil) != (b.Horde.wall != nil) {
 		return // the air, the walls and the ground don't push each other
 	}
+	if a.Horde.InTunnel() || b.Horde.InTunnel() || a.Horde.IsTrap() || b.Horde.IsTrap() {
+		return // underground; traps lie flat on the ground
+	}
 	ra, rb := a.Horde.Unit.Radius, b.Horde.Unit.Radius
 	minDist := ra + rb
 	d := b.Pos.Sub(a.Pos)

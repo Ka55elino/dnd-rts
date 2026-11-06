@@ -1,0 +1,17 @@
+{
+  "id": "stoneskin",
+  "name": "Stoneskin",
+  "kind": "active",
+  "target": "self",
+  "cooldown": 50,
+  "effects": [
+    {
+      "type": "buff",
+      "duration": 8,
+      "modifiers": {
+        "rangedTaken": -1
+      },
+      "radius": 0
+    }
+  ]
+}

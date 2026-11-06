@@ -1,0 +1,9 @@
+{
+  "id": "sabotage_kit",
+  "name": "Sabotage Kit",
+  "cost": {
+    "gold": 150,
+    "wood": 50
+  },
+  "researchTime": 30
+}

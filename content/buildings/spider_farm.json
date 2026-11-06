@@ -1,0 +1,29 @@
+{
+  "id": "spider_farm",
+  "name": "Spider Farm",
+  "kind": "building",
+  "model": "spider_farm",
+  "footprint": {
+    "x": 8,
+    "y": 8
+  },
+  "health": 800,
+  "armor": 3,
+  "placement": [
+    "free"
+  ],
+  "buildTime": 15,
+  "cost": {
+    "gold": 80,
+    "wood": 40
+  },
+  "material": "stone",
+  "economy": [
+    {
+      "type": "provide",
+      "resource": "food",
+      "amount": 10
+    }
+  ],
+  "noBuildRadius": 12
+}

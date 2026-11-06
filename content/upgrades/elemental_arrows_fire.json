@@ -1,0 +1,22 @@
+{
+  "id": "elemental_arrows_fire",
+  "name": "Elemental Arrows: Fire",
+  "cost": {
+    "gold": 250,
+    "wood": 100
+  },
+  "researchTime": 35,
+  "group": "elemental_arrows",
+  "units": [
+    "elf_archer",
+    "griffon_rider",
+    "tiger_rider"
+  ],
+  "buildings": [
+    "elf_archer_tower"
+  ],
+  "modifiers": {
+    "extraType": "fire",
+    "extraDamage": 0.2
+  }
+}

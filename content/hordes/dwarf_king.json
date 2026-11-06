@@ -1,0 +1,15 @@
+{
+  "id": "dwarf_king",
+  "name": "Dwarf King",
+  "unit": "dwarf_king",
+  "size": 1,
+  "formation": {
+    "columns": 1,
+    "spacing": 1
+  },
+  "cost": {
+    "gold": 1300
+  },
+  "buildTime": 70,
+  "unique": true
+}

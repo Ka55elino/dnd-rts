@@ -1,0 +1,54 @@
+{
+  "id": "spider_queen",
+  "name": "Spider Queen",
+  "model": "spider_queen_simple",
+  "health": 800,
+  "armor": 2,
+  "speed": 4.2,
+  "radius": 0.5,
+  "mass": 2.5,
+  "ranged": {
+    "damage": 28,
+    "range": 22,
+    "cooldown": 1.6,
+    "damageType": "poison",
+    "projectile": {
+      "speed": 34,
+      "spread": 1
+    },
+    "targets": [
+      "ground",
+      "air"
+    ]
+  },
+  "tags": [
+    "hero",
+    "infantry",
+    "mage",
+    "ranged",
+    "living"
+  ],
+  "armorClass": "medium",
+  "magicDefense": 5,
+  "hero": {
+    "xp": [
+      0,
+      150,
+      400,
+      800,
+      1400
+    ],
+    "perLevel": {
+      "damage": 0.1,
+      "armor": 0.5
+    },
+    "healthPerLevel": 0.1
+  },
+  "abilities": [
+    "summon_spiders",
+    "web_run",
+    "spider_net",
+    "lair",
+    "spider_form"
+  ]
+}

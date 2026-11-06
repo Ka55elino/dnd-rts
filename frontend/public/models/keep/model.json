@@ -3,27 +3,28 @@
   "lods": [
     {
       "file": "lod0.glb",
-      "triangles": 22561
+      "triangles": 1430
     },
     {
       "file": "lod1.glb",
-      "triangles": 10023
+      "triangles": 1398
     },
     {
       "file": "lod2.glb",
-      "triangles": 6974
+      "triangles": 494
     }
   ],
   "bounds": {
     "min": [
-      -4.685,
-      0,
-      -4.725
+      -7.15,
+      0.0,
+      -7.05
     ],
     "max": [
-      4.685,
-      20.285,
-      4.71
+      7.15,
+      25.5,
+      7.05
     ]
-  }
+  },
+  "build": 1793993045949
 }

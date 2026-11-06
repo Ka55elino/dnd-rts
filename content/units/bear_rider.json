@@ -1,0 +1,25 @@
+{
+  "id": "bear_rider",
+  "name": "Bear Rider",
+  "model": "bear_rider_simple",
+  "health": 260,
+  "armor": 3,
+  "speed": 6.5,
+  "radius": 0.85,
+  "mass": 4.5,
+  "melee": {
+    "damage": 20,
+    "range": 1.6,
+    "cooldown": 1.1,
+    "damageType": "slash"
+  },
+  "charge": {
+    "trampleDamage": 25,
+    "knockback": 6
+  },
+  "tags": [
+    "cavalry",
+    "living"
+  ],
+  "armorClass": "heavy"
+}

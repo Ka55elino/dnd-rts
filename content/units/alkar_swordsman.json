@@ -1,0 +1,22 @@
+{
+  "id": "alkar_swordsman",
+  "name": "Alkar Swordsman",
+  "model": "alkar_swordsman_simple",
+  "health": 130,
+  "armor": 3,
+  "speed": 3.6,
+  "radius": 0.4,
+  "mass": 1,
+  "melee": {
+    "damage": 15,
+    "range": 1.3,
+    "cooldown": 1.0,
+    "damageType": "slash"
+  },
+  "tags": [
+    "infantry",
+    "living"
+  ],
+  "armorClass": "heavy",
+  "magicDefense": 1
+}

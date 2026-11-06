@@ -1,4 +1,5 @@
 import * as THREE from "three";
+import { HORDE_HIDDEN, HORDE_TRAP } from "../../net/protocol";
 import { PLAYER_COLORS, type SoldiersView } from "../view/SoldiersView";
 
 const LIFT = 3.2; // world units above the tallest soldier of the horde
@@ -58,13 +59,15 @@ export class HordeLabels {
 
         for (const [id, h] of soldiers.hordes) {
             const s = this.sum.get(id);
-            if (!s || s.n === 0) continue;
+            if (!s || s.n === 0 || (h.flags & HORDE_TRAP) !== 0) continue; // traps: no plate
             const label = this.labels.get(id) ?? this.create(id, h.owner);
 
             this.tmp.set(s.x / s.n, s.top + LIFT, s.z / s.n).project(camera);
             const visible = this.tmp.z < 1 && Math.abs(this.tmp.x) < 1.1 && Math.abs(this.tmp.y) < 1.1;
             label.el.hidden = !visible;
             if (!visible) continue;
+            // Own invisible / camouflaged horde: the enemy cannot see it.
+            label.el.classList.toggle("horde-label--hidden", (h.flags & HORDE_HIDDEN) !== 0);
 
             const sx = (this.tmp.x + 1) * 0.5 * width;
             const sy = (1 - this.tmp.y) * 0.5 * height;

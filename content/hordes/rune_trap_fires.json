@@ -1,0 +1,12 @@
+{
+  "id": "rune_trap_fires",
+  "name": "Fire Rune Trap",
+  "unit": "rune_trap_fire",
+  "size": 1,
+  "formation": {
+    "columns": 1,
+    "spacing": 1
+  },
+  "cost": {},
+  "buildTime": 1
+}

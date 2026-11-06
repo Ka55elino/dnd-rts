@@ -1,0 +1,44 @@
+{
+  "id": "spider_queen_form",
+  "name": "Spider Queen (spider form)",
+  "model": "spider_queen_form_simple",
+  "health": 1300,
+  "armor": 5,
+  "speed": 5,
+  "radius": 0.9,
+  "mass": 6,
+  "melee": {
+    "damage": 50,
+    "range": 2.0,
+    "cooldown": 1.1,
+    "damageType": "poison"
+  },
+  "tags": [
+    "hero",
+    "monster",
+    "living"
+  ],
+  "armorClass": "heavy",
+  "magicDefense": 3,
+  "abilities": [
+    "summon_spiders",
+    "web_run",
+    "spider_net",
+    "lair",
+    "spider_form"
+  ],
+  "hero": {
+    "xp": [
+      0,
+      150,
+      400,
+      800,
+      1400
+    ],
+    "perLevel": {
+      "damage": 0.1,
+      "armor": 0.5
+    },
+    "healthPerLevel": 0.1
+  }
+}

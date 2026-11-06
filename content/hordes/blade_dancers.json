@@ -1,0 +1,17 @@
+{
+  "id": "blade_dancers",
+  "name": "Blade Dancers",
+  "unit": "blade_dancer",
+  "size": 16,
+  "formation": {
+    "columns": 4,
+    "spacing": 1.2
+  },
+  "cost": {
+    "gold": 170
+  },
+  "buildTime": 22,
+  "uses": {
+    "food": 10
+  }
+}

@@ -1,0 +1,17 @@
+{
+  "id": "scouts",
+  "name": "Scouts",
+  "unit": "scout",
+  "size": 6,
+  "formation": {
+    "columns": 3,
+    "spacing": 1.4
+  },
+  "cost": {
+    "gold": 120
+  },
+  "buildTime": 18,
+  "uses": {
+    "food": 5
+  }
+}

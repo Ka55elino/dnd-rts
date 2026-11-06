@@ -2,8 +2,7 @@
   "id": "ballista_tower",
   "name": "Ballista Tower",
   "kind": "building",
-  "model": "castle_tower",
-  "modelScale": 0.95,
+  "model": "ballista_tower",
   "footprint": {
     "x": 6.5,
     "y": 6.5

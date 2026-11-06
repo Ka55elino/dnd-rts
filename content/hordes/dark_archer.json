@@ -1,0 +1,15 @@
+{
+  "id": "dark_archer",
+  "name": "Dark Archer",
+  "unit": "dark_archer",
+  "size": 1,
+  "formation": {
+    "columns": 1,
+    "spacing": 1
+  },
+  "cost": {
+    "gold": 1000
+  },
+  "buildTime": 60,
+  "unique": true
+}

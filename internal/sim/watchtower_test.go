@@ -1,9 +1,12 @@
 package sim
 
 import (
+	"os"
 	"testing"
 
+	"dnd-rts/internal/data"
 	"dnd-rts/internal/fixed"
+	"dnd-rts/internal/terrain"
 )
 
 func TestWatchtowerGarrison(t *testing.T) {
@@ -49,4 +52,79 @@ func TestWatchtowerGarrison(t *testing.T) {
 	if archers.OnWall() {
 		t.Error("still up a destroyed tower")
 	}
+}
+
+// Only foot soldiers go up a watchtower — every foot unit of every faction does, nobody else does
+// (cavalry, flyers, monsters, machines, traps). The Playground's tower has another building right in
+// front of its stair: the climb must still find its way.
+func TestWatchtowerOnlyFootUnits(t *testing.T) {
+	w := newPlaygroundWorld(t)
+	var tower *Building
+	for _, b := range w.Buildings {
+		if b.Def.Garrison && b.Owner == 0 {
+			tower = b
+		}
+	}
+	if tower == nil {
+		t.Fatal("no watchtower in the playground")
+	}
+	// Clear the field so nothing else holds the tower or picks fights.
+	for _, h := range w.Hordes {
+		for _, s := range h.Soldiers {
+			s.HP = 0
+		}
+	}
+	w.Step(nil)
+	start, ok := w.walkableTarget(tower.Pos.Add(fixed.V2i(0, -24)))
+	if !ok {
+		t.Fatal("no open ground near the tower")
+	}
+	climbed, tried := 0, 0
+	for _, id := range w.Catalog.HordeIDs {
+		tried++
+		def := w.Catalog.Hordes[id]
+		u := w.Catalog.Units[def.Unit]
+		if u.Trap != nil {
+			continue
+		}
+		h, err := w.SpawnHorde(0, id, start, 0)
+		if err != nil {
+			t.Fatal(err)
+		}
+		w.Step([]Command{{Player: 0, Kind: CmdMove, Hordes: []HordeID{h.ID}, Target: tower.Pos}})
+		for i := 0; i < 25*TickRate && !h.OnWall(); i++ {
+			w.Step(nil)
+		}
+		foot := u.HasTag("infantry") && !u.HasTag("cavalry") && !u.Flying && !u.HasTag("mechanical")
+		if h.OnWall() {
+			climbed++
+		}
+		if h.OnWall() != foot {
+			t.Errorf("%s (tags %v, flying %v): on the tower = %v, want %v", id, u.Tags, u.Flying, h.OnWall(), foot)
+		}
+		h.dismissed = true
+		for _, s := range h.Soldiers {
+			s.HP = 0
+		}
+		w.Step(nil)
+		w.Step(nil)
+	}
+	t.Logf("%d of %d horde types climbed", climbed, tried)
+}
+
+func newPlaygroundWorld(t *testing.T) *World {
+	t.Helper()
+	cat, err := data.Load(os.DirFS("../../content"))
+	if err != nil {
+		t.Fatal(err)
+	}
+	hf, err := terrain.ForMap(os.DirFS("../../content"), cat.Maps["plains"])
+	if err != nil {
+		t.Fatal(err)
+	}
+	w := NewWorld(cat, hf)
+	if err := SetupPlayground(w, "plains", []PlayerSetup{{0, "empire"}, {1, "warband"}}); err != nil {
+		t.Fatal(err)
+	}
+	return w
 }

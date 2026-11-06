@@ -1,0 +1,24 @@
+{
+  "id": "troll_arena",
+  "name": "Troll Arena",
+  "kind": "building",
+  "model": "troll_arena",
+  "footprint": {
+    "x": 13,
+    "y": 13
+  },
+  "health": 1600,
+  "armor": 3,
+  "placement": [
+    "free"
+  ],
+  "buildTime": 30,
+  "cost": {
+    "gold": 280,
+    "wood": 180
+  },
+  "material": "stone",
+  "trains": [
+    "siege_trolls"
+  ]
+}

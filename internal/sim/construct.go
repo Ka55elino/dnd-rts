@@ -1,6 +1,8 @@
 package sim
 
 import (
+	"slices"
+
 	"dnd-rts/internal/data"
 	"dnd-rts/internal/fixed"
 )
@@ -9,8 +11,9 @@ import (
 const TagWorker = "worker"
 
 var (
-	// buildReach: a worker horde builds when its anchor is this close to the footprint.
-	buildReach = NavCellSize + fixed.One
+	// buildReach: a worker horde builds when its anchor is this close to the footprint (a cell and
+	// a half: next to a wall the nearest open cell can be a little over one cell away).
+	buildReach = NavCellSize.MulInt(3).DivInt(2) + fixed.One
 	// buildApproach: where workers head, measured from the footprint.
 	buildApproach = fixed.FromInt(2)
 	// swingReach: a worker soldier steps this close to the wall to hammer it.
@@ -91,12 +94,33 @@ func (w *World) buildFree(c Command) {
 			workers = append(workers, h)
 		}
 	}
-	if len(workers) == 0 || !w.CanPlaceFree(c.Player, def, c.Target, c.Angle) || !w.pay(c.Player, def.Cost) {
+	if len(workers) == 0 {
 		return
 	}
-	b, err := w.SpawnBuilding(c.Player, def.ID, c.Target, c.Angle)
-	if err != nil {
+	var b *Building
+	if def.Allows(data.PlacementGate) {
+		w.buildGate(c.Player, def, c.Target, workers) // over the own wall where the player clicked
 		return
+	}
+	if def.Allows(data.PlacementWall) {
+		return // walls are lines (CmdBuildWall)
+	}
+	if def.Allows(data.PlacementTower) {
+		// A defensive tower: on the own wall, wherever the player clicked along it.
+		spot, facing, ok := w.TowerSpot(c.Player, def, c.Target)
+		if !ok || !w.pay(c.Player, def.Cost) {
+			return
+		}
+		b = w.placeBuilding(c.Player, def.ID, spot, facing) // on the wall: no open ground under it
+		b.onWall = true
+	} else {
+		if !w.CanPlaceFree(c.Player, def, c.Target, c.Angle) || !w.pay(c.Player, def.Cost) {
+			return
+		}
+		var err error
+		if b, err = w.SpawnBuilding(c.Player, def.ID, c.Target, c.Angle); err != nil {
+			return
+		}
 	}
 	b.startConstruction()
 	for _, h := range workers {
@@ -106,12 +130,18 @@ func (w *World) buildFree(c Command) {
 
 // CanPlaceFree reports whether player may put a free building of type def
 // at pos facing `facing`: allowed for the faction, on open ground inside the
-// map, clear of other buildings and of every plot, outside every building's
-// no-build circle, and with no building inside its own no-build circle.
+// map, clear of other buildings, trees and the feet of wall stairs, outside every
+// building's no-build circle, and with no building inside its own no-build circle.
 func (w *World) CanPlaceFree(player PlayerID, def *data.Building, pos fixed.Vec2, facing fixed.Fixed) bool {
 	if !def.Allows(data.PlacementFree) || !w.canBuild(player, def.ID) || !w.Meets(player, def.Requires) {
 		return false
 	}
+	return w.fitsFree(def, pos, facing, true)
+}
+
+// fitsFree: the footprint fits on open ground (no terrain block, tree or building under it);
+// with noBuild, the no-build circles count too.
+func (w *World) fitsFree(def *data.Building, pos fixed.Vec2, facing fixed.Fixed, noBuild bool) bool {
 	ghost := rect{center: pos, facing: facing, half: def.Footprint.Scale(fixed.FromFraction(1, 2))}
 	// Map bounds (keep a cell of margin) and terrain: every nav cell whose
 	// center lies under the footprint must be walkable.
@@ -133,25 +163,93 @@ func (w *World) CanPlaceFree(player PlayerID, def *data.Building, pos fixed.Vec2
 			}
 		}
 	}
-	// Other buildings and plots (exact rectangle overlap), no-build circles both ways.
+	for i := range w.Trees {
+		if t := &w.Trees[i]; t.Grown && tmp.Covers(t.Pos, fixed.One) {
+			return false
+		}
+	}
+	// The feet of wall stairs stay clear (units go up there).
+	for _, r := range w.Walls {
+		for _, st := range r.Stairs {
+			if r == w.placeIgnoreStair.ring && st.node == w.placeIgnoreStair.node {
+				continue
+			}
+			if !r.tower && tmp.DistTo(st.ground) < stairClear {
+				return false
+			}
+		}
+	}
+	// Other buildings (exact rectangle overlap), no-build circles both ways.
 	for _, b := range w.Buildings {
-		if r := b.Def.NoBuildRadius; r > 0 && tmp.DistTo(b.Pos) < r {
+		if slices.Contains(w.placeIgnore, b) {
+			continue // the wall end a new line joins
+		}
+		if r := b.Def.NoBuildRadius; noBuild && r > 0 && tmp.DistTo(b.Pos) < r {
 			return false // reaches into b's circle
 		}
-		if r := def.NoBuildRadius; r > 0 && b.DistTo(pos) < r {
+		if r := def.NoBuildRadius; noBuild && r > 0 && b.DistTo(pos) < r {
 			return false // b would stand inside the new building's circle
 		}
 		if ghost.overlaps(rect{center: b.Pos, facing: b.Facing, half: b.Def.Footprint.Scale(fixed.FromFraction(1, 2))}) {
 			return false
 		}
-		for i, p := range b.Def.Plots {
-			half := p.Size.DivInt(2)
-			if ghost.overlaps(rect{center: b.PlotPos(i), facing: b.Facing, half: fixed.Vec2{X: half, Y: half}}) {
-				return false
+	}
+	return true
+}
+
+// stairClear: free buildings keep this far from the foot of a wall stair.
+var stairClear = fixed.FromInt(3)
+
+// towerReach: a click this close to the centre line of an own wall segment puts a tower on it.
+var towerReach = fixed.FromInt(8)
+
+// TowerSpot is where a defensive tower of type def goes when player clicks at pos: on the centre
+// line of the nearest own (finished, standing) wall segment, facing out, clear of gates, stairs and
+// other towers. ok is false when there is no such place (or the player can't build it).
+func (w *World) TowerSpot(player PlayerID, def *data.Building, pos fixed.Vec2) (spot fixed.Vec2, facing fixed.Fixed, ok bool) {
+	if !def.Allows(data.PlacementTower) || !w.canBuild(player, def.ID) || !w.Meets(player, def.Requires) {
+		return spot, 0, false
+	}
+	best := towerReach
+	for _, s := range w.Buildings {
+		if s.Owner != player || s.Def.Kind != data.BuildingWall || !s.Alive() || s.UnderConstruction() {
+			continue
+		}
+		right, _ := s.axes()
+		half := s.Def.Footprint.X.DivInt(2)
+		along := pos.Sub(s.Pos).Dot(right).Clamp(-half, half)
+		p := s.Pos.Add(right.Scale(along))
+		if d := p.Dist(pos); d <= best {
+			best, spot, facing, ok = d, p, s.Facing, true
+		}
+	}
+	if !ok {
+		return spot, 0, false
+	}
+	size := max(def.Footprint.X, def.Footprint.Y)
+	for _, b := range w.Buildings {
+		if !b.Alive() {
+			continue
+		}
+		switch {
+		case b.Def.Kind == data.BuildingGate:
+			if b.DistTo(spot) < size/2+fixed.FromInt(2) {
+				return spot, 0, false // keep the gatehouse clear
+			}
+		case b.onWall:
+			if b.DistTo(spot) < size/2+fixed.One {
+				return spot, 0, false // another tower here
 			}
 		}
 	}
-	return true
+	for _, r := range w.Walls {
+		for _, st := range r.Stairs {
+			if !r.tower && st.ground.Dist(spot) < size/2+fixed.FromInt(5) {
+				return spot, 0, false // a stair comes up here
+			}
+		}
+	}
+	return spot, facing, true
 }
 
 // rect is an oriented rectangle: half.X along its right, half.Y along its front.

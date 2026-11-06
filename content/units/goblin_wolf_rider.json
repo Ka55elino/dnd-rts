@@ -1,0 +1,21 @@
+{
+  "id": "goblin_wolf_rider",
+  "name": "Goblin Wolf Rider",
+  "model": "goblin_wolf_rider_simple",
+  "health": 150,
+  "armor": 1,
+  "speed": 7.8,
+  "radius": 0.7,
+  "mass": 2.5,
+  "melee": {
+    "damage": 13,
+    "range": 1.4,
+    "cooldown": 0.9,
+    "damageType": "slash"
+  },
+  "tags": [
+    "cavalry",
+    "living"
+  ],
+  "armorClass": "light"
+}

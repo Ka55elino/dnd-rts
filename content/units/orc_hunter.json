@@ -1,0 +1,36 @@
+{
+  "id": "orc_hunter",
+  "name": "Orc Hunter",
+  "model": "orc_hunter_simple",
+  "health": 90,
+  "armor": 1,
+  "speed": 3.8,
+  "radius": 0.4,
+  "mass": 1,
+  "melee": {
+    "damage": 9,
+    "range": 1.6,
+    "cooldown": 1.0,
+    "damageType": "pierce"
+  },
+  "ranged": {
+    "damage": 11,
+    "range": 20,
+    "cooldown": 1.8,
+    "damageType": "pierce",
+    "projectile": {
+      "speed": 26,
+      "spread": 2.5
+    },
+    "targets": [
+      "ground",
+      "air"
+    ]
+  },
+  "tags": [
+    "infantry",
+    "ranged",
+    "living"
+  ],
+  "armorClass": "light"
+}

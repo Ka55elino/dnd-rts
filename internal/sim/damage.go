@@ -118,7 +118,7 @@ func (w *World) hitSoldier(src *Soldier, owner PlayerID, t *Soldier, dmg fixed.F
 
 // hitSoldierEx is hitSoldier with ranged = true for volleys (ranged-damage modifiers apply).
 func (w *World) hitSoldierEx(src *Soldier, owner PlayerID, t *Soldier, dmg fixed.Fixed, dtype string, effects, ranged bool) fixed.Fixed {
-	if !t.Alive() || dmg <= 0 || t.mods.invulnerable {
+	if !t.Alive() || dmg <= 0 || t.mods.invulnerable || t.Horde.InTunnel() {
 		return 0
 	}
 	r := &w.Catalog.Combat
@@ -166,7 +166,11 @@ func (w *World) hitSoldierEx(src *Soldier, owner PlayerID, t *Soldier, dmg fixed
 	t.HP -= dmg
 
 	if dtype == data.DmgNecrotic && src != nil && src.Alive() {
-		src.HP = min(src.HP+dmg.Mul(r.Necrotic.LifeSteal), src.MaxHP())
+		w.heal(src, dmg.Mul(r.Necrotic.LifeSteal))
+	}
+	// Reflection (Dark Shield): the attacker takes part of it back, without effects or further reflection.
+	if t.mods.reflect > 0 && src != nil && src.Alive() && src.Horde.Owner != t.Horde.Owner && !src.mods.invulnerable {
+		src.HP -= dmg.Mul(t.mods.reflect)
 	}
 	if effects && t.Alive() {
 		w.applyEffect(t, owner, srcKey, base, dtype)
@@ -358,4 +362,13 @@ func (h *Horde) slowFactor(w *World) fixed.Fixed {
 		sum += s.slowFactor(w)
 	}
 	return sum.DivInt(len(h.Soldiers))
+}
+
+// heal restores HP up to the maximum; a soldier under heal prevention (cursed ground, Cursed
+// Presence) gets nothing.
+func (w *World) heal(s *Soldier, amount fixed.Fixed) {
+	if s.mods.noHeal || !s.Alive() {
+		return
+	}
+	s.HP = min(s.HP+amount, s.MaxHP())
 }

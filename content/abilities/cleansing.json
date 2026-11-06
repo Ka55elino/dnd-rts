@@ -1,0 +1,13 @@
+{
+  "id": "cleansing",
+  "name": "Cleansing",
+  "kind": "active",
+  "target": "self",
+  "cooldown": 35,
+  "effects": [
+    {
+      "type": "dispel",
+      "radius": 10
+    }
+  ]
+}

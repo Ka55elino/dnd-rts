@@ -1,0 +1,18 @@
+{
+  "id": "orc_hunters",
+  "name": "Orc Hunters",
+  "unit": "orc_hunter",
+  "size": 16,
+  "formation": {
+    "columns": 4,
+    "spacing": 1.3
+  },
+  "cost": {
+    "gold": 160,
+    "wood": 40
+  },
+  "buildTime": 24,
+  "uses": {
+    "food": 10
+  }
+}

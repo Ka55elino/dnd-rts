@@ -1,0 +1,29 @@
+{
+  "id": "phosphorus_shells",
+  "name": "Phosphorus Shells",
+  "kind": "active",
+  "target": "point",
+  "range": 50,
+  "cooldown": 40,
+  "requires": {
+    "upgrades": [
+      "phosphorus_shells"
+    ]
+  },
+  "effects": [
+    {
+      "type": "zone",
+      "radius": 6,
+      "duration": 8,
+      "interval": 1,
+      "effects": [
+        {
+          "type": "status",
+          "status": "burn",
+          "duration": 2,
+          "radius": 0
+        }
+      ]
+    }
+  ]
+}

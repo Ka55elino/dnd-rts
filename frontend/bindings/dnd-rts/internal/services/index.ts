@@ -15,7 +15,6 @@ export {
 export type {
     AbilityInfo,
     BaseInfo,
-    BuildingPlot,
     BuildingType,
     FactionInfo,
     HordeType,

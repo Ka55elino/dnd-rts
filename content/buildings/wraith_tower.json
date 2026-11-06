@@ -1,0 +1,36 @@
+{
+  "id": "wraith_tower",
+  "name": "Wraith Tower",
+  "kind": "building",
+  "model": "wraith_tower",
+  "footprint": {
+    "x": 6,
+    "y": 6
+  },
+  "health": 1800,
+  "armor": 4,
+  "material": "stone",
+  "placement": [
+    "tower"
+  ],
+  "buildTime": 30,
+  "cost": {
+    "gold": 250,
+    "wood": 100
+  },
+  "attack": {
+    "damage": 28,
+    "range": 28,
+    "cooldown": 2.5,
+    "damageType": "necrotic",
+    "projectile": {
+      "speed": 34,
+      "spread": 1
+    },
+    "targets": [
+      "ground",
+      "air"
+    ]
+  },
+  "volley": 1
+}

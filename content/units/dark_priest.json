@@ -1,0 +1,21 @@
+{
+  "id": "dark_priest",
+  "name": "Dark Priest",
+  "model": "dark_priest_simple",
+  "health": 70,
+  "armor": 0,
+  "speed": 3.4,
+  "radius": 0.4,
+  "mass": 1,
+  "tags": [
+    "infantry",
+    "mage",
+    "living"
+  ],
+  "armorClass": "light",
+  "magicDefense": 5,
+  "abilities": [
+    "deny_death",
+    "heal"
+  ]
+}

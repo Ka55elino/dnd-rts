@@ -1,0 +1,18 @@
+{
+  "id": "siege_trolls",
+  "name": "Siege Troll",
+  "unit": "siege_troll",
+  "size": 1,
+  "formation": {
+    "columns": 1,
+    "spacing": 1
+  },
+  "cost": {
+    "gold": 450,
+    "metal": 60
+  },
+  "buildTime": 45,
+  "uses": {
+    "food": 10
+  }
+}

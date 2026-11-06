@@ -126,9 +126,22 @@ func (w *World) summon(owner PlayerID, src *Soldier, a *data.Ability, e *data.Ab
 		facing = src.Horde.Facing
 		slot = src.Horde.AbilityIndex(a.ID)
 	}
+	var spots []fixed.Vec2
+	if e.PerTree {
+		for _, t := range w.treesNear(center, perTreeRadius(e), n) {
+			spots = append(spots, t.Pos)
+		}
+		n = len(spots)
+	}
+	if e.MaxAlive > 0 && src != nil {
+		w.dropOldestSummons(src.Horde, slot, e.MaxAlive-n)
+	}
 	for k := 0; k < n; k++ {
 		p := center
-		if n > 1 {
+		switch {
+		case spots != nil:
+			p = spots[k] // next to its tree (walkableTarget moves it off the tree)
+		case n > 1:
 			p = p.Add(fixed.FromAngle(fixed.Pi.MulInt(2 * k).DivInt(n)).Scale(fixed.FromInt(4)))
 		}
 		var ok bool
@@ -153,6 +166,42 @@ func (w *World) summon(owner PlayerID, src *Soldier, a *data.Ability, e *data.Ab
 			h.expires = w.Tick + uint32(cooldownTicks(e.Duration))
 		}
 	}
+}
+
+// perTreeRadius: how far from the centre trees count for a PerTree summon (default 15 m).
+func perTreeRadius(e *data.AbilityEffect) fixed.Fixed {
+	if e.Radius > 0 {
+		return e.Radius
+	}
+	return fixed.FromInt(15)
+}
+
+// dropOldestSummons dismisses the oldest hordes summoned by slot i of h until at most keep remain
+// (traps: placing a fourth removes the first).
+func (w *World) dropOldestSummons(h *Horde, i, keep int) {
+	var mine []*Horde
+	for _, x := range w.Hordes {
+		if x.summoner == h && x.summonSlot == i && x.Alive() && !x.dismissed {
+			mine = append(mine, x) // sorted by ID: oldest first
+		}
+	}
+	for k := 0; k < len(mine)-max(keep, 0); k++ {
+		mine[k].dismissed = true
+		for _, s := range mine[k].Soldiers {
+			s.HP = 0
+		}
+	}
+}
+
+// foreignBuildingNear: the nearest building of someone else (enemy or neutral) within buildingSnap.
+func (w *World) foreignBuildingNear(owner PlayerID, p fixed.Vec2) *Building {
+	var best *Building
+	for _, b := range w.Buildings {
+		if b.Owner != owner && b.Alive() && b.DistTo(p) <= buildingSnap && (best == nil || b.DistTo(p) < best.DistTo(p)) {
+			best = b
+		}
+	}
+	return best
 }
 
 // summonAlive: something summoned by ability slot i of h is still alive.
@@ -211,6 +260,17 @@ func (w *World) castBlocked(h *Horde, i int, point fixed.Vec2) bool {
 	a := h.abilities[i]
 	if limitedSummon(a) && w.summonAlive(h, i) {
 		return true
+	}
+	if a.OnTree && w.nearestTree(point, treeSnap) == nil {
+		return true // cast on a tree: none there
+	}
+	if a.OnBuilding && w.foreignBuildingNear(h.Owner, point) == nil {
+		return true
+	}
+	for k := range a.Effects {
+		if e := &a.Effects[k]; e.Type == data.EffSummon && e.PerTree && len(w.treesNear(point, perTreeRadius(e), 1)) == 0 {
+			return true // ents: no trees around
+		}
 	}
 	for k := range a.Effects {
 		if e := &a.Effects[k]; e.Type == data.EffTeleport {

@@ -1,0 +1,16 @@
+{
+  "id": "acid_bombs",
+  "name": "Acid Bombs",
+  "cost": {
+    "gold": 200,
+    "wood": 50
+  },
+  "researchTime": 30,
+  "units": [
+    "harpy"
+  ],
+  "modifiers": {
+    "extraType": "acid",
+    "extraDamage": 0.3
+  }
+}

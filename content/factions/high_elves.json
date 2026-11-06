@@ -1,0 +1,39 @@
+{
+  "id": "high_elves",
+  "name": "High Elves",
+  "color": "#3f8f5a",
+  "hordes": [
+    "spirits",
+    "twinblades",
+    "elf_archers",
+    "griffon_riders",
+    "tiger_riders",
+    "elf_fire_elementals",
+    "elf_water_elementals",
+    "elf_storm_elementals",
+    "elf_ranger",
+    "elf_king",
+    "priestess"
+  ],
+  "start": [
+    "twinblades",
+    "elf_archers",
+    "tiger_riders",
+    "elf_ranger",
+    "spirits"
+  ],
+  "fortress": "keep",
+  "buildings": [
+    "order_of_the_sword",
+    "order_of_archers",
+    "griffon_tower",
+    "tiger_pen",
+    "spirit_garden",
+    "enchantment_tower",
+    "moonwell",
+    "elf_archer_tower",
+    "magic_tower",
+    "castle_wall",
+    "castle_gate"
+  ]
+}

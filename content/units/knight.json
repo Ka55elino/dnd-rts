@@ -1,7 +1,7 @@
 {
   "id": "knight",
   "name": "Knight",
-  "model": "",
+  "model": "knight_simple",
   "health": 220,
   "armor": 3,
   "speed": 7,

@@ -1,7 +1,7 @@
 {
   "id": "warlord",
   "name": "Warlord",
-  "model": "",
+  "model": "warlord_simple",
   "health": 1000,
   "armor": 3,
   "speed": 4.2,

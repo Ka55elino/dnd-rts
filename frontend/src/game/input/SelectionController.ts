@@ -23,7 +23,7 @@ export interface SelectionDeps {
     onOwnBuilding: (building: number, hordeIds: number[], point: THREE.Vector3) => boolean;
     /** Right click on the ground with no hordes selected (rally point of the shown building). */
     onRightClickIdle: (ground: THREE.Vector3) => void;
-    /** Left click that hit no own soldier (buildings, plots). */
+    /** Left click that hit no own soldier (buildings). */
     onClickWorld: (ray: THREE.Raycaster, ground: THREE.Vector3 | null) => void;
     onChange: (selected: ReadonlySet<number>) => void;
 }

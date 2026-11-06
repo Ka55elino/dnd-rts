@@ -1,0 +1,15 @@
+{
+  "id": "recon_shell",
+  "name": "Recon Shell",
+  "kind": "active",
+  "target": "point",
+  "range": 60,
+  "cooldown": 45,
+  "effects": [
+    {
+      "type": "reveal",
+      "radius": 15,
+      "duration": 15
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "id": "goblins",
+  "name": "Goblin",
+  "unit": "goblin",
+  "size": 1,
+  "formation": {
+    "columns": 1,
+    "spacing": 1
+  },
+  "cost": {
+    "gold": 40
+  },
+  "buildTime": 8,
+  "uses": {
+    "food": 2
+  }
+}

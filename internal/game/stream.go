@@ -39,17 +39,30 @@ func (srv *Server) Handle(c *application.StreamConn) {
 	if err != nil {
 		return
 	}
-	mapID, err := protocol.DecodeHello(frame)
+	hello, err := protocol.DecodeHello(frame)
 	if err != nil {
 		log.Printf("game: bad hello: %v", err)
 		return
 	}
+	mapID := hello.MapID
 
-	players := []sim.PlayerSetup{
-		{ID: LocalPlayer, Faction: "empire"},
-		{ID: 1, Faction: "warband"},
+	factions := []string{"empire", "warband"}
+	for i, f := range hello.Factions {
+		if i < len(factions) && f != "" {
+			factions[i] = f
+		}
 	}
-	world, err := srv.NewWorld(mapID, players)
+	players := []sim.PlayerSetup{
+		{ID: LocalPlayer, Faction: factions[0]},
+		{ID: 1, Faction: factions[1]},
+	}
+	playground := hello.Mode == protocol.ModePlayground
+	var world *sim.World
+	if playground {
+		world, err = srv.NewPlayground(mapID, players)
+	} else {
+		world, err = srv.NewWorld(mapID, players)
+	}
 	if err != nil {
 		log.Printf("game: %v", err)
 		return
@@ -66,6 +79,9 @@ func (srv *Server) Handle(c *application.StreamConn) {
 	go srv.readCommands(c, session)
 	session.Run(c.Context().Done())
 
+	if playground {
+		return // a test field, not a match: no replay
+	}
 	if err := SaveReplay(session.Replay()); err != nil {
 		log.Printf("game: saving replay: %v", err)
 	}
@@ -79,6 +95,17 @@ func (srv *Server) NewWorld(mapID string, players []sim.PlayerSetup) (*sim.World
 	}
 	w := sim.NewWorld(srv.Catalog, hf)
 	return w, sim.SetupSkirmish(w, mapID, players)
+}
+
+// NewPlayground builds a test field: like a skirmish world, but every player gets one finished
+// building of each type and one horde of each type of its faction.
+func (srv *Server) NewPlayground(mapID string, players []sim.PlayerSetup) (*sim.World, error) {
+	hf, err := srv.Terrain(mapID)
+	if err != nil {
+		return nil, err
+	}
+	w := sim.NewWorld(srv.Catalog, hf)
+	return w, sim.SetupPlayground(w, mapID, players)
 }
 
 func (srv *Server) readCommands(c *application.StreamConn, s *Session) {
@@ -145,17 +172,6 @@ func (srv *Server) readCommands(c *application.StreamConn, s *Session) {
 				Hordes:         toHordeIDs(a.Hordes),
 				TargetBuilding: sim.BuildingID(a.Target),
 			})
-		case protocol.MsgCmdPlot:
-			p, err := protocol.DecodePlot(frame)
-			if err != nil || int(p.Kind) >= len(srv.Catalog.BuildingIDs) {
-				continue
-			}
-			s.Submit(sim.Command{
-				Kind:           sim.CmdBuildOnPlot,
-				TargetBuilding: sim.BuildingID(p.Host),
-				Count:          int(p.Plot),
-				Name:           srv.Catalog.BuildingIDs[p.Kind],
-			})
 		case protocol.MsgCmdCancel:
 			id, err := protocol.DecodeCancel(frame)
 			if err != nil {
@@ -173,6 +189,18 @@ func (srv *Server) readCommands(c *application.StreamConn, s *Session) {
 				Name:   srv.Catalog.BuildingIDs[b.Kind],
 				Target: fixed.Vec2{X: fixed.FromRaw(int64(b.X)), Y: fixed.FromRaw(int64(b.Z))},
 				Angle:  fixed.FromRaw(int64(b.Angle)),
+			})
+		case protocol.MsgCmdWall:
+			b, err := protocol.DecodeWall(frame)
+			if err != nil || int(b.Kind) >= len(srv.Catalog.BuildingIDs) {
+				continue
+			}
+			s.Submit(sim.Command{
+				Kind:   sim.CmdBuildWall,
+				Hordes: toHordeIDs(b.Hordes),
+				Name:   srv.Catalog.BuildingIDs[b.Kind],
+				Target: fixed.Vec2{X: fixed.FromRaw(int64(b.X0)), Y: fixed.FromRaw(int64(b.Z0))},
+				To:     fixed.Vec2{X: fixed.FromRaw(int64(b.X1)), Y: fixed.FromRaw(int64(b.Z1))},
 			})
 		case protocol.MsgCmdHelp:
 			a, err := protocol.DecodeHelp(frame)

@@ -1,0 +1,9 @@
+{
+  "id": "frost_rune",
+  "name": "Frost Rune",
+  "cost": {
+    "gold": 200,
+    "metal": 50
+  },
+  "researchTime": 30
+}

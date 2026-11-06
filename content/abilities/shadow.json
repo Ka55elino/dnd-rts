@@ -1,0 +1,8 @@
+{
+  "id": "shadow",
+  "name": "Shadow",
+  "kind": "passive",
+  "modifiers": {
+    "invisible": true
+  }
+}

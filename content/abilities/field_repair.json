@@ -1,0 +1,12 @@
+{
+  "id": "field_repair",
+  "name": "Field Repair",
+  "kind": "aura",
+  "radius": 10,
+  "modifiers": {
+    "armor": 2
+  },
+  "tags": [
+    "mechanical"
+  ]
+}

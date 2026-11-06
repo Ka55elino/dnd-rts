@@ -1,7 +1,7 @@
 {
   "id": "fire_mage",
   "name": "Fire Mage",
-  "model": "",
+  "model": "fire_mage_simple",
   "health": 80,
   "armor": 0,
   "speed": 3.4,

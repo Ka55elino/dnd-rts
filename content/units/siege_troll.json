@@ -1,0 +1,40 @@
+{
+  "id": "siege_troll",
+  "name": "Siege Troll",
+  "model": "siege_troll_simple",
+  "health": 800,
+  "armor": 3,
+  "speed": 3.8,
+  "radius": 1.0,
+  "mass": 8,
+  "melee": {
+    "damage": 40,
+    "range": 2.0,
+    "cooldown": 1.6,
+    "damageType": "crush"
+  },
+  "ranged": {
+    "damage": 50,
+    "range": 32,
+    "cooldown": 4.0,
+    "damageType": "crush",
+    "projectile": {
+      "speed": 22,
+      "spread": 3
+    },
+    "targets": [
+      "ground"
+    ],
+    "splash": 3,
+    "requires": {
+      "upgrades": [
+        "sack_of_rocks"
+      ]
+    }
+  },
+  "tags": [
+    "monster",
+    "siege"
+  ],
+  "armorClass": "heavy"
+}

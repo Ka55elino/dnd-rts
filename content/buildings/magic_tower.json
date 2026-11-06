@@ -1,0 +1,36 @@
+{
+  "id": "magic_tower",
+  "name": "Magic Tower",
+  "kind": "building",
+  "model": "magic_tower",
+  "footprint": {
+    "x": 6,
+    "y": 6
+  },
+  "health": 1800,
+  "armor": 4,
+  "material": "stone",
+  "placement": [
+    "tower"
+  ],
+  "buildTime": 30,
+  "cost": {
+    "gold": 250,
+    "wood": 100
+  },
+  "attack": {
+    "damage": 30,
+    "range": 28,
+    "cooldown": 2.5,
+    "damageType": "radiant",
+    "projectile": {
+      "speed": 36,
+      "spread": 1
+    },
+    "targets": [
+      "ground",
+      "air"
+    ]
+  },
+  "volley": 1
+}

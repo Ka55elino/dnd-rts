@@ -29,6 +29,15 @@ type Zone struct {
 	ticks    int // left
 	interval int
 	effects  []data.AbilityEffect
+
+	smoke   bool   // hides the hordes inside from everyone outside (visibility.go)
+	caster  *Horde // channelled zones end when it dies or walks away
+	channel bool
+	// Raising the dead: enemies dying inside rise as Raise for the owner.
+	raise      string
+	raiseEvery int
+	raiseDur   fixed.Fixed
+	deaths     int
 }
 
 // CastEvent tells the client an ability went off (for visuals only).
@@ -126,7 +135,7 @@ func (w *World) orderCast(h *Horde, id string, point fixed.Vec2, target *Horde) 
 		if affects == "" {
 			affects = data.AffectsEnemies // default for unit targets
 		}
-		if target == nil || !target.Alive() || !touches(affects, h.Owner, target.Owner) {
+		if target == nil || !target.Alive() || !touches(affects, h.Owner, target.Owner) || !w.VisibleTo(target, h.Owner) {
 			return
 		}
 		point = target.Pos
@@ -205,7 +214,7 @@ func (w *World) tryAutocast(h *Horde, i int, a *data.Ability) {
 	var best *Horde
 	var bestScore fixed.Fixed
 	for _, e := range w.Hordes {
-		if !e.Alive() || (e.Owner == h.Owner) != allies || c.Pos.Dist(e.Pos) > reach {
+		if !e.Alive() || (e.Owner == h.Owner) != allies || c.Pos.Dist(e.Pos) > reach || !w.VisibleTo(e, h.Owner) {
 			continue
 		}
 		var score fixed.Fixed
@@ -254,6 +263,11 @@ func abilityRadius(a *data.Ability) fixed.Fixed {
 // cast runs an active ability now.
 func (w *World) cast(h *Horde, i int, center fixed.Vec2, target *Horde) {
 	a := h.abilities[i]
+	if a.OnTree {
+		if t := w.nearestTree(center, treeSnap); t != nil {
+			center = t.Pos
+		}
+	}
 	// Commands run before this tick's hash rebuild; refresh it so indices match.
 	w.combatHash.build(w)
 	src := h.caster()
@@ -269,6 +283,9 @@ func (w *World) cast(h *Horde, i int, center fixed.Vec2, target *Horde) {
 	h.abilityCd[i] = cooldownTicks(a.Cooldown)
 	for _, s := range h.Soldiers {
 		s.swing = swingTicks
+	}
+	if !a.Stealthy {
+		h.reveal(w) // casting shows an invisible caster (sabotage doesn't)
 	}
 	// Visuals: one ring for circles; cones and chains send their own events.
 	circle := false
@@ -314,6 +331,12 @@ func (w *World) runEffect(owner PlayerID, src *Soldier, a *data.Ability, e *data
 		w.runChain(owner, src, a, e, center, target)
 	case data.EffSummon:
 		w.summon(owner, src, a, e, center)
+	case data.EffTree:
+		w.plantTrees(center, max(e.Count, 1), e.Radius)
+	case data.EffReveal:
+		w.addReveal(owner, center, e.Radius, e.Duration)
+	case data.EffBuild:
+		w.buildAt(owner, e.Building, center)
 	case data.EffTeleport:
 		w.teleport(owner, src, e, center)
 	case data.EffTransform:
@@ -326,6 +349,9 @@ func (w *World) runEffect(owner PlayerID, src *Soldier, a *data.Ability, e *data
 		w.area(owner, affects, src, e, center, target, func(s *Soldier) {
 			w.hitSoldier(src, owner, s, dmg, e.DamageType, true)
 		})
+		if e.Radius > 0 && e.Shape != data.ShapeCone && affects != data.AffectsAllies {
+			w.damageTrees(center, e.Radius, dmg, e.DamageType)
+		}
 		if e.Radius > 0 && e.Shape != data.ShapeCone {
 			for _, b := range w.Buildings {
 				if b.Owner != owner && b.Owner != Neutral && b.DistTo(center) <= e.Radius && affects != data.AffectsAllies {
@@ -336,7 +362,7 @@ func (w *World) runEffect(owner PlayerID, src *Soldier, a *data.Ability, e *data
 	case data.EffHeal:
 		w.area(owner, affects, src, e, center, target, func(s *Soldier) {
 			if isLiving(s.Horde.Unit) {
-				s.HP = min(s.HP+e.Amount, s.MaxHP())
+				w.heal(s, e.Amount)
 			}
 		})
 	case data.EffStatus:
@@ -355,6 +381,13 @@ func (w *World) runEffect(owner PlayerID, src *Soldier, a *data.Ability, e *data
 		z := &Zone{
 			ID: w.nextZone, Owner: owner, Ability: a, Pos: center, Radius: e.Radius,
 			ticks: cooldownTicks(e.Duration), interval: cooldownTicks(e.Interval), effects: forMode(e.Effects, casterMode(src)),
+			smoke: e.Smoke, channel: e.Channel, raise: e.Raise, raiseEvery: e.RaiseEvery, raiseDur: e.RaiseDuration,
+		}
+		if src != nil {
+			z.caster = src.Horde
+		}
+		if z.raise != "" && z.raiseEvery <= 0 {
+			z.raiseEvery = w.Catalog.Hordes[z.raise].Size
 		}
 		w.nextZone++
 		w.Zones = append(w.Zones, z)
@@ -425,6 +458,9 @@ func knockFrom(w *World, s *Soldier, center fixed.Vec2, radius, force fixed.Fixe
 func (w *World) updateZones() {
 	kept := w.Zones[:0]
 	for _, z := range w.Zones {
+		if z.channel && (z.caster == nil || !z.caster.Alive() || z.caster.moving || z.caster.InTunnel()) {
+			continue // the channel broke: the caster died or walked off
+		}
 		if z.ticks%max(z.interval, 1) == 0 {
 			for k := range z.effects {
 				e := z.effects[k]
@@ -449,7 +485,7 @@ func (w *World) toggleAbility(h *Horde, id string, value int) {
 	if i := h.AbilityIndex(id); i >= 0 && h.abilities[i].Kind == data.AbilityMode {
 		a := h.abilities[i]
 		if value < 0 || value >= len(a.Modes) || value == h.modes[i] || h.abilityCd[i] > 0 ||
-			!w.Meets(h.Owner, a.Requires) || !h.abilityUnlocked(i) {
+			!w.Meets(h.Owner, a.Requires) || !h.abilityUnlocked(i) || !w.Meets(h.Owner, a.Modes[value].Requires) {
 			return
 		}
 		h.modes[i] = value

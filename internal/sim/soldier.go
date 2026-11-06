@@ -82,6 +82,9 @@ func (s *Soldier) Swinging() bool { return s.swing > 0 }
 func (s *Soldier) Knocked() bool { return s.knockTicks > 0 }
 
 func (s *Soldier) update(w *World) {
+	if s.Horde.InTunnel() || s.Horde.IsTrap() {
+		return
+	}
 	start := s.Pos
 	defer s.stayOnWalkable(w, start)
 	if s.swing > 0 {
@@ -213,7 +216,7 @@ func (s *Soldier) fight(w *World) bool {
 	u := s.Horde.Unit
 	search := meleeLeash
 
-	if t := s.target; t == nil || !t.Alive() || s.Pos.Dist(t.Pos) > search+fixed.FromInt(2) {
+	if t := s.target; t == nil || !t.Alive() || s.Pos.Dist(t.Pos) > search+fixed.FromInt(2) || !w.VisibleTo(t.Horde, s.Horde.Owner) {
 		s.target = w.nearestEnemySoldier(s, search)
 	}
 	t := s.target
@@ -250,6 +253,7 @@ func (s *Soldier) fight(w *World) bool {
 		}
 		s.cooldown = cooldownTicks(u.Melee.Cooldown)
 		s.swing = swingTicks
+		s.Horde.reveal(w)
 	}
 	return true
 }
@@ -279,6 +283,7 @@ func (s *Soldier) fightBuilding(w *World, b *Building) bool {
 		}
 		s.cooldown = cooldownTicks(u.Melee.Cooldown)
 		s.swing = swingTicks
+		s.Horde.reveal(w)
 	}
 	return true
 }

@@ -1,0 +1,9 @@
+{
+  "id": "sack_of_rocks",
+  "name": "Sack of Rocks",
+  "cost": {
+    "gold": 150,
+    "wood": 100
+  },
+  "researchTime": 30
+}

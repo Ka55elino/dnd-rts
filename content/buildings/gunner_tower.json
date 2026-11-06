@@ -1,0 +1,36 @@
+{
+  "id": "gunner_tower",
+  "name": "Gunner Tower",
+  "kind": "building",
+  "model": "gunner_tower",
+  "footprint": {
+    "x": 6,
+    "y": 6
+  },
+  "health": 1800,
+  "armor": 4,
+  "material": "stone",
+  "placement": [
+    "tower"
+  ],
+  "buildTime": 30,
+  "cost": {
+    "gold": 250,
+    "wood": 100
+  },
+  "attack": {
+    "damage": 16,
+    "range": 30,
+    "cooldown": 2.2,
+    "damageType": "pierce",
+    "projectile": {
+      "speed": 60,
+      "spread": 2
+    },
+    "targets": [
+      "ground",
+      "air"
+    ]
+  },
+  "volley": 4
+}

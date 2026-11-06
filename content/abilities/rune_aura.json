@@ -1,0 +1,20 @@
+{
+  "id": "rune_aura",
+  "name": "Rune Aura",
+  "kind": "aura",
+  "radius": 15,
+  "modifiers": {
+    "attackSpeed": 0.2
+  },
+  "byMode": {
+    "fire": {
+      "attackSpeed": 0.2
+    },
+    "ice": {
+      "armor": 2
+    },
+    "lightning": {
+      "magicDefense": 3
+    }
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "id": "smoke_screen",
+  "name": "Smoke Screen",
+  "kind": "active",
+  "target": "point",
+  "range": 28,
+  "cooldown": 40,
+  "requires": {
+    "upgrades": [
+      "smoke_grenades"
+    ]
+  },
+  "effects": [
+    {
+      "type": "zone",
+      "radius": 8,
+      "duration": 12,
+      "interval": 1,
+      "smoke": true,
+      "effects": [
+        {
+          "type": "status",
+          "status": "blind",
+          "duration": 1.2,
+          "radius": 0
+        }
+      ]
+    }
+  ]
+}

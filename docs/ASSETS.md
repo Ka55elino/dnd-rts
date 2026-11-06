@@ -12,6 +12,7 @@ art/source/...glb ──► tools/vatbake  (animated units) ──► frontend/p
 - The artist delivers **source files only** (`.glb` + textures). LODs, VAT textures and compression are produced by the tools; do not deliver LODs by hand.
 - **`art/source/` is not in git** (only its README is): sources live on the local disk, later on the NAS — what is there and where: [`art/source/README.md`](../art/source/README.md). The baked output in `frontend/public/models/` **is committed**: the game builds and runs from a clone without the sources; after changing a source, re-bake and commit the output.
 - After baking, the tool prints the triangle and vertex counts of every LOD and the VAT size — this is how a delivery is checked against the budgets below.
+- Stand-in units for developing mechanics are built from plain shapes with `tools/modelc`, stand-in buildings and siege machines with `tools/propc` (see [MODEL_PIPELINE.md](MODEL_PIPELINE.md)); they write the same output as `vatbake` / `meshbake`. There are no downloaded models in the game.
 - To look at a baked model: main menu → **Model Overview** (every unit, machine, building and baked model). Clips: play / pause (Space), frame step (← →), scrubbing, the frame number, **Strip** (6 poses side by side). Look: LOD, team color, **Light** (Day / Evening / Overcast / Studio), **Background**, **Ground**, **Smooth / Flat** shading, **Shadows**. A model whose `model.json` has a `build` stamp is reloaded automatically when it is rebuilt. Both bake tools keep `frontend/public/models/index.json` (the list it reads) up to date.
 - Lighting (`frontend/src/engine/lighting.ts`): hemisphere fill + a warm sun with a shadow map that follows the camera target, filmic (ACES) tone mapping; the game uses the Day preset. Only the near LODs (0 and 1) cast shadows — the shadow pass draws every instance again.
 - The renderer draws units with instancing: up to **~100,000 soldiers** in a scene. Every rule for units follows from this number.
@@ -164,8 +165,8 @@ LOD0 budgets:
 | Keep | ≤ 40,000 | 14 × 14 m |
 | Outposts (neutral) | ≤ 20,000 | 8 × 8 m |
 | Machines (ballista, trebuchet, mortar, airship) | ≤ 15,000 | by unit radius; airship ≤ 12,000 |
-| Construction scaffolding S / M / L | ≤ 3,000 / 5,000 / 7,000 | as the plot |
-| Ruins S / M / L | ≤ 4,000 / 6,000 / 8,000 | as the plot |
+| Construction scaffolding S / M / L | ≤ 3,000 / 5,000 / 7,000 | as the footprint |
+| Ruins S / M / L | ≤ 4,000 / 6,000 / 8,000 | as the footprint |
 | Trees | ≤ 1,500 (≤ 300 for far copies) | — |
 | Rocks, props | ≤ 800 | — |
 | Projectiles | ≤ 100 (arrow, bolt), ≤ 300 (stone, shell) | — |

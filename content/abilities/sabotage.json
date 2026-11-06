@@ -1,0 +1,32 @@
+{
+  "id": "sabotage",
+  "name": "Sabotage",
+  "kind": "active",
+  "target": "point",
+  "range": 4,
+  "cooldown": 30,
+  "onBuilding": true,
+  "stealthy": true,
+  "requires": {
+    "upgrades": [
+      "sabotage_kit"
+    ]
+  },
+  "effects": [
+    {
+      "type": "zone",
+      "radius": 5,
+      "duration": 20,
+      "interval": 1,
+      "channel": true,
+      "effects": [
+        {
+          "type": "damage",
+          "damageType": "fire",
+          "amount": 15,
+          "radius": 0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "id": "skeleton_archers",
+  "name": "Skeleton Archers",
+  "unit": "skeleton_archer",
+  "size": 10,
+  "formation": {
+    "columns": 5,
+    "spacing": 1.1
+  },
+  "cost": {},
+  "buildTime": 1
+}

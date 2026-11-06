@@ -1,0 +1,23 @@
+{
+  "id": "tunnel",
+  "name": "Tunnel",
+  "kind": "building",
+  "model": "tunnel",
+  "footprint": {
+    "x": 8,
+    "y": 8
+  },
+  "health": 800,
+  "armor": 3,
+  "placement": [
+    "free"
+  ],
+  "buildTime": 15,
+  "cost": {
+    "gold": 80,
+    "wood": 40
+  },
+  "material": "stone",
+  "noBuildRadius": 6,
+  "tunnel": true
+}

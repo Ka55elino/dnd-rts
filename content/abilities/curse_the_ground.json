@@ -1,0 +1,28 @@
+{
+  "id": "curse_the_ground",
+  "name": "Curse the Ground",
+  "kind": "active",
+  "target": "point",
+  "range": 22,
+  "cooldown": 45,
+  "effects": [
+    {
+      "type": "zone",
+      "radius": 8,
+      "duration": 15,
+      "interval": 1,
+      "channel": true,
+      "raise": "risen_skeletons",
+      "raiseEvery": 3,
+      "raiseDuration": 45,
+      "effects": [
+        {
+          "type": "damage",
+          "damageType": "necrotic",
+          "amount": 6,
+          "radius": 0
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,17 @@
+{
+  "id": "elemental_blades_fire",
+  "name": "Elemental Blades: Fire",
+  "cost": {
+    "gold": 250,
+    "wood": 100
+  },
+  "researchTime": 35,
+  "group": "elemental_blades",
+  "units": [
+    "twinblade"
+  ],
+  "modifiers": {
+    "extraType": "fire",
+    "extraDamage": 0.2
+  }
+}

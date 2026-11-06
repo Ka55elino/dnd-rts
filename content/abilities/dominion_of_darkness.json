@@ -1,0 +1,24 @@
+{
+  "id": "dominion_of_darkness",
+  "name": "Dominion of Darkness",
+  "kind": "active",
+  "target": "self",
+  "cooldown": 150,
+  "effects": [
+    {
+      "type": "zone",
+      "radius": 25,
+      "duration": 15,
+      "interval": 1,
+      "effects": [
+        {
+          "type": "damage",
+          "damageType": "necrotic",
+          "amount": 10,
+          "radius": 0
+        }
+      ]
+    }
+  ],
+  "ultimate": true
+}

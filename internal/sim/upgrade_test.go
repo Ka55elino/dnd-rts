@@ -10,11 +10,10 @@ import (
 func forgeWorld(t *testing.T) (*World, *Building) {
 	t.Helper()
 	w := newTestWorld(t)
-	keep := w.Buildings[0]
-	if _, err := w.SpawnBuilding(0, "barracks", keep.PlotPos(0), keep.Facing); err != nil {
+	if _, err := w.SpawnBuilding(0, "barracks", baseSpot(t, w, "barracks", 0), 0); err != nil {
 		t.Fatal(err)
 	}
-	forge, err := w.SpawnBuilding(0, "forge", keep.PlotPos(1), keep.Facing)
+	forge, err := w.SpawnBuilding(0, "forge", baseSpot(t, w, "forge", 0), 0)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -74,12 +73,12 @@ func TestBuildingAndHordeRequirements(t *testing.T) {
 	w := newTestWorld(t)
 	keep := w.Buildings[0]
 	n := len(w.Buildings)
-	w.Step([]Command{{Player: 0, Kind: CmdBuildOnPlot, TargetBuilding: keep.ID, Count: 0, Name: "forge"}})
+	w.Step([]Command{{Player: 0, Kind: CmdBuildFree, Hordes: []HordeID{workersOf(t, w).ID}, Name: "forge", Target: baseSpot(t, w, "forge", 0)}})
 	if len(w.Buildings) != n {
 		t.Fatal("forge built without barracks")
 	}
 	// Knights need Forged Weapons I.
-	barracks, _ := w.SpawnBuilding(0, "barracks", keep.PlotPos(1), keep.Facing)
+	barracks, _ := w.SpawnBuilding(0, "barracks", baseSpot(t, w, "barracks", 0), 0)
 	w.Step([]Command{{Player: 0, Kind: CmdDevGive, Name: "gold", Count: 5000}, {Player: 0, Kind: CmdDevGive, Name: "metal", Count: 5000}})
 	for i := 0; i < 3; i++ {
 		w.SpawnBuilding(0, "farm", keep.Pos.Add(fixed.V2i(-30, -30+i*30)), 0)

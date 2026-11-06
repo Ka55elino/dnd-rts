@@ -1,0 +1,25 @@
+{
+  "id": "wraith_horde",
+  "name": "Wraith Horde",
+  "kind": "active",
+  "target": "point",
+  "range": 30,
+  "cooldown": 180,
+  "effects": [
+    {
+      "type": "zone",
+      "radius": 12,
+      "duration": 4,
+      "interval": 0.5,
+      "effects": [
+        {
+          "type": "damage",
+          "damageType": "necrotic",
+          "amount": 25,
+          "radius": 0
+        }
+      ]
+    }
+  ],
+  "ultimate": true
+}

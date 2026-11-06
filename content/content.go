@@ -4,5 +4,5 @@ package content
 
 import "embed"
 
-//go:embed units hordes factions buildings abilities upgrades maps resources.json combat.json plots.json
+//go:embed units hordes factions buildings abilities upgrades maps resources.json combat.json
 var FS embed.FS

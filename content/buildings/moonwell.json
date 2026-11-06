@@ -1,0 +1,34 @@
+{
+  "id": "moonwell",
+  "name": "Moonwell",
+  "kind": "building",
+  "model": "moonwell",
+  "footprint": {
+    "x": 8,
+    "y": 8
+  },
+  "health": 800,
+  "armor": 3,
+  "placement": [
+    "free"
+  ],
+  "buildTime": 15,
+  "cost": {
+    "gold": 80,
+    "wood": 40
+  },
+  "material": "stone",
+  "economy": [
+    {
+      "type": "provide",
+      "resource": "food",
+      "amount": 10
+    }
+  ],
+  "noBuildRadius": 12,
+  "growTrees": {
+    "radius": 10,
+    "every": 20,
+    "max": 6
+  }
+}

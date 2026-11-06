@@ -50,6 +50,9 @@ const (
 	EffSummon    = "summon"    // Count hordes of type Horde near the centre, for Duration (0 = until killed)
 	EffTeleport  = "teleport"  // the caster's horde (and own hordes in Radius around it) jump to the centre
 	EffTransform = "transform" // the caster's horde becomes Unit for Duration
+	EffTree      = "tree"      // plant a tree at the centre (or Count trees within Radius)
+	EffReveal    = "reveal"    // the caster's owner sees Radius around the centre for Duration (fog of war)
+	EffBuild     = "build"     // a finished Building of the caster's owner at the centre (Undermine's tunnel)
 )
 
 // Effect area shapes.
@@ -96,6 +99,15 @@ type Ability struct {
 	// Ultimate: the hero's big ability (UI only; rules are in its numbers).
 	Ultimate bool `json:"ultimate,omitempty"`
 
+	// Stealthy: casting doesn't reveal an invisible caster (sabotage).
+	Stealthy bool `json:"stealthy,omitempty"`
+	// OnTree: point abilities are cast on a tree: the point snaps to the nearest grown tree
+	// within treeSnap (Sacred Tree, Awakening of the Ents); without one they can't be cast.
+	OnTree bool `json:"onTree,omitempty"`
+	// OnBuilding: the point must be near a building of someone else (an enemy or neutral one;
+	// Undermine, Sabotage).
+	OnBuilding bool `json:"onBuilding,omitempty"`
+
 	// Stance: a toggle that puts the soldiers in a stance (shield wall, spear wall);
 	// while it is on, the client plays the unit's "brace" clip instead of idle.
 	Stance bool `json:"stance,omitempty"`
@@ -106,6 +118,7 @@ type ModeChoice struct {
 	ID        string    `json:"id"`
 	Name      string    `json:"name"`
 	Modifiers Modifiers `json:"modifiers,omitempty"`
+	Requires  *Requires `json:"requires,omitempty"` // e.g. the golem's fire rune needs its upgrade
 }
 
 // ModsFor returns the modifiers for the unit's current mode ("" = none).
@@ -163,6 +176,24 @@ type AbilityEffect struct {
 
 	// EffTransform.
 	Unit string `json:"unit,omitempty"` // the form (keeps abilities, level and the health fraction)
+
+	// EffZone: enemies (living) who die inside the zone while it lasts rise for the zone's owner:
+	// one horde of Raise per RaiseEvery deaths (default: its squad size), for RaiseDuration seconds.
+	Raise         string      `json:"raise,omitempty"`
+	RaiseEvery    int         `json:"raiseEvery,omitempty"`
+	RaiseDuration fixed.Fixed `json:"raiseDuration,omitempty"`
+	// EffZone: Channel — the zone ends when the caster's horde dies (sabotage).
+	Channel bool `json:"channel,omitempty"`
+	// EffSummon: PerTree — one horde per tree within Radius of the centre (at the tree), up to
+	// Count; nothing without trees (ents).
+	PerTree bool `json:"perTree,omitempty"`
+	// EffSummon: MaxAlive — at most this many hordes summoned by this ability stay; the oldest
+	// one goes when another is placed (traps: up to 3).
+	MaxAlive int `json:"maxAlive,omitempty"`
+	// EffZone: Smoke — hordes inside are hidden from everyone outside the cloud (Smoke Screen).
+	Smoke bool `json:"smoke,omitempty"`
+	// EffBuild.
+	Building string `json:"building,omitempty"`
 }
 
 // Modifiers change unit stats while active. Fractions add up: two +0.15
@@ -206,6 +237,21 @@ type Modifiers struct {
 	// Charge: + fraction of trample damage and knockback; a wedge also loses
 	// half the momentum per trampled foe (it drives deeper).
 	Charge fixed.Fixed `json:"charge,omitempty"`
+
+	// Reflect: this fraction of the damage taken from an attacker is dealt back to it (Dark Shield).
+	Reflect fixed.Fixed `json:"reflect,omitempty"`
+	// NoHeal: the unit can't be healed (abilities, life steal) — anti-heal auras on enemies.
+	NoHeal bool `json:"noHeal,omitempty"`
+	// Invisible: enemies don't see the unit unless they detect it; attacking reveals it for a
+	// few seconds. Camouflage: the same, but only while the horde stands still. InTrees: either
+	// works only near trees.
+	Invisible  bool `json:"invisible,omitempty"`
+	Camouflage bool `json:"camouflage,omitempty"`
+	InTrees    bool `json:"inTrees,omitempty"`
+	// Detect: invisible enemies within this radius are seen (towers with True Sight, auras).
+	Detect fixed.Fixed `json:"detect,omitempty"`
+	// TreeGrowth: auras only — felled trees in the radius regrow this much faster (+1 = twice).
+	TreeGrowth fixed.Fixed `json:"treeGrowth,omitempty"`
 }
 
 // IsZero reports whether the modifiers change nothing.
@@ -267,6 +313,7 @@ func (c *Catalog) validateAbilities(fail func(kind, id, format string, args ...a
 				}
 				seen[m.ID] = true
 				c.validateMods(id, m.Modifiers, fail)
+				c.validateRequires("ability", id, m.Requires, fail)
 			}
 		default:
 			fail("ability", id, "kind must be active, toggle, passive, aura or mode")
@@ -281,6 +328,11 @@ func (c *Catalog) validateAbilities(fail func(kind, id, format string, args ...a
 		}
 	}
 	for _, uid := range c.UnitIDs {
+		if t := c.Units[uid].Trap; t != nil {
+			if a, ok := c.Abilities[t.Ability]; t.Radius <= 0 || !ok || a.Kind != AbilityActive {
+				fail("unit", uid, "trap needs radius > 0 and a known active ability")
+			}
+		}
 		var modes []string
 		var needed []string
 		for _, ab := range c.Units[uid].Abilities {
@@ -348,8 +400,8 @@ func (c *Catalog) validateEffects(id string, effects []AbilityEffect, fail func(
 			if _, ok := c.Hordes[e.Horde]; !ok {
 				fail("ability", id, "%s: unknown horde %q", where, e.Horde)
 			}
-			if e.Count < 0 || e.Duration < 0 {
-				fail("ability", id, "%s: count and duration must be >= 0", where)
+			if e.Count < 0 || e.Duration < 0 || e.MaxAlive < 0 {
+				fail("ability", id, "%s: count, duration and maxAlive must be >= 0", where)
 			}
 		case EffTeleport:
 		case EffTransform:
@@ -360,10 +412,28 @@ func (c *Catalog) validateEffects(id string, effects []AbilityEffect, fail func(
 			if depth > 0 {
 				fail("ability", id, "%s: zones can't contain zones", where)
 			}
-			if e.Radius <= 0 || e.Duration <= 0 || e.Interval <= 0 || len(e.Effects) == 0 {
-				fail("ability", id, "%s: zones need radius, duration, interval > 0 and effects", where)
+			if e.Radius <= 0 || e.Duration <= 0 || e.Interval <= 0 || (len(e.Effects) == 0 && e.Raise == "") {
+				fail("ability", id, "%s: zones need radius, duration, interval > 0 and effects (or raise)", where)
+			}
+			if _, ok := c.Hordes[e.Raise]; e.Raise != "" && !ok {
+				fail("ability", id, "%s: raise: unknown horde %q", where, e.Raise)
+			}
+			if e.RaiseEvery < 0 || e.RaiseDuration < 0 {
+				fail("ability", id, "%s: raiseEvery and raiseDuration must be >= 0", where)
 			}
 			c.validateEffects(id, e.Effects, fail, depth+1)
+		case EffTree:
+			if e.Count < 0 || e.Radius < 0 {
+				fail("ability", id, "%s: count and radius must be >= 0", where)
+			}
+		case EffReveal:
+			if e.Radius <= 0 || e.Duration <= 0 {
+				fail("ability", id, "%s: reveal needs radius and duration > 0", where)
+			}
+		case EffBuild:
+			if b, ok := c.Buildings[e.Building]; !ok || b.Kind != BuildingRegular {
+				fail("ability", id, "%s: build needs a known regular building", where)
+			}
 		default:
 			fail("ability", id, "%s: unknown effect type", where)
 		}

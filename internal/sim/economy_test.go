@@ -29,11 +29,12 @@ func TestStartingStocksAndFood(t *testing.T) {
 	}
 }
 
-func TestPlotBuildingCostsAndRefund(t *testing.T) {
+func TestBuildingCostsAndRefund(t *testing.T) {
 	w := newTestWorld(t)
 	gold, wood := res(t, w, "gold"), res(t, w, "wood")
-	keep := w.Buildings[0]
-	w.Step([]Command{{Player: 0, Kind: CmdBuildOnPlot, TargetBuilding: keep.ID, Count: 0, Name: "barracks"}})
+	spot := baseSpot(t, w, "barracks", 0)
+	build := Command{Player: 0, Kind: CmdBuildFree, Hordes: []HordeID{workersOf(t, w).ID}, Name: "barracks", Target: spot}
+	w.Step([]Command{build})
 	if w.Stock(0, gold) != 300 || w.Stock(0, wood) != 200 {
 		t.Fatalf("after barracks: gold %d wood %d", w.Stock(0, gold), w.Stock(0, wood))
 	}
@@ -45,7 +46,7 @@ func TestPlotBuildingCostsAndRefund(t *testing.T) {
 	// Not enough wood: refused, nothing taken.
 	w.Step([]Command{{Player: 0, Kind: CmdDevGive, Name: "wood", Count: -250}})
 	n := len(w.Buildings)
-	w.Step([]Command{{Player: 0, Kind: CmdBuildOnPlot, TargetBuilding: keep.ID, Count: 0, Name: "barracks"}})
+	w.Step([]Command{build})
 	if len(w.Buildings) != n || w.Stock(0, gold) != 500 {
 		t.Fatal("barracks placed without enough wood")
 	}

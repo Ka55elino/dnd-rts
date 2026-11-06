@@ -1,0 +1,13 @@
+{
+  "id": "chill_of_the_grave",
+  "name": "Chill of the Grave",
+  "kind": "aura",
+  "radius": 15,
+  "modifiers": {
+    "extraType": "necrotic",
+    "extraDamage": 0.2
+  },
+  "tags": [
+    "undead"
+  ]
+}

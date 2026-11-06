@@ -31,14 +31,19 @@ type Unit struct {
 	// Attacks: a unit may have a melee attack, a ranged attack, both or none.
 	// With both, it shoots from afar and switches to melee when enemies close in.
 	Melee     *Attack  `json:"melee,omitempty"`
-	Ranged    *Attack  `json:"ranged,omitempty"`    // needs a projectile
+	Ranged    *Attack  `json:"ranged,omitempty"`    // needs a projectile; may require an upgrade (Attack.Requires)
 	Flying    bool     `json:"flying,omitempty"`    // only attacks that target "air" can hit it
 	Charge    *Charge  `json:"charge,omitempty"`    // cavalry: tramples infantry at speed
 	Abilities []string `json:"abilities,omitempty"` // Ability.IDs
 	// Hero: levels and experience (heroes only). Ability i unlocks at level i+1.
 	Hero *HeroDef `json:"hero,omitempty"`
 	// XP: experience this unit is worth when it dies (0 = health / 10).
-	XP   int      `json:"xp,omitempty"`
+	XP int `json:"xp,omitempty"`
+	// Sight: how far the unit sees through the fog of war (0 = the default, DefaultSight).
+	Sight fixed.Fixed `json:"sight,omitempty"`
+	// Trap: the unit is a ground trap (placed by an ability): it stands still and goes off when
+	// an enemy steps within Radius — its Ability's effects at its spot, then it is gone.
+	Trap *Trap    `json:"trap,omitempty"`
 	Tags []string `json:"tags,omitempty"` // "infantry", "cavalry", "ranged", ...
 }
 
@@ -50,6 +55,15 @@ func (u *Unit) HasTag(tag string) bool {
 		}
 	}
 	return false
+}
+
+// DefaultSight: vision radius of units and buildings without their own (world units).
+var DefaultSight = fixed.FromInt(36)
+
+// Trap: see Unit.Trap.
+type Trap struct {
+	Radius  fixed.Fixed `json:"radius"`
+	Ability string      `json:"ability"` // an active ability; its effects go off at the trap
 }
 
 // Charge describes trampling: a unit moving fast through enemy infantry
@@ -76,6 +90,9 @@ type Attack struct {
 
 	// Targets: what the attack can hit — "ground", "air" or both. Default: ground.
 	Targets []string `json:"targets,omitempty"`
+
+	// Requires: the attack exists only once the player has these (a troll's sack of rocks).
+	Requires *Requires `json:"requires,omitempty"`
 
 	// MinRange: ranged attacks can't hit closer than this (trebuchets).
 	MinRange fixed.Fixed `json:"minRange,omitempty"`
@@ -169,6 +186,8 @@ type Faction struct {
 	Start     []string `json:"start,omitempty"`     // starting army (Horde.IDs); empty = one of each in Hordes
 	Fortress  string   `json:"fortress"`            // Building.ID (kind fortress), placed in the player's map slot
 	Buildings []string `json:"buildings,omitempty"` // Building.IDs (kind building) the player can construct
+	// FortressTunnel: the fortress is also a tunnel entrance (dwarves).
+	FortressTunnel bool `json:"fortressTunnel,omitempty"`
 }
 
 // Building kinds.
@@ -180,11 +199,12 @@ const (
 	BuildingGate     = "gate"     // a wall segment its owner's units pass through
 )
 
-// Placements of regular buildings.
+// Placements (every building is put up by workers).
 const (
-	PlacementPlot  = "plot"  // on a prepared plot around a fortress / outpost; builds itself
-	PlacementTower = "tower" // on a tower socket of a base wall; builds itself
-	PlacementFree  = "free"  // anywhere in the build zone; built by workers
+	PlacementFree  = "free"  // anywhere on open ground
+	PlacementTower = "tower" // anywhere along the owner's wall (defensive towers)
+	PlacementWall  = "wall"  // wall segments: dragged as a line from a start to an end point
+	PlacementGate  = "gate"  // a gatehouse over a stretch of the owner's finished wall
 )
 
 // Building is a structure type: fortress, outpost or a constructible building.
@@ -195,6 +215,9 @@ type Building struct {
 
 	Model      string      `json:"model"`                // static model id (frontend/public/models/<id>)
 	ModelScale fixed.Fixed `json:"modelScale,omitempty"` // 0 = 1
+	// FactionModels: a shared building drawn differently per owner faction (the keep): faction id →
+	// model id; other factions use Model.
+	FactionModels map[string]string `json:"factionModels,omitempty"`
 
 	// Footprint: width (x, along the building's right) and depth (y, along its
 	// front) in world units. Blocks movement.
@@ -205,7 +228,7 @@ type Building struct {
 	Material     string      `json:"material,omitempty"`     // wood / stone (default) / magic
 	MagicDefense fixed.Fixed `json:"magicDefense,omitempty"` // flat reduction of magic damage
 
-	// Regular buildings: where they may be built (PlacementPlot / PlacementFree)
+	// Regular buildings: where they may be built (PlacementFree / PlacementTower)
 	// and how long construction takes.
 	Placement []string    `json:"placement,omitempty"`
 	BuildTime fixed.Fixed `json:"buildTime,omitempty"` // seconds
@@ -217,10 +240,8 @@ type Building struct {
 	Research []string  `json:"research,omitempty"` // Upgrade.IDs researched here
 	Requires *Requires `json:"requires,omitempty"`
 
-	// Fortresses and outposts: build plots around the building. A fortress
-	// may describe its whole base instead (generated plots are appended).
-	Plots []Plot      `json:"plots,omitempty"`
-	Base  *BaseLayout `json:"base,omitempty"`
+	// Fortresses: the base around the building (the wall, gates, stairs).
+	Base *BaseLayout `json:"base,omitempty"`
 
 	// NoBuildRadius keeps free buildings away: no footprint may reach into
 	// this circle around the building (0 = only the footprint itself).
@@ -245,6 +266,21 @@ type Building struct {
 	// Toggles: toggle abilities (e.g. fire arrows) a tower switches; their
 	// modifiers change its shots while on.
 	Toggles []string `json:"toggles,omitempty"`
+
+	// Sight: vision radius through the fog of war (0 = DefaultSight).
+	Sight fixed.Fixed `json:"sight,omitempty"`
+	// Tunnel: an entrance of the owner's tunnel network (dwarves): an own horde sent to a tunnel
+	// enters the nearest entrance and comes out of this one, one horde at a time.
+	Tunnel bool `json:"tunnel,omitempty"`
+	// GrowTrees: plants trees around the building over time (moonwell).
+	GrowTrees *GrowTrees `json:"growTrees,omitempty"`
+}
+
+// GrowTrees: one tree every Every seconds within Radius of the building, up to Max of them.
+type GrowTrees struct {
+	Radius fixed.Fixed `json:"radius"`
+	Every  fixed.Fixed `json:"every"`
+	Max    int         `json:"max"`
 }
 
 // Capture describes how a neutral outpost is taken: units of exactly one
@@ -273,19 +309,6 @@ func (b *Building) Allows(placement string) bool {
 	return false
 }
 
-// FitsPlot reports whether the footprint fits on a square plot of the given size.
-func (b *Building) FitsPlot(size fixed.Fixed) bool {
-	return b.Footprint.X <= size && b.Footprint.Y <= size
-}
-
-// Plot is a prepared building site, relative to its fortress / outpost:
-// offset.x along the owner's right, offset.y along its front.
-type Plot struct {
-	Offset fixed.Vec2  `json:"offset"`
-	Size   fixed.Fixed `json:"size,omitempty"`  // side of the square site; a plot building fits if its footprint does
-	Class  string      `json:"class,omitempty"` // size class s / m / l (sets Size from plots.json)
-}
-
 // Map is a playable map.
 type Map struct {
 	ID       string       `json:"id"`
@@ -295,6 +318,16 @@ type Map struct {
 	Terrain  MapTerrain   `json:"terrain"`
 	Players  []MapPlayer  `json:"players"`
 	Outposts []MapOutpost `json:"outposts,omitempty"`
+	Forests  []MapForest  `json:"forests,omitempty"`
+}
+
+// MapForest is a patch of trees: Count trees scattered in a circle of Radius (deterministic
+// from Seed). Trees block movement, give cover, burn, regrow.
+type MapForest struct {
+	Pos    fixed.Vec2  `json:"pos"`
+	Radius fixed.Fixed `json:"radius"`
+	Count  int         `json:"count"`
+	Seed   int64       `json:"seed,omitempty"`
 }
 
 // MapTerrain describes the heightfield.

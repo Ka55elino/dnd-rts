@@ -1,0 +1,15 @@
+{
+  "id": "spider_boots",
+  "name": "Spider Boots",
+  "cost": {
+    "gold": 150,
+    "wood": 50
+  },
+  "researchTime": 25,
+  "tags": [
+    "infantry"
+  ],
+  "modifiers": {
+    "immune": "slow"
+  }
+}

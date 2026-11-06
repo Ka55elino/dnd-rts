@@ -1,30 +1,16 @@
 package data
 
 import (
-	"bytes"
-	"encoding/json"
-	"fmt"
-	"io/fs"
 	"slices"
 
 	"dnd-rts/internal/fixed"
 )
 
-// Base layouts (docs/BASES.md). A fortress describes its base with a
-// generator — a contour (circle / square / polygon) with a wall, gates,
-// tower sockets on the wall and rings of build plots — which Load expands
-// into concrete plots. PvP maps use the generator; campaign maps will place
-// bases by hand in the map editor (same Plot / BaseLayout data).
-
-// Plot size classes.
-const (
-	PlotSmall  = "s"
-	PlotMedium = "m"
-	PlotLarge  = "l"
-)
-
-// PlotSizes: side of a plot per size class (content/plots.json).
-type PlotSizes map[string]fixed.Fixed
+// Base layouts (docs/BASES.md). A fortress may describe a ready-made walled base
+// with a generator — a contour (circle / square / polygon) with a wall, gates and
+// stairs — which Load expands into wall segments. The standard keep has none
+// (players build their walls with workers); campaign maps will use it for
+// prepared bases (the map editor, same BaseLayout data).
 
 // BaseLayout is a fortress's base, relative to the fortress (x along its
 // right, y along its front). Angles are degrees, clockwise from the front.
@@ -34,9 +20,7 @@ type BaseLayout struct {
 	Radius fixed.Fixed `json:"radius"`           // contour: circle radius, half the square's side, polygon circumradius
 	Rotate fixed.Fixed `json:"rotate,omitempty"` // square / polygon: turn of the contour, degrees
 
-	Rings  []PlotRing    `json:"rings,omitempty"`
-	Gates  []fixed.Fixed `json:"gates,omitempty"`  // gate directions
-	Towers int           `json:"towers,omitempty"` // tower sockets on the wall, evenly spaced, kept clear of gates
+	Gates []fixed.Fixed `json:"gates,omitempty"` // gate directions
 
 	// The wall: segments of building Wall around the contour; at each gate one
 	// Gate building (a gatehouse) in place of GateWidth segments (default: its
@@ -48,11 +32,10 @@ type BaseLayout struct {
 	Stairs    int    `json:"stairs,omitempty"`
 
 	// Filled by Load.
-	Outline      []fixed.Vec2 `json:"-"` // contour corners (circles: 32-gon)
-	GatePos      []fixed.Vec2 `json:"-"`
-	TowerSockets []fixed.Vec2 `json:"-"`
-	Segments     []WallSlot   `json:"-"` // around the contour, in order (the walkway is this loop)
-	StairList    []WallStair  `json:"-"`
+	Outline   []fixed.Vec2 `json:"-"` // contour corners (circles: 32-gon)
+	GatePos   []fixed.Vec2 `json:"-"`
+	Segments  []WallSlot   `json:"-"` // around the contour, in order (the walkway is this loop)
+	StairList []WallStair  `json:"-"`
 }
 
 // WallSlot is one segment of a base wall, relative to the fortress.
@@ -69,62 +52,29 @@ type WallStair struct {
 	Ground fixed.Vec2 // relative to the fortress
 }
 
-// PlotRing places Count plots evenly on a circle; sizes cycle through Sizes.
-type PlotRing struct {
-	Radius fixed.Fixed `json:"radius"`
-	Count  int         `json:"count"`
-	Offset fixed.Fixed `json:"offset,omitempty"` // angle of the first plot, degrees
-	Sizes  []string    `json:"sizes"`            // size classes, repeated around the ring
-}
-
-// maxPlots: the snapshot carries a 48-bit mask of occupied plots per building.
-const maxPlots = 48
-
-// PlotTower: the class of tower sockets on a base wall (plots of the fortress).
-const PlotTower = "tower"
-
-// gateClear: tower sockets keep this many degrees away from a gate.
-var gateClear = fixed.FromInt(12)
-
-func loadPlotSizes(fsys fs.FS, into *PlotSizes) []error {
-	raw, err := fs.ReadFile(fsys, "plots.json")
-	if err != nil {
-		return []error{fmt.Errorf("plots.json: %w", err)}
-	}
-	dec := json.NewDecoder(bytes.NewReader(raw))
-	dec.DisallowUnknownFields()
-	if err := dec.Decode(into); err != nil {
-		return []error{fmt.Errorf("plots.json: %w", err)}
-	}
-	return nil
-}
-
 // polar: offset at angle a (degrees, clockwise from the front) and radius r.
 func polar(a, r fixed.Fixed) fixed.Vec2 {
 	rad := a.Mul(fixed.Pi).DivInt(180)
 	return fixed.Vec2{X: fixed.Sin(rad).Mul(r), Y: fixed.Cos(rad).Mul(r)}
 }
 
-// expandBases turns base layouts into plots and contour points, and fills plot
-// sizes from their class. Runs before Validate.
+// ExpandBase (re)computes the base of building id after its layout was set in code (tests, the
+// map editor later).
+func (c *Catalog) ExpandBase(id string) {
+	saved := c.BuildingIDs
+	c.BuildingIDs = []string{id}
+	c.expandBases()
+	c.BuildingIDs = saved
+}
+
+// expandBases turns base layouts into contour points, wall segments, gates and
+// stairs. Runs before Validate.
 func (c *Catalog) expandBases() {
 	for _, id := range c.BuildingIDs {
 		b := c.Buildings[id]
-		for i := range b.Plots { // explicit plots may name a class instead of a size
-			if p := &b.Plots[i]; p.Size == 0 && p.Class != "" {
-				p.Size = c.PlotSizes[p.Class]
-			}
-		}
 		l := b.Base
 		if l == nil {
 			continue
-		}
-		for _, r := range l.Rings {
-			for k := 0; k < r.Count && len(r.Sizes) > 0; k++ {
-				a := r.Offset + fixed.FromInt(360).MulInt(k).DivInt(r.Count)
-				class := r.Sizes[k%len(r.Sizes)]
-				b.Plots = append(b.Plots, Plot{Offset: polar(a, r.Radius), Size: c.PlotSizes[class], Class: class})
-			}
 		}
 		// Contour.
 		n := 32
@@ -150,17 +100,7 @@ func (c *Catalog) expandBases() {
 		for _, g := range l.Gates {
 			l.GatePos = append(l.GatePos, l.wallPoint(g))
 		}
-		l.TowerSockets = nil
-		for k := 0; k < l.Towers; k++ {
-			a := fixed.FromInt(360).MulInt(2*k + 1).DivInt(2 * l.Towers) // between evenly spaced spokes
-			if l.nearGate(a) {
-				continue
-			}
-			l.TowerSockets = append(l.TowerSockets, l.wallPoint(a))
-		}
 		c.expandWall(b, l)
-		// Free buildings stay outside the wall.
-		b.NoBuildRadius = max(b.NoBuildRadius, l.Radius+fixed.FromInt(4)+c.wallThickness(l))
 	}
 }
 
@@ -188,26 +128,7 @@ func (l *BaseLayout) wallPoint(a fixed.Fixed) fixed.Vec2 {
 	return best
 }
 
-func (l *BaseLayout) nearGate(a fixed.Fixed) bool {
-	for _, g := range l.Gates {
-		d := (a - g).Abs()
-		d = min(d, fixed.FromInt(360)-d)
-		if d < gateClear {
-			return true
-		}
-	}
-	return false
-}
-
 func (c *Catalog) validateBases(fail func(kind, id, format string, args ...any)) {
-	for _, class := range []string{PlotSmall, PlotMedium, PlotLarge, PlotTower} {
-		if c.PlotSizes[class] <= 0 {
-			fail("plots", class, "plots.json needs a size > 0 for %q", class)
-		}
-	}
-	if !(c.PlotSizes[PlotSmall] < c.PlotSizes[PlotMedium] && c.PlotSizes[PlotMedium] < c.PlotSizes[PlotLarge]) {
-		fail("plots", "sizes", "plot sizes must grow: s < m < l")
-	}
 	for _, id := range c.BuildingIDs {
 		b := c.Buildings[id]
 		if l := b.Base; l != nil {
@@ -236,68 +157,12 @@ func (c *Catalog) validateBases(fail func(kind, id, format string, args ...any))
 					}
 				}
 			}
-			for i, r := range l.Rings {
-				if r.Radius <= 0 || r.Count <= 0 || len(r.Sizes) == 0 {
-					fail("building", id, "base.rings[%d]: needs radius > 0, count > 0 and sizes", i)
-				}
-				for _, s := range r.Sizes {
-					if _, ok := c.PlotSizes[s]; !ok {
-						fail("building", id, "base.rings[%d]: unknown plot size %q (s, m, l)", i, s)
-					}
-				}
-			}
-		}
-		for i, p := range b.Plots {
-			if p.Class != "" && c.PlotSizes[p.Class] == 0 {
-				fail("building", id, "plot %d: unknown size class %q", i, p.Class)
-			}
-		}
-		if len(b.Plots) > maxPlots {
-			fail("building", id, "at most %d plots (has %d)", maxPlots, len(b.Plots))
-		}
-		// Plots must not overlap each other or the building, and stay inside the wall.
-		half := func(p Plot) fixed.Fixed { return p.Size.DivInt(2) }
-		for i, p := range b.Plots {
-			if p.Class == PlotTower {
-				continue // on the wall, not inside the base
-			}
-			if (p.Offset.X.Abs() < b.Footprint.X.DivInt(2)+half(p)) && (p.Offset.Y.Abs() < b.Footprint.Y.DivInt(2)+half(p)) {
-				fail("building", id, "plot %d overlaps the building", i)
-			}
-			for j := i + 1; j < len(b.Plots); j++ {
-				q := b.Plots[j]
-				if q.Class == PlotTower {
-					continue
-				}
-				if (p.Offset.X-q.Offset.X).Abs() < half(p)+half(q) && (p.Offset.Y-q.Offset.Y).Abs() < half(p)+half(q) {
-					fail("building", id, "plots %d and %d overlap", i, j)
-				}
-			}
-			if l := b.Base; l != nil {
-				// The plot's far corner must stay inside the contour's inner circle.
-				corner := fixed.Vec2{X: p.Offset.X.Abs() + half(p), Y: p.Offset.Y.Abs() + half(p)}
-				inner := l.Radius
-				if l.Shape != "circle" && len(l.Outline) >= 3 {
-					inner = l.Outline[0].Add(l.Outline[1]).Scale(fixed.One / 2).Len() // apothem
-				}
-				inner -= c.wallThickness(l) // the wall's inner face
-				if corner.Len() > inner {
-					fail("building", id, "plot %d reaches past the base wall", i)
-				}
-			}
 		}
 	}
 }
 
-func (c *Catalog) wallThickness(l *BaseLayout) fixed.Fixed {
-	if w, ok := c.Buildings[l.Wall]; ok {
-		return w.Footprint.Y.DivInt(2)
-	}
-	return 0
-}
-
-// expandWall lays wall segments around the contour, gates, stairs and the
-// tower sockets (as plots of class "tower", after the building plots).
+// expandWall lays wall segments around the contour, gates and stairs
+// (defensive towers are built anywhere along the wall later).
 func (c *Catalog) expandWall(b *Building, l *BaseLayout) {
 	l.Segments, l.StairList = nil, nil
 	wall, ok := c.Buildings[l.Wall]
@@ -391,10 +256,6 @@ func (c *Catalog) expandWall(b *Building, l *BaseLayout) {
 		stair((2*k + 1) * len(l.Segments) / (2 * l.Stairs))
 	}
 	slices.SortFunc(l.StairList, func(a, b WallStair) int { return a.Node - b.Node })
-	// Tower sockets on the wall become plots of class "tower".
-	for _, t := range l.TowerSockets {
-		b.Plots = append(b.Plots, Plot{Offset: t, Size: c.PlotSizes[PlotTower], Class: PlotTower})
-	}
 }
 
 // mergeGates turns each run of gate segments into one gate slot (a gatehouse
@@ -464,4 +325,11 @@ func (c *Catalog) circleWithGates(l *BaseLayout, wall, gate *Building) {
 			l.Segments = append(l.Segments, WallSlot{Offset: polar(a, l.Radius), Out: polar(a, fixed.One)})
 		}
 	}
+}
+
+// TestBaseLayout is the walled base the tests (and the map editor's default) use: a circle of radius
+// 70 with gates at the front and the back, castle walls, 4 extra stairs.
+func TestBaseLayout() *BaseLayout {
+	return &BaseLayout{Shape: "circle", Radius: fixed.FromInt(70), Gates: []fixed.Fixed{0, fixed.FromInt(180)},
+		Wall: "castle_wall", Gate: "castle_gate", Stairs: 4}
 }

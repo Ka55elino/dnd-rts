@@ -1,0 +1,8 @@
+{
+  "id": "buried",
+  "name": "Buried",
+  "kind": "passive",
+  "modifiers": {
+    "invisible": true
+  }
+}

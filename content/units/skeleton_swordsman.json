@@ -1,0 +1,21 @@
+{
+  "id": "skeleton_swordsman",
+  "name": "Skeleton Swordsman",
+  "model": "skeleton_swordsman_simple",
+  "health": 60,
+  "armor": 1,
+  "speed": 3.6,
+  "radius": 0.4,
+  "mass": 1,
+  "melee": {
+    "damage": 8,
+    "range": 1.2,
+    "cooldown": 1.0,
+    "damageType": "slash"
+  },
+  "tags": [
+    "infantry",
+    "undead"
+  ],
+  "armorClass": "light"
+}

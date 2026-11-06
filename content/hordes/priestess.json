@@ -1,0 +1,15 @@
+{
+  "id": "priestess",
+  "name": "Priestess",
+  "unit": "priestess",
+  "size": 1,
+  "formation": {
+    "columns": 1,
+    "spacing": 1
+  },
+  "cost": {
+    "gold": 1100
+  },
+  "buildTime": 60,
+  "unique": true
+}

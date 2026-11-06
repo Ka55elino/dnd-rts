@@ -1,0 +1,12 @@
+{
+  "id": "wraiths",
+  "name": "Wraiths",
+  "unit": "wraith",
+  "size": 8,
+  "formation": {
+    "columns": 4,
+    "spacing": 1.2
+  },
+  "cost": {},
+  "buildTime": 1
+}

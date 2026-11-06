@@ -2,8 +2,7 @@
   "id": "archery_range",
   "name": "Archery Range",
   "kind": "building",
-  "model": "mausoleum",
-  "modelScale": 2.2,
+  "model": "archery_range",
   "footprint": {
     "x": 10,
     "y": 10
@@ -11,7 +10,7 @@
   "health": 1300,
   "armor": 3,
   "placement": [
-    "plot"
+    "free"
   ],
   "buildTime": 20,
   "cost": {

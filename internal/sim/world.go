@@ -51,15 +51,29 @@ type World struct {
 	nextProjectile ProjectileID
 	nextBuilding   BuildingID
 	nextZone       uint32
+	nextTree       int
 
 	// navTerrain is the walkability from terrain alone; buildings are
 	// stamped on top of it (see rebuildBlocked).
 	navTerrain []bool
 
+	// placeIgnore: buildings fitsFree doesn't count (the end of a wall a new line joins); scratch.
+	placeIgnore []*Building
+	// placeIgnoreStair: the stair at the end a new wall line joins (it may be built over).
+	placeIgnoreStair struct {
+		ring *WallRing
+		node int
+	}
+
 	// pierceOff is set while a volley from a "no pierce" horde lands (fire mode); scratch.
 	pierceOff bool
 
+	// FogEnabled: the fog of war is on (visibility.go).
+	FogEnabled bool
+	fog        fogGrid
+
 	// Match state.
+	Trees    []Tree     // trees.go
 	Players  []PlayerID // in the match, sorted
 	factions []string   // faction id per entry of Players
 	econ     []*economy // per entry of Players
@@ -99,6 +113,8 @@ func (w *World) Step(cmds []Command) {
 	w.Events = w.Events[:0]
 	w.combatHash.build(w)
 	w.updateMods()
+	w.updateFog(false)
+	w.updateConcealment()
 	for _, c := range cmds {
 		w.apply(c)
 	}
@@ -118,6 +134,9 @@ func (w *World) Step(cmds []Command) {
 	w.updateCapture()
 	w.updateEffects()
 	w.updateZones()
+	w.updateTraps()
+	w.updateTunnels()
+	w.updateTrees()
 	w.separate()
 	w.updateGates()
 	w.updateConstruction()
@@ -205,12 +224,27 @@ func (w *World) Horde(id HordeID) *Horde {
 }
 
 func (w *World) apply(c Command) {
+	if c.Kind < CmdDevSpawnHorde && len(c.Hordes) > 0 {
+		// Hordes underground and traps take no orders.
+		ids := make([]HordeID, 0, len(c.Hordes))
+		for _, id := range c.Hordes {
+			if h := w.Horde(id); h != nil && !h.InTunnel() && !h.IsTrap() {
+				ids = append(ids, id)
+			}
+		}
+		c.Hordes = ids
+	}
 	switch c.Kind {
 	case CmdMove:
 		for _, id := range c.Hordes {
 			h := w.Horde(id)
 			if h == nil || h.Owner != c.Player {
 				continue // unknown or not yours: ignore (never trust the client)
+			}
+			// Onto an own tunnel entrance: through the network (dwarves).
+			if b := w.tunnelAt(c.Player, c.Target); b != nil && !h.Unit.Flying {
+				w.orderTunnel(h, b)
+				continue
 			}
 			// Onto an own wall (foot soldiers), along it, or down from it.
 			if r, s, ok := w.wallAt(c.Player, c.Target); ok && h.canClimb() {
@@ -227,7 +261,7 @@ func (w *World) apply(c Command) {
 		}
 	case CmdAttack:
 		enemy := w.Horde(c.TargetHorde)
-		if enemy == nil || enemy.Owner == c.Player {
+		if enemy == nil || enemy.Owner == c.Player || !w.VisibleTo(enemy, c.Player) {
 			return
 		}
 		for _, id := range c.Hordes {
@@ -274,21 +308,27 @@ func (w *World) apply(c Command) {
 				h.attackBuilding(w, b)
 			}
 		}
-	case CmdBuildOnPlot:
-		if host := w.Building(c.TargetBuilding); host != nil {
-			w.buildOnPlot(c.Player, host, c.Count, c.Name)
-		}
 	case CmdBuildFree:
 		w.buildFree(c)
+	case CmdBuildWall:
+		w.buildWall(c)
 	case CmdConstruct:
 		b := w.Building(c.TargetBuilding)
 		// Help build a foundation, or repair a damaged building (walls too).
-		if b == nil || b.Owner != c.Player || !(b.UnderConstruction() && !b.selfBuild || b.Damaged()) {
+		if b == nil || b.Owner != c.Player || !(b.UnderConstruction() || b.Damaged()) {
 			return
 		}
+		var workers []*Horde
 		for _, id := range c.Hordes {
 			if h := w.Horde(id); h != nil && h.Owner == c.Player && h.IsWorker() {
 				h.constructOrder(w, b)
+				workers = append(workers, h)
+			}
+		}
+		// A wall foundation: go on with the rest of that wall's unfinished segments afterwards.
+		if r := w.wallOf(b); r != nil && b.UnderConstruction() {
+			for _, h := range workers {
+				h.buildQueue = slices.Clone(r.Segs)
 			}
 		}
 	case CmdStop, CmdHold, CmdAttackMove, CmdPatrol:
@@ -346,7 +386,7 @@ func (w *World) apply(c Command) {
 		if b := w.Building(c.TargetBuilding); b != nil {
 			w.cancelConstruction(c.Player, b)
 		}
-	case CmdDevSpawnHorde, CmdDevSpawnBuilding, CmdDevKill, CmdDevHeal, CmdDevGive, CmdDevHit, CmdDevXP:
+	case CmdDevSpawnHorde, CmdDevSpawnBuilding, CmdDevKill, CmdDevHeal, CmdDevGive, CmdDevHit, CmdDevXP, CmdDevFog, CmdDevTree:
 		w.applyDev(c)
 	}
 }

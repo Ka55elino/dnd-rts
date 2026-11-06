@@ -33,8 +33,7 @@ export type CursorName =
     | "fireAt"
     | "cast"
     | "castAlly"
-    | "place"
-    | "plot";
+    | "place";
 
 const OUT = "#1c130a"; // dark outline under every stroke
 const BRONZE = "#e2bd72";
@@ -86,7 +85,6 @@ const CURSORS: Record<CursorName, { svg: string; hot: [number, number] }> = {
     cast: { svg: stroked("M16 3 L18.5 13.5 L29 16 L18.5 18.5 L16 29 L13.5 18.5 L3 16 L13.5 13.5 Z", VIOLET, 1.8), hot: [16, 16] },
     castAlly: { svg: stroked("M16 3 L18.5 13.5 L29 16 L18.5 18.5 L16 29 L13.5 18.5 L3 16 L13.5 13.5 Z", GREEN, 1.8), hot: [16, 16] },
     place: { svg: stroked("M16 9 V23 M9 16 H23", BRONZE, 1.6), hot: [16, 16] },
-    plot: { svg: arrow(BRONZE) + stroked("M17 17 H29 V29 H17 Z", GREEN, 1.6), hot: [3, 2] },
 };
 
 /** Fallback CSS keywords while the images load (or if they fail). */

@@ -1,0 +1,15 @@
+{
+  "id": "invisibility_detection",
+  "name": "Invisibility Detection",
+  "cost": {
+    "gold": 150,
+    "wood": 100
+  },
+  "researchTime": 30,
+  "buildings": [
+    "wraith_tower"
+  ],
+  "modifiers": {
+    "detect": 30
+  }
+}

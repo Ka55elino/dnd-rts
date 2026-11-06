@@ -1,0 +1,18 @@
+{
+  "id": "dark_dragons",
+  "name": "Dark Dragon",
+  "unit": "dark_dragon",
+  "size": 1,
+  "formation": {
+    "columns": 1,
+    "spacing": 1
+  },
+  "cost": {
+    "gold": 900,
+    "metal": 150
+  },
+  "buildTime": 70,
+  "uses": {
+    "food": 20
+  }
+}

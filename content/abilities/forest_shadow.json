@@ -1,0 +1,9 @@
+{
+  "id": "forest_shadow",
+  "name": "Forest Shadow",
+  "kind": "passive",
+  "modifiers": {
+    "camouflage": true,
+    "inTrees": true
+  }
+}
